@@ -37,6 +37,7 @@ Project Structure
 # also docs like https://github.com/avigad/mathematics_in_lean_source
 ├── docs
 # The accompanying paper like https://arxiv.org/abs/1910.09336 and https://arxiv.org/abs/1910.12320
+# Will be written using https://manubot.org/
 ├── paper
 # Scripts like https://github.com/leanprover-community/mathlib/blob/master/scripts/deploy_docs.sh
 ├── scripts
