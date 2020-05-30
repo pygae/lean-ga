@@ -15,14 +15,14 @@ Formalization Goals
     - doesn't depend on data structures, not even canonical structures
     - contains only how the algebra works and its natural relations to other abstract mathematical structures by leveraging the power of Type Class in Lean 
     - is deeply rooted in its mathematical foundation while keeping its accessibility to common users
-2. Formalize PGA, CGA etc. based on the generic formalization
+2. Formalize Geometry like PGA, CGA etc. based on the generic formalization
 3. Verify the equivalence or explore the relations of various formalisms of Geometric Algebra
 4. Verify the correctness and computational properties of various Geometric Algebra data structures and algorithms
 5. Develops tactics and automations specific to Geometric Algebra using Lean's powerful metaprogramming framework
 6. Formalize important or interesting applications of Geometric Algebra
 7. Numerical GA Code generator for various programming languages with a rich set of options from various verified Geometric Algebra data structures and algorithms
 8. Symbolic rewrite rule generator framework
-9. Verify GA packages by pluggable bridges with them
+9. Verify GA libraries by pluggable bridges with them, using tools/APIs summarized in https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Examples.20of.20communicating.20with.20Lean
 10. Formalize Geometric Calculus
 
 Project Structure
@@ -33,7 +33,8 @@ Project Structure
 ├── .github
 # VSCode settings like https://github.com/leanprover-community/mathlib/blob/master/.vscode/settings.json              
 ├── .vscode
-# Docs like https://github.com/leanprover-community/mathlib/tree/master/docs using https://github.com/leanprover-community/doc-gen and possibly https://github.com/leanprover-community/format_lean 
+# Docs like https://github.com/leanprover-community/mathlib/tree/master/docs using https://github.com/leanprover-community/doc-gen and possibly https://github.com/leanprover-community/format_lean and https://github.com/leanprover-community/lean-client-python
+# also docs like https://github.com/avigad/mathematics_in_lean_source
 ├── docs
 # The accompanying paper like https://arxiv.org/abs/1910.09336 and https://arxiv.org/abs/1910.12320
 ├── paper
@@ -62,7 +63,7 @@ Project Structure
 #           Goal 8
 │   │   ├── rulegen
 #           Goal 9
-│   │   ├── package
+│   │   ├── libraries
 #           Goal 10
 │   │   ├── calculus
 #           Experimental code
