@@ -20,9 +20,9 @@ Formalization Goals
 4. Verify the correctness and computational properties of various Geometric Algebra data structures and algorithms
 5. Develops tactics and automations specific to Geometric Algebra using Lean's powerful metaprogramming framework
 6. Formalize important or interesting applications of Geometric Algebra
-7. Numerical GA Code generator for various programming languages with a rich set of options from various verified Geometric Algebra data structures and algorithms
-8. Symbolic rewrite rule generator framework
-9. Verify GA libraries by pluggable bridges with them, using tools/APIs summarized in https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Examples.20of.20communicating.20with.20Lean
+7. Numerical GA Code generator for various programming languages with a rich set of options from various verified Geometric Algebra data structures and algorithms, inspired by https://github.com/vincentnozick/garamon and https://github.com/enkimute/ganja.js
+8. Symbolic rewrite rule generator for Rule-based rewriting languages, e.g. https://github.com/JuliaSymbolics/SymbolicUtils.jl
+9. Verify GA libraries (e.g. https://github.com/chakravala/Grassmann.jl , https://github.com/jeremyong/gal , https://github.com/RobinKa/tfga , to name a few interested but really challenging ones) by pluggable bridges with them, using tools/APIs summarized in https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Examples.20of.20communicating.20with.20Lean
 10. Formalize Geometric Calculus
 
 Project Structure
