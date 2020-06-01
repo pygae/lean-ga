@@ -53,6 +53,7 @@ GA Formalization Related
         - https://www.isa-afp.org/browser_info/current/AFP/Octonions/
 
 - [Comparison of Two Theorem Provers: Isabelle/HOL and Coq](https://arxiv.org/abs/1808.09701)
+- [A Survey of Languages for Formalizing Mathematics](https://arxiv.org/abs/2005.12876)
 
 GA related
 -------------
