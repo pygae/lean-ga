@@ -1,7 +1,7 @@
 lean-ga
 =========
 
-A work-in-progress formalization of Geometric Algebra (GA) in the [Lean formal proof verification system](https://leanprover-community.github.io/) and using its [Mathematical Library](https://github.com/leanprover-community/mathlib/).
+A work-in-progress formalization of Geometric Algebra (GA) in the [Lean formal proof verification system](https://github.com/leanprover-community/lean) and using its [Mathematical Library](https://github.com/leanprover-community/mathlib/).
 
 Development Status
 --------------------
@@ -14,7 +14,7 @@ Formalization Goals
 1. Formalize Geometric Algebra in a generic way that
     - doesn't depend on data structures, not even canonical structures
     - contains only how the algebra works and its natural relations to other abstract mathematical structures by leveraging the power of Type Class in Lean 
-    - is deeply rooted in its mathematical foundation while keeping its accessibility to common users
+    - is deeply rooted in its mathematical foundation while keeping its accessibility to common GA users
 2. Formalize geometric objects (in PGA, CGA, for example) based on the generic formalization
 3. Verify the equivalence or explore the relations of various formalisms of Geometric Algebra
 4. Verify the correctness and computational properties of various Geometric Algebra data structures and algorithms
