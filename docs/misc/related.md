@@ -11,6 +11,8 @@ GA & Lean related
 - https://github.com/leanprover-community/mathlib/blob/master/src/geometry/manifold/real_instances.lean
 - https://github.com/leanprover-community/mathlib/blob/master/src/analysis/convex/cone.lean
 - commutative differential graded algebras: https://gist.github.com/kbuzzard/f5ee35457c5d257ceec58c66d7da0c38
+- free module: https://gist.github.com/sflicht/53bdcdb1e3536e668736f7b4eb63cd79
+- "ForTheL texts and Lean texts" in http://www.andrew.cmu.edu/user/avigad/meetings/fomm2020/slides/fomm_koepke.pdf
 
 - https://github.com/leanprover/lean/blob/master/library/init/core.lean
 - on fold notation: https://gitter.im/leanprover_public/Lobby?at=5a5686366117191e614e3ce4
@@ -26,6 +28,10 @@ GA & Lean related
 
 - [The Lean Mathematical Library](https://arxiv.org/abs/1910.09336)
 - [Maintaining a library of formal mathematics](https://lean-forward.github.io/mathlib-maintenance/paper.pdf)
+- https://leanprover-community.github.io/mathlib-overview.html
+- https://leanprover-community.github.io/mathlib_docs/
+- https://github.com/leanprover-community/leanprover-community.github.io/blob/newsite/data/overview.yaml
+- 
 
 - https://lean-forward.github.io/
 - [https://manishearth.github.io/blog/2017/03/04/what-are-sum-product-and-pi-types/](https://manishearth.github.io/blog/2017/03/04/what-are-sum-product-and-pi-types/)

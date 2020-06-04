@@ -9,12 +9,15 @@ and https://github.com/leanprover-community/mathlib/blob/master/src/data/complex
 -/
 
 import tactic.ring_exp ring_theory.algebra algebra.opposites algebra.commute data.equiv.ring
+import linear_algebra.bilinear_form
+import data.real.basic
+import data.complex.basic
 
 /-!
 # Geometric Algebra
 
 In this file we define geometric algebra `𝔾[R]` over a commutative field `F`, and define some
-algebraic structures on `𝔾[F]`. Type 𝔾 using `\bbG`.
+algebraic structures on `𝔾[F]`. Type 𝔾 using `\McG`.
 
 In this file we define geometric algebra `𝒢[R]` over a commutative field `F`, and define some
 algebraic structures on `𝒢[F]`. Type 𝒢 using `\McG`.
@@ -55,15 +58,42 @@ In particular(hopefully), all definitions in this file are computable.
 geometric_algebra
 -/
 
-@[nolint unused_arguments, ext]
-structure geometric_algebra (V: Type*) (F: Type*) (g: Type*):=
-mk {} :: (todo : F)
+-- abbreviation vector_space (k : Type u) (M : Type v) [field k] [add_comm_group M] := module k M
+-- structure quadratic_form (R : Type u) (M : Type v) [ring R] [add_comm_group M] [module R M]
 
-notation `𝒢[` V`,` F`,` g `]` := geometric_algebra V F g
+
+-- @[nolint unused_arguments, ext]
+-- class geometric_algebra (S: Type*) (F: Type*)
+-- [field F] [add_comm_group S] [V : vector_space F S] :=
+-- (metric : bilin_form F S)
+
+class geometric_algebra (F : Type*) (S : Type*) (G : Type*) [field F] [add_comm_group S] [V : vector_space F S]
+extends semigroup G :=
+(metric : bilin_form F S)
+
+notation `𝒢[` F`,` S`,` G `]` := geometric_algebra F S G
 
 namespace geometric_algebra
 
-variables {V: Type*} {F: Type*} {g: Type*} [field F] (todo : F)
+variables (F : Type*) (S : Type*) (G : Type*) [field F] [add_comm_group S]
+variables (V : vector_space F S) (metric : bilin_form F S)
+
+-- variables (vec : Type*) (a b c : vec) [add_comm_group vec] [vector_space F vec] [has_mul vec]
+
+-- variables (𝒢ₐ: 𝒢[F, vec, G])
+
+-- lemma vec_assoc : (a * b) * c = a * (b * c) :=
+-- begin
+
+-- end
+
+-- TODO: prove ℂ is a GA
+
+instance : vector_space ℝ ℂ := sorry
+
+instance : 𝒢[ℝ, ℂ, ℂ] := {! !}
+
+-- TODO: prove properties and identities for 𝒢
 
 end geometric_algebra
 
