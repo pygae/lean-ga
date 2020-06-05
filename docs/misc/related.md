@@ -13,6 +13,7 @@ GA & Lean related
 - commutative differential graded algebras: https://gist.github.com/kbuzzard/f5ee35457c5d257ceec58c66d7da0c38
 - free module: https://gist.github.com/sflicht/53bdcdb1e3536e668736f7b4eb63cd79
 - "ForTheL texts and Lean texts" in http://www.andrew.cmu.edu/user/avigad/meetings/fomm2020/slides/fomm_koepke.pdf
+- grassmann algebra and clifford algebra: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/cleaning.20up.20this.20tactic.20proof.20%28regarding.20closures%29/near/193026381
 
 - https://github.com/leanprover/lean/blob/master/library/init/core.lean
 - on fold notation: https://gitter.im/leanprover_public/Lobby?at=5a5686366117191e614e3ce4

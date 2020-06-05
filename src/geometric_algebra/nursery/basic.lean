@@ -9,7 +9,7 @@ and https://github.com/leanprover-community/mathlib/blob/master/src/data/complex
 -/
 
 import tactic.ring_exp ring_theory.algebra algebra.opposites algebra.commute data.equiv.ring
-import linear_algebra.bilinear_form
+import linear_algebra.quadratic_form
 import data.real.basic
 import data.complex.basic
 
@@ -67,16 +67,21 @@ geometric_algebra
 -- [field F] [add_comm_group S] [V : vector_space F S] :=
 -- (metric : bilin_form F S)
 
-class geometric_algebra (F : Type*) (S : Type*) (G : Type*) [field F] [add_comm_group S] [V : vector_space F S]
-extends semigroup G :=
-(metric : bilin_form F S)
+-- class geometric_algebra (F : Type*) (S : Type*) (G : Type*) [field F] [add_comm_group S] [V : vector_space F S]
+-- extends semigroup G :=
+-- (metric : bilin_form F S)
 
-notation `𝒢[` F`,` S`,` G `]` := geometric_algebra F S G
+class geometric_algebra (K : Type*) (V: Type*) (G : Type*)
+[field K]
+[add_comm_group V] [vector_space K V] [Q : quadratic_form K V]
+[semiring G] [A : algebra K G]
+
+-- notation `𝒢[` F`,` S`,` G `]` := geometric_algebra F S G
 
 namespace geometric_algebra
 
-variables (F : Type*) (S : Type*) (G : Type*) [field F] [add_comm_group S]
-variables (V : vector_space F S) (metric : bilin_form F S)
+-- variables (F : Type*) (S : Type*) (G : Type*) [field F] [add_comm_group S]
+-- variables (V : vector_space F S) (metric : bilin_form F S)
 
 -- variables (vec : Type*) (a b c : vec) [add_comm_group vec] [vector_space F vec] [has_mul vec]
 
@@ -89,9 +94,9 @@ variables (V : vector_space F S) (metric : bilin_form F S)
 
 -- TODO: prove ℂ is a GA
 
-instance : vector_space ℝ ℂ := sorry
+-- instance : vector_space ℝ ℂ := sorry
 
-instance : 𝒢[ℝ, ℂ, ℂ] := {! !}
+-- instance : 𝒢[ℝ, ℂ, ℂ] := {! !}
 
 -- TODO: prove properties and identities for 𝒢
 
