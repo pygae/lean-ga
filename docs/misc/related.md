@@ -21,6 +21,7 @@ GA & Lean related
     - https://github.com/leanprover-community/lean/blob/master/tests/lean/fold.lean
 - https://github.com/leanprover-community/lean/blob/master/tests/lean/over_notation.lean
 - https://github.com/leanprover/vscode-lean/blob/master/translations.json
+- https://leanprover-community.github.io/mathlib_docs/analysis/normed_space/real_inner_product.html#inner_product_space
 
 - https://github.com/lean-forward/field
 - https://github.com/lean-forward/ring_exp
@@ -32,7 +33,7 @@ GA & Lean related
 - https://leanprover-community.github.io/mathlib-overview.html
 - https://leanprover-community.github.io/mathlib_docs/
 - https://github.com/leanprover-community/leanprover-community.github.io/blob/newsite/data/overview.yaml
-- 
+- https://leanprover-community.github.io/overview.html
 
 - https://lean-forward.github.io/
 - [https://manishearth.github.io/blog/2017/03/04/what-are-sum-product-and-pi-types/](https://manishearth.github.io/blog/2017/03/04/what-are-sum-product-and-pi-types/)
