@@ -81,7 +81,7 @@ geometric_algebra
 class geometric_algebra (G : Type*) (K : Type*) (V : Type*)
 [field K] [has_lift K G]
 [add_comm_group V] [vector_space K V] [has_lift V G]
-[ring G]
+[ring G] [algebra K G]
  :=
 [assoc : ∀ (a b c : G), (a * b) * c = a * (b * c)]
 [left_distrib : ∀ a b c : G, a * (b + c) = (a * b) + (a * c)]
@@ -142,7 +142,7 @@ namespace geometric_algebra
 variables (G : Type*) (K : Type*) (V : Type*)
 [field K] [has_lift K G]
 [add_comm_group V] [vector_space K V] [has_lift V G]
-[ring G]
+[ring G] [algebra K G]
 
 variables (a b c : G) [GA : geometric_algebra G K V]
 
