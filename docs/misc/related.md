@@ -10,10 +10,12 @@ GA & Lean related
 - https://github.com/leanprover-community/mathlib/blob/master/src/data/matrix/basic.lean
 - https://github.com/leanprover-community/mathlib/blob/master/src/geometry/manifold/real_instances.lean
 - https://github.com/leanprover-community/mathlib/blob/master/src/analysis/convex/cone.lean
+- https://github.com/leanprover-community/mathlib/blob/master/src/analysis/normed_space/real_inner_product.lean
 - commutative differential graded algebras: https://gist.github.com/kbuzzard/f5ee35457c5d257ceec58c66d7da0c38
 - free module: https://gist.github.com/sflicht/53bdcdb1e3536e668736f7b4eb63cd79
 - "ForTheL texts and Lean texts" in http://www.andrew.cmu.edu/user/avigad/meetings/fomm2020/slides/fomm_koepke.pdf
 - grassmann algebra and clifford algebra: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/cleaning.20up.20this.20tactic.20proof.20%28regarding.20closures%29/near/193026381
+- Huber_pair: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/synthesized.20not.20defeq.20inferred/near/200026861
 
 - https://github.com/leanprover/lean/blob/master/library/init/core.lean
 - on fold notation: https://gitter.im/leanprover_public/Lobby?at=5a5686366117191e614e3ce4
@@ -113,6 +115,7 @@ Lean related
 - [common-sense-lean](https://github.com/own-pt/common-sense-lean) - The initial ideas of a common sense library in Lean based on SUMO Ontology
 - [lean-for-hackers](https://github.com/agentultra/lean-for-hackers)
 - [tptp-lean-puzzles](https://github.com/FredsoNerd/tptp-lean-puzzles)
+- https://github.com/unitb/temporal-logic
 
 Type theory related
 ---------------------

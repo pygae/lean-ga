@@ -71,13 +71,59 @@ geometric_algebra
 -- extends semigroup G :=
 -- (metric : bilin_form F S)
 
+-- class geometric_algebra (G : Type*) (K : Type*) (V : Type*)
+-- [field K] [has_coe K G]
+-- [add_comm_group V] [vector_space K V] [has_coe V G]
+-- [ring G]
+--  :=
+-- (v_sq_in_k : ∀ v : V, ∃ k : K, (↑v : G) * (↑v : G) = (↑k : G))
+
 class geometric_algebra (G : Type*) (K : Type*) (V : Type*)
-[field K]
-[add_comm_group V] [vector_space K V] -- [Q : quadratic_form K V]
+[field K] [has_lift K G]
+[add_comm_group V] [vector_space K V] [has_lift V G]
 [ring G]
-extends algebra K G
  :=
-(inner_product : quadratic_form K V)
+[assoc : ∀ (a b c : G), (a * b) * c = a * (b * c)]
+[left_distrib : ∀ a b c : G, a * (b + c) = (a * b) + (a * c)]
+[right_distrib : ∀ a b c : G, (a + b) * c = (a * c) + (b * c)]
+(v_sq_in_k : ∀ v : V, ∃ k : K, (↑v : G) * (↑v : G) = (↑k : G))
+
+/-
+
+class test :=
+(K : Type*)
+(V : Type*)
+[field : field K]
+[group : add_comm_group V]
+[space : vector_space K V]
+
+#check test.mk ℝ ℝ -- test.mk ℝ ℝ : test
+
+noncomputable instance test_rr : test := {
+  K := ℝ,
+  V := ℝ
+}
+
+class test'
+(K : Type*)
+(V : Type*)
+[field : field K]
+[group : add_comm_group V]
+[space : vector_space K V]
+
+#check test' ℝ ℝ -- test' ℝ ℝ : Type
+
+instance test'_rr : test' ℝ ℝ := by sorry -- by apply_instance -- tactic.mk_instance failed to generate instance for
+
+-- class test''
+-- (K : Type*)
+-- (V : Type*)
+-- [field : field K]
+-- [group : add_comm_group V]
+-- extends vector_space K V -- invalid 'structure' extends, 'vector_space' is not a structure
+
+-/
+
 
 -- class geometric_algebra (G : Type*) (K : set G) (V : set G)
 -- [field K]
@@ -93,29 +139,31 @@ extends algebra K G
 
 namespace geometric_algebra
 
-variables (G : Type*) (K : Type*) (V : set G) [field K] [add_comm_group V] [vector_space K V] [ring G] [is_subring V]
+variables (G : Type*) (K : Type*) (V : Type*)
+[field K] [has_lift K G]
+[add_comm_group V] [vector_space K V] [has_lift V G]
+[ring G]
 
 variables (a b c : G) [GA : geometric_algebra G K V]
 
 lemma gp_assoc : (a * b) * c = a * (b * c) := semigroup.mul_assoc a b c
 
--- lemma gp_distrib : a * (b + c) = a * b + a * c :=
--- begin
--- apply distrib.left_distrib
--- end
-
 lemma gp_distrib : a * (b + c) = a * b + a * c := distrib.left_distrib a b c
 
--- lemma gp_vec_sq_is_field (v : V) : v * v ∈ K := sorry 
+-- prove ℝ is a GA
 
--- variables (vec : Type*) (a b c : vec) [add_comm_group vec] [vector_space F vec] [has_mul vec]
+instance : has_lift ℝ ℝ := { lift := λ x, x }
 
--- variables (𝒢ₐ: 𝒢[F, vec, G])
-
--- lemma vec_assoc : (a * b) * c = a * (b * c) :=
--- begin
-
--- end
+noncomputable instance : geometric_algebra ℝ ℝ ℝ := {
+    assoc := (λ a b c, semigroup.mul_assoc a b c),
+    left_distrib := (λ a b c, distrib.left_distrib a b c),
+    right_distrib := (λ a b c, distrib.right_distrib a b c),
+    v_sq_in_k := begin
+        intro v,
+        use (↑v) * (↑v),
+        refl
+    end
+}
 
 -- TODO: prove ℂ is a GA
 
