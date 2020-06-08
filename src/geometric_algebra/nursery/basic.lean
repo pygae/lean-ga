@@ -83,7 +83,6 @@ class geometric_algebra (G : Type*) (K : Type*) (V : Type*)
 [add_comm_group V] [vector_space K V] [has_lift V G]
 [ring G] [algebra K G]
  :=
-(v_mul_inj : ∀ v : V, function.injective ((*) (↑v : G)))
 (v_sq_in_k : ∀ v : V, ∃ k : K, (↑v : G) * (↑v : G) = (↑k : G))
 
 /-
@@ -177,16 +176,6 @@ end geometric_algebra
 instance : has_lift ℝ ℝ := { lift := λ x, x }
 
 noncomputable instance : geometric_algebra ℝ ℝ ℝ := {
-    v_mul_inj := begin
-        intro v,
-        rw function.injective,
-        intros a₁ a₂,
-        intro h,
-        -- 1 goal
-        -- v a₁ a₂ : ℝ,
-        -- h : ↑v * a₁ = ↑v * a₂
-        -- ⊢ a₁ = a₂
-    end,
     v_sq_in_k := begin
         intro v,
         use (↑v) * (↑v),
