@@ -83,9 +83,6 @@ class geometric_algebra (G : Type*) (K : Type*) (V : Type*)
 [add_comm_group V] [vector_space K V] [has_lift V G]
 [ring G] [algebra K G]
  :=
-[assoc : ∀ (a b c : G), (a * b) * c = a * (b * c)]
-[left_distrib : ∀ a b c : G, a * (b + c) = (a * b) + (a * c)]
-[right_distrib : ∀ a b c : G, (a + b) * c = (a * c) + (b * c)]
 (v_sq_in_k : ∀ v : V, ∃ k : K, (↑v : G) * (↑v : G) = (↑k : G))
 
 /-
@@ -146,24 +143,11 @@ variables (G : Type*) (K : Type*) (V : Type*)
 
 variables (a b c : G) [GA : geometric_algebra G K V]
 
-lemma gp_assoc : (a * b) * c = a * (b * c) := semigroup.mul_assoc a b c
+lemma assoc : ∀ a b c : G, (a * b) * c = a * (b * c) := λ a b c, semigroup.mul_assoc a b c
 
-lemma gp_distrib : a * (b + c) = a * b + a * c := distrib.left_distrib a b c
+lemma left_distrib : ∀ a b c : G, a * (b + c) = (a * b) + (a * c) := λ a b c, distrib.left_distrib a b c
 
--- prove ℝ is a GA
-
-instance : has_lift ℝ ℝ := { lift := λ x, x }
-
-noncomputable instance : geometric_algebra ℝ ℝ ℝ := {
-    assoc := (λ a b c, semigroup.mul_assoc a b c),
-    left_distrib := (λ a b c, distrib.left_distrib a b c),
-    right_distrib := (λ a b c, distrib.right_distrib a b c),
-    v_sq_in_k := begin
-        intro v,
-        use (↑v) * (↑v),
-        refl
-    end
-}
+lemma right_distrib : ∀ a b c : G, (a + b) * c = (a * c) + (b * c) := λ a b c, distrib.right_distrib a b c
 
 -- TODO: prove ℂ is a GA
 
@@ -186,5 +170,17 @@ noncomputable instance : geometric_algebra ℝ ℝ ℝ := {
 -- TODO: prove properties and identities for 𝒢
 
 end geometric_algebra
+
+-- prove ℝ is a GA
+
+instance : has_lift ℝ ℝ := { lift := λ x, x }
+
+noncomputable instance : geometric_algebra ℝ ℝ ℝ := {
+    v_sq_in_k := begin
+        intro v,
+        use (↑v) * (↑v),
+        refl
+    end
+}
 
 
