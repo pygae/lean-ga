@@ -83,6 +83,7 @@ class geometric_algebra (G : Type*) (K : Type*) (V : Type*)
 [add_comm_group V] [vector_space K V] [has_lift V G]
 [ring G] [algebra K G]
  :=
+(mul_inj : ∀ g : G, function.injective ((*) g))
 (v_sq_in_k : ∀ v : V, ∃ k : K, (↑v : G) * (↑v : G) = (↑k : G))
 
 /-
@@ -176,6 +177,21 @@ end geometric_algebra
 instance : has_lift ℝ ℝ := { lift := λ x, x }
 
 noncomputable instance : geometric_algebra ℝ ℝ ℝ := {
+    mul_inj := (
+        assume a,
+        assume a₁ a₂ h,
+        have a⁻¹ * a * a₁ = a⁻¹ * a * a₂, by rw [mul_assoc, mul_assoc, h],
+        show a₁ = a₂, begin
+            rw inv_mul_self (a : ℝ),
+            -- failed to synthesize type class instance for
+            -- a a₁ a₂ : ℝ,
+            -- h : a * a₁ = a * a₂,
+            -- this : a⁻¹ * a * a₁ = a⁻¹ * a * a₂
+            -- ⊢ group ℝ
+            -- Unfortunately, ℝ is clearly not a group
+            -- if a is 0, then there's no way to guarantee a₁ = a₂
+        end
+    ),
     v_sq_in_k := begin
         intro v,
         use (↑v) * (↑v),
