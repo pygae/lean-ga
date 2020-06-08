@@ -79,8 +79,8 @@ geometric_algebra
 -- (v_sq_in_k : ∀ v : V, ∃ k : K, (↑v : G) * (↑v : G) = (↑k : G))
 
 class geometric_algebra (G : Type*) (K : Type*) (V : Type*)
-[field K] [has_lift K G]
-[add_comm_group V] [vector_space K V] [has_lift V G]
+[field K] [has_coe K G]
+[add_comm_group V] [vector_space K V] [has_coe V G]
 [ring G] [algebra K G]
  :=
 (v_sq_in_k : ∀ v : V, ∃ k : K, (↑v : G) * (↑v : G) = (↑k : G))
@@ -137,8 +137,8 @@ instance test'_rr : test' ℝ ℝ := by sorry -- by apply_instance -- tactic.mk_
 namespace geometric_algebra
 
 variables (G : Type*) (K : Type*) (V : Type*)
-[field K] [has_lift K G]
-[add_comm_group V] [vector_space K V] [has_lift V G]
+[field K] [has_coe K G]
+[add_comm_group V] [vector_space K V] [has_coe V G]
 [ring G] [algebra K G]
 
 variables (a b c : G) [GA : geometric_algebra G K V]
@@ -173,7 +173,7 @@ end geometric_algebra
 
 -- prove ℝ is a GA
 
-instance : has_lift ℝ ℝ := { lift := λ x, x }
+instance : has_coe ℝ ℝ := { coe := λ x, x }
 
 noncomputable instance : geometric_algebra ℝ ℝ ℝ := {
     v_sq_in_k := begin
@@ -183,4 +183,59 @@ noncomputable instance : geometric_algebra ℝ ℝ ℝ := {
     end
 }
 
+-- prove ℂ is a GA
+
+instance has_coe_c_c : has_coe ℂ ℂ := { coe := λ x, x }
+
+noncomputable instance : vector_space ℝ ℂ := {
+    smul := λ r c, r * c,
+    one_smul := begin
+        intro b,
+        simp,
+    end,
+    mul_smul := begin
+        intros x y b,
+        simp only [complex.of_real_mul, mul_assoc],
+    end,
+    smul_add := begin
+        intros r x y,
+        simp only [left_distrib],
+    end,
+    smul_zero := begin
+        intro r,
+        simp only [complex.of_real_mul, mul_zero],
+    end,
+    add_smul := begin
+        intros r s x,
+        simp only [complex.of_real_add, right_distrib],
+    end,
+    zero_smul := begin
+        intro x,
+        simp only [complex.of_real_add, complex.of_real_mul, complex.of_real_zero, zero_mul],
+    end
+}
+
+noncomputable instance : algebra ℝ ℂ := {
+    smul := λ r c, r * c,
+    to_fun := λ r, ↑r,
+    map_one' := rfl,
+    map_mul' := by simp,
+    map_zero' := by simp,
+    map_add' := by simp,
+    commutes' := begin
+        intros r x,
+        simp only [complex.of_real_mul, mul_comm],
+    end,
+    smul_def' := by simp
+}
+
+noncomputable instance : geometric_algebra ℂ ℝ ℂ := {
+    v_sq_in_k := begin
+        intro v,
+        --  clearly not true
+        -- 1 goal
+        -- v : ℂ
+        -- ⊢ ∃ (k : ℝ), ↑v * ↑v = ↑k
+    end
+}
 
