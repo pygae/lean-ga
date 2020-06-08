@@ -45,6 +45,10 @@ GA & Lean related
 - https://github.com/leanprover-community/leanprover-community.github.io/blob/newsite/templates/contribute/style.md
 - https://www.cs.cornell.edu/courses/cs3110/2018sp/a5/coq-tactics-cheatsheet.html
 
+- https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/Some.20olympiad.20formalisations/near/197858180
+- https://github.com/leanprover-community/mathlib/pull/2720/files
+- https://github.com/jsm28/bmo2-2020-lean/
+
 GA Formalization Related
 --------------------------
 
