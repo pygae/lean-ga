@@ -44,6 +44,7 @@ GA & Lean related
 
 - https://github.com/leanprover-community/leanprover-community.github.io/blob/newsite/templates/contribute/style.md
 - https://www.cs.cornell.edu/courses/cs3110/2018sp/a5/coq-tactics-cheatsheet.html
+- http://www.inf.ed.ac.uk/teaching/courses/tspl/cheatsheet.pdf
 
 - https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/Some.20olympiad.20formalisations/near/197858180
 - https://github.com/leanprover-community/mathlib/pull/2720/files
