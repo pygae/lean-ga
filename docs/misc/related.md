@@ -42,6 +42,9 @@ GA & Lean related
 
 - http://math.uga.edu/~pete/quadraticforms.pdf
 
+- https://github.com/leanprover-community/leanprover-community.github.io/blob/newsite/templates/contribute/style.md
+- https://www.cs.cornell.edu/courses/cs3110/2018sp/a5/coq-tactics-cheatsheet.html
+
 GA Formalization Related
 --------------------------
 

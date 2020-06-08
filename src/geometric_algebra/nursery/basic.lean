@@ -12,6 +12,7 @@ import tactic.ring_exp ring_theory.algebra algebra.opposites algebra.commute dat
 import linear_algebra.quadratic_form
 import data.real.basic
 import data.complex.basic
+import analysis.normed_space.real_inner_product
 
 /-!
 # Geometric Algebra
@@ -183,59 +184,14 @@ noncomputable instance : geometric_algebra ℝ ℝ ℝ := {
     end
 }
 
--- prove ℂ is a GA
+-- -- prove euclidean vector space is a GA
 
-instance has_coe_c_c : has_coe ℂ ℂ := { coe := λ x, x }
+-- notation `𝒱[` n `]` := euclidean_space n
 
-noncomputable instance : vector_space ℝ ℂ := {
-    smul := λ r c, r * c,
-    one_smul := begin
-        intro b,
-        simp,
-    end,
-    mul_smul := begin
-        intros x y b,
-        simp only [complex.of_real_mul, mul_assoc],
-    end,
-    smul_add := begin
-        intros r x y,
-        simp only [left_distrib],
-    end,
-    smul_zero := begin
-        intro r,
-        simp only [complex.of_real_mul, mul_zero],
-    end,
-    add_smul := begin
-        intros r s x,
-        simp only [complex.of_real_add, right_distrib],
-    end,
-    zero_smul := begin
-        intro x,
-        simp only [complex.of_real_add, complex.of_real_mul, complex.of_real_zero, zero_mul],
-    end
-}
+-- const 𝒱2 = 𝒱[2]
 
-noncomputable instance : algebra ℝ ℂ := {
-    smul := λ r c, r * c,
-    to_fun := λ r, ↑r,
-    map_one' := rfl,
-    map_mul' := by simp,
-    map_zero' := by simp,
-    map_add' := by simp,
-    commutes' := begin
-        intros r x,
-        simp only [complex.of_real_mul, mul_comm],
-    end,
-    smul_def' := by simp
-}
+-- instance : geometric_algebra 𝒱2 ℝ 𝒱2 := {
+--   v_sq_in_k := _
+-- }
 
-noncomputable instance : geometric_algebra ℂ ℝ ℂ := {
-    v_sq_in_k := begin
-        intro v,
-        --  clearly not true
-        -- 1 goal
-        -- v : ℂ
-        -- ⊢ ∃ (k : ℝ), ↑v * ↑v = ↑k
-    end
-}
 
