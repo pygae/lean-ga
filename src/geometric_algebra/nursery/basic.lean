@@ -97,30 +97,72 @@ local postfix `²`:80 := square
 -/
 lemma vec_sym_prod_scalar [geometric_algebra G K V] : ∀ (a b : V), ∃ k : K, a *₊ b = (k : G) :=
 assume a b,
-have h1 : (a + b)² = (a² + b² + a *₊ b : G), from by sorry,
-have h2 : a *₊ b = ((a + b)² - a² - b² : G), from by sorry,
-have h3 : ∃ k₁ : K, (a + b)² = (k₁ : G), from begin
-  rw square,
-  apply geometric_algebra.vec_sq_scalar (a + b),
-  repeat {assumption},
-end,
-have h4 : ∃ k₂ : K, a² = (k₂ : G), from begin
-  rw square,
-  apply geometric_algebra.vec_sq_scalar a,
-  repeat {assumption},
-end,
-have h5 : ∃ k₃ : K, b² = (k₃ : G), from begin
-  rw square,
-  apply geometric_algebra.vec_sq_scalar b,
-  repeat {assumption},
-end,
-have h6 : ∃ k : K, (a + b)² - a² - b² = (k : G), from begin
+have h1 : (a + b)² = (a² + b² + a *₊ b : G), from begin
+  repeat {rw square},
   sorry
+  -- G : Type u_1,
+  -- K : Type u_2,
+  -- V : Type u_3,
+  -- _inst_1 : field K,
+  -- _inst_2 : has_coe K G,
+  -- _inst_3 : add_comm_group V,
+  -- _inst_4 : vector_space K V,
+  -- _inst_5 : has_coe V G,
+  -- _inst_6 : ring G,
+  -- _inst_7 : algebra K G,
+  -- _inst_8 : geometric_algebra G K V,
+  -- a b : V
+  -- ⊢ ↑(a + b) * ↑(a + b) = ↑a * ↑a + ↑b * ↑b + a*₊b
+  -- repeat {unfold coe, unfold lift_t, unfold has_lift_t.lift, unfold coe_t, unfold has_coe_t.coe, unfold coe_b, unfold has_coe.coe},
 end,
+have h2 : a *₊ b = ((a + b)² - a² - b² : G), from by sorry,
+have vec_sq_scalar :
+          ∀ v : V, ∃ k : K, (v² : G) = (k : G), from
 begin
-  rw h2,
-  exact h6,
-end
+  intro v,
+  apply geometric_algebra.vec_sq_scalar (v),
+  repeat {assumption},
+end,
+exists.elim (vec_sq_scalar (a + b))
+(
+  assume kab,
+  exists.elim (vec_sq_scalar a)
+  (
+    assume ka,
+    exists.elim (vec_sq_scalar b)
+    (
+      assume kb,
+      begin
+        intros hb ha hab,
+        rw h2,
+        use kab - ka - kb,
+        rw [hb, ha, hab],
+        -- 1 goal
+        -- G : Type u_1,
+        -- K : Type u_2,
+        -- V : Type u_3,
+        -- _inst_1 : field K,
+        -- _inst_2 : has_coe K G,
+        -- _inst_3 : add_comm_group V,
+        -- _inst_4 : vector_space K V,
+        -- _inst_5 : has_coe V G,
+        -- _inst_6 : ring G,
+        -- _inst_7 : algebra K G,
+        -- _inst_8 : geometric_algebra G K V,
+        -- a b : V,
+        -- h1 : (a + b)² = a² + b² + a*₊b,
+        -- h2 : a*₊b = (a + b)² - a² - b²,
+        -- vec_sq_scalar : ∀ (v : V), ∃ (k : K), v² = ↑k,
+        -- kab ka kb : K,
+        -- hb : b² = ↑kb,
+        -- ha : a² = ↑ka,
+        -- hab : (a + b)² = ↑kab
+        -- ⊢ ↑kab - ↑ka - ↑kb = ↑(kab - ka - kb)
+        sorry
+      end
+    )
+  )
+)
 
 end
 
