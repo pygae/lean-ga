@@ -71,7 +71,8 @@ section
 variables {G : Type*} {K : Type*} {V : Type*}
 [field K] [has_coe K G]
 [add_comm_group V] [vector_space K V] [has_coe V G]
-[ring G] [algebra K G] [GA : geometric_algebra G K V]
+[ring G] [algebra K G]
+[GA : geometric_algebra G K V]
 
 variables (A B C : G)
 
@@ -87,50 +88,38 @@ def square {X : Type*} [has_coe X G] (A : X) : G := A * A
 
 def sym_prod {X : Type*} [has_coe X G] (A B : X) : G := A * B + B * A
 
--- local notation `[` x `*₊`:75 y `]` := sym_prod x y
-
 local infix `*₊`:75 := sym_prod
 
 local postfix `²`:80 := square
 
-#print notation + -- 65
-#print notation * -- 70
-#print notation = -- 50
-#print notation
-
--- instance : has_coe V V := { coe := λ v, v}
-
 /-
   Symmetrised product of two vectors must be a scalar
 -/
-lemma vec_sym_prod_scalar : ∀ (a b : V), ∃ k : K, a *₊ b = (k : G) :=
+lemma vec_sym_prod_scalar [geometric_algebra G K V] : ∀ (a b : V), ∃ k : K, a *₊ b = (k : G) :=
 assume a b,
-have h1 : (a + b)² = ((a)² + (b)² + a *₊ b : G), from by sorry,
-have h2 : a *₊ b = ((a + b)² - a * a - b * b : G), from by sorry,
+have h1 : (a + b)² = (a² + b² + a *₊ b : G), from by sorry,
+have h2 : a *₊ b = ((a + b)² - a² - b² : G), from by sorry,
 have h3 : ∃ k₁ : K, (a + b)² = (k₁ : G), from begin
   rw square,
   apply geometric_algebra.vec_sq_scalar (a + b),
-  apply _inst_1,
-  apply _inst_4,
-  apply _inst_7,
-  -- 1 goal
-  -- G : Type u_1,
-  -- K : Type u_2,
-  -- V : Type u_3,
-  -- _inst_1 : field K,
-  -- _inst_2 : has_coe K G,
-  -- _inst_3 : add_comm_group V,
-  -- _inst_4 : vector_space K V,
-  -- _inst_5 : has_coe V G,
-  -- _inst_6 : ring G,
-  -- _inst_7 : algebra K G,
-  -- a b : V,
-  -- h1 : (a + b)² = a² + b² + a*₊b,
-  -- h2 : a*₊b = (a + b)² - ↑a * ↑a - ↑b * ↑b
-  -- ⊢ geometric_algebra G K V
+  repeat {assumption},
+end,
+have h4 : ∃ k₂ : K, a² = (k₂ : G), from begin
+  rw square,
+  apply geometric_algebra.vec_sq_scalar a,
+  repeat {assumption},
+end,
+have h5 : ∃ k₃ : K, b² = (k₃ : G), from begin
+  rw square,
+  apply geometric_algebra.vec_sq_scalar b,
+  repeat {assumption},
+end,
+have h6 : ∃ k : K, (a + b)² - a² - b² = (k : G), from begin
+  sorry
 end,
 begin
-
+  rw h2,
+  exact h6,
 end
 
 end
