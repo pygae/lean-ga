@@ -62,22 +62,78 @@ class geometric_algebra (G : Type*) (K : Type*) (V : Type*)
 [add_comm_group V] [vector_space K V] [has_coe V G]
 [ring G] [algebra K G]
  :=
-(v_sq_in_k : ∀ v : V, ∃ k : K, (↑v : G) * (↑v : G) = (↑k : G))
+(vec_sq_scalar : ∀ v : V, ∃ k : K, (v * v : G) = (k : G))
 
 namespace geometric_algebra
 
-variables (G : Type*) (K : Type*) (V : Type*)
+section
+
+variables {G : Type*} {K : Type*} {V : Type*}
 [field K] [has_coe K G]
 [add_comm_group V] [vector_space K V] [has_coe V G]
-[ring G] [algebra K G]
+[ring G] [algebra K G] [GA : geometric_algebra G K V]
 
-variables (a b c : G) [GA : geometric_algebra G K V]
+variables (A B C : G)
 
-lemma assoc : ∀ a b c : G, (a * b) * c = a * (b * c) := λ a b c, semigroup.mul_assoc a b c
+-- prove properties and identities for GA
 
-lemma left_distrib : ∀ a b c : G, a * (b + c) = (a * b) + (a * c) := λ a b c, distrib.left_distrib a b c
+lemma assoc : ∀ A B C : G, (A * B) * C = A * (B * C) := λ A B C, semigroup.mul_assoc A B C
 
-lemma right_distrib : ∀ a b c : G, (a + b) * c = (a * c) + (b * c) := λ a b c, distrib.right_distrib a b c
+lemma left_distrib : ∀ A B C : G, A * (B + C) = (A * B) + (A * C) := λ A B C, distrib.left_distrib A B C
+
+lemma right_distrib : ∀ A B C : G, (A + B) * C = (A * C) + (B * C) := λ A B C, distrib.right_distrib A B C
+
+def square {X : Type*} [has_coe X G] (A : X) : G := A * A
+
+def sym_prod {X : Type*} [has_coe X G] (A B : X) : G := A * B + B * A
+
+-- local notation `[` x `*₊`:75 y `]` := sym_prod x y
+
+local infix `*₊`:75 := sym_prod
+
+local postfix `²`:80 := square
+
+#print notation + -- 65
+#print notation * -- 70
+#print notation = -- 50
+#print notation
+
+-- instance : has_coe V V := { coe := λ v, v}
+
+/-
+  Symmetrised product of two vectors must be a scalar
+-/
+lemma vec_sym_prod_scalar : ∀ (a b : V), ∃ k : K, a *₊ b = (k : G) :=
+assume a b,
+have h1 : (a + b)² = ((a)² + (b)² + a *₊ b : G), from by sorry,
+have h2 : a *₊ b = ((a + b)² - a * a - b * b : G), from by sorry,
+have h3 : ∃ k₁ : K, (a + b)² = (k₁ : G), from begin
+  rw square,
+  apply geometric_algebra.vec_sq_scalar (a + b),
+  apply _inst_1,
+  apply _inst_4,
+  apply _inst_7,
+  -- 1 goal
+  -- G : Type u_1,
+  -- K : Type u_2,
+  -- V : Type u_3,
+  -- _inst_1 : field K,
+  -- _inst_2 : has_coe K G,
+  -- _inst_3 : add_comm_group V,
+  -- _inst_4 : vector_space K V,
+  -- _inst_5 : has_coe V G,
+  -- _inst_6 : ring G,
+  -- _inst_7 : algebra K G,
+  -- a b : V,
+  -- h1 : (a + b)² = a² + b² + a*₊b,
+  -- h2 : a*₊b = (a + b)² - ↑a * ↑a - ↑b * ↑b
+  -- ⊢ geometric_algebra G K V
+end,
+begin
+
+end
+
+end
 
 end geometric_algebra
 
@@ -86,13 +142,9 @@ end geometric_algebra
 instance : has_coe ℝ ℝ := { coe := λ x, x }
 
 noncomputable instance : geometric_algebra ℝ ℝ ℝ := {
-    v_sq_in_k := begin
+    vec_sq_scalar := begin
         intro v,
-        use (↑v) * (↑v),
+        use v * v,
         refl
     end
 }
-
--- TODO: prove properties and identities for 𝒢
-
-
