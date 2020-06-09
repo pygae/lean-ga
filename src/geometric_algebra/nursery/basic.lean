@@ -179,3 +179,29 @@ noncomputable instance : geometric_algebra ℝ ℝ ℝ := {
         refl
     end
 }
+
+-- class has_geometric_product (G : Type*) :=
+-- (add {α : Type*} {β : Type*} : α → β → G)
+-- (mul {α : Type*} {β : Type*} : α → β → G)
+-- (assoc : ∀ A B C : G, (A * B) * C = A * (B * C))
+-- (left_distrib : ∀ A B C : G, A * (B + C) = (A * B) + (A * C))
+-- (right_distrib : ∀ A B C : G, (A + B) * C = (A * C) + (B * C))
+-- (vec_sq_scalar {K : Type*} {V : Type*} [field K] [add_comm_group V] [vector_space K V]:
+--     ∀ v : V, ∃ k : K, v * v = k)
+
+inductive vec_gp_res
+(K : Type*) (V : Type*) [field K] [add_comm_group V] [vector_space K V]
+| scalar : K → vec_gp_res
+| bivec  : V → V → vec_gp_res
+
+class has_vec_gp (K : Type*) (V : Type*) [field K] [add_comm_group V] [vector_space K V] :=
+(mul : V → V → vec_gp_res K V)
+(assoc : ∀ A B C : V, mul (mul A B) C = (mul A (mul B C))
+-- type mismatch at application
+--   mul (mul A B)
+-- term
+--   mul A B
+-- has type
+--   vec_gp_res K V : Type (max ? ?)
+-- but is expected to have type
+--   V : Type ?
