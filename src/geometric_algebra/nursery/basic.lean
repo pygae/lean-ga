@@ -8,7 +8,7 @@ The following code is inspired by
 and https://github.com/leanprover-community/mathlib/blob/master/src/data/complex/basic.lean
 -/
 
-import tactic.ring_exp ring_theory.algebra algebra.opposites algebra.commute data.equiv.ring
+import ring_theory.algebra
 import linear_algebra.quadratic_form
 import data.real.basic
 import data.complex.basic
