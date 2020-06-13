@@ -69,7 +69,7 @@ local infix `*₊`:75 := sym_prod
 
 local infix `*₊ᵥ`:75 := sym_prod_vec
 
-#check ⇑fᵥ
+-- #check ⇑fᵥ
 
 /-
   Symmetrised product of two vectors must be a scalar
@@ -86,20 +86,6 @@ have h1 : (a + b)²ᵥ = a²ᵥ + b²ᵥ + a *₊ᵥ b, from begin
   repeat {rw right_distrib},
   cc,
 end,
-have h2 : a *₊ᵥ b = (a + b)²ᵥ - a²ᵥ - b²ᵥ, from begin
-  -- apply_fun (λ x, x - a²ᵥ - b²ᵥ) at h1,
-  rw h1,
-  rw add_comm,
-  unfold has_sub.sub,
-  unfold algebra.sub, 
-  rw add_assoc,
-  rw add_assoc, 
-  repeat {rw square_vec},
-  -- rw add_assoc (a *ᵥ a) (b *ᵥ b) (-(a *ᵥ a) + -(b *ᵥ b)),
-  repeat {rw prod_vec},
-  -- repeat {rw sym_prod_vec},
-  sorry
-end,
 have vec_sq_scalar : ∀ v : G₁, ∃ k : G₀, v²ᵥ = fₛ k, from
   λ v, geometric_algebra.vec_sq_scalar(v),
 exists.elim (vec_sq_scalar (a + b))
@@ -114,14 +100,17 @@ exists.elim (vec_sq_scalar (a + b))
       begin
         intros hb ha hab,
         rw [hb, ha, hab] at h1,
-        use kab - ka - kb,
-        repeat {rw ring_hom.map_sub},
+        use - ka - kb + kab,
+        simp only [ring_hom.map_add],
         rw h1,
-        cc,
-        -- rw h2,
-        -- use kab - ka - kb,
-        -- rw [hb, ha, hab],
-        -- repeat {rw ring_hom.map_sub},
+        rw ←add_assoc,
+        rw ←add_assoc,
+        unfold has_sub.sub,
+        unfold algebra.sub,
+        repeat {rw ←ring_hom.map_add},
+        rw add_comm (-ka) (-kb),
+        rw add_assoc (-kb) (-ka) ka,
+        simp only [add_zero, ring_hom.map_zero, add_left_neg, zero_add],
       end
     )
   )
