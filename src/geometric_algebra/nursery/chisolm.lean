@@ -10,6 +10,9 @@ import ring_theory.algebra
 import data.real.basic
 import data.complex.basic
 
+import tactic.apply_fun
+import tactic
+
 universes u u₀ u₁
 
 class geometric_algebra
@@ -40,29 +43,89 @@ def fᵥ : G₁ →+ G := f₁ G₀
 
 def fₛ : G₀ →+* G := algebra_map G₀ G
 
-lemma assoc : ∀ A B C : G, (A * B) * C = A * (B * C) := λ A B C, semigroup.mul_assoc A B C
+-- lemma assoc : ∀ A B C : G, (A * B) * C = A * (B * C) := λ A B C, semigroup.mul_assoc A B C
 
-lemma left_distrib : ∀ A B C : G, A * (B + C) = (A * B) + (A * C) := λ A B C, distrib.left_distrib A B C
+-- lemma left_distrib : ∀ A B C : G, A * (B + C) = (A * B) + (A * C) := λ A B C, distrib.left_distrib A B C
 
-lemma right_distrib : ∀ A B C : G, (A + B) * C = (A * C) + (B * C) := λ A B C, distrib.right_distrib A B C
+-- lemma right_distrib : ∀ A B C : G, (A + B) * C = (A * C) + (B * C) := λ A B C, distrib.right_distrib A B C
+
+def prod_vec (a b : G₁) := fᵥ a * fᵥ b
+
+local infix `*ᵥ`:75 := prod_vec
 
 def square (a : G) := a * a
 
+def square_vec (a : G₁) := a *ᵥ a
+
+local postfix `²`:80 := square
+
+local postfix `²ᵥ`:80 := square_vec
+
 def sym_prod (a b : G) := a * b + b * a
 
-def sym_prod_vec (a b : G₁) := sym_prod (fᵥ a) (fᵥ b)
+def sym_prod_vec (a b : G₁) := a *ᵥ b + b *ᵥ a
 
 local infix `*₊`:75 := sym_prod
 
 local infix `*₊ᵥ`:75 := sym_prod_vec
 
-local postfix `²`:80 := square
+#check ⇑fᵥ
 
 /-
   Symmetrised product of two vectors must be a scalar
 -/
 lemma vec_sym_prod_scalar:
-∀ (a b : G₁), ∃ k : G₀, a *₊ᵥ b = fₛ k := by sorry
+∀ (a b : G₁), ∃ k : G₀, a *₊ᵥ b = fₛ k :=
+assume a b,
+have h1 : (a + b)²ᵥ = a²ᵥ + b²ᵥ + a *₊ᵥ b, from begin
+  repeat {rw square_vec},
+  repeat {rw sym_prod_vec},
+  repeat {rw prod_vec},
+  rw add_monoid_hom.map_add fᵥ a b,
+  rw left_distrib,
+  repeat {rw right_distrib},
+  cc,
+end,
+have h2 : a *₊ᵥ b = (a + b)²ᵥ - a²ᵥ - b²ᵥ, from begin
+  -- apply_fun (λ x, x - a²ᵥ - b²ᵥ) at h1,
+  rw h1,
+  rw add_comm,
+  unfold has_sub.sub,
+  unfold algebra.sub, 
+  rw add_assoc,
+  rw add_assoc, 
+  repeat {rw square_vec},
+  -- rw add_assoc (a *ᵥ a) (b *ᵥ b) (-(a *ᵥ a) + -(b *ᵥ b)),
+  repeat {rw prod_vec},
+  -- repeat {rw sym_prod_vec},
+  sorry
+end,
+have vec_sq_scalar : ∀ v : G₁, ∃ k : G₀, v²ᵥ = fₛ k, from
+  λ v, geometric_algebra.vec_sq_scalar(v),
+exists.elim (vec_sq_scalar (a + b))
+(
+  assume kab,
+  exists.elim (vec_sq_scalar a)
+  (
+    assume ka,
+    exists.elim (vec_sq_scalar b)
+    (
+      assume kb,
+      begin
+        intros hb ha hab,
+        rw [hb, ha, hab] at h1,
+        use kab - ka - kb,
+        repeat {rw ring_hom.map_sub},
+        rw h1,
+        cc,
+        -- rw h2,
+        -- use kab - ka - kb,
+        -- rw [hb, ha, hab],
+        -- repeat {rw ring_hom.map_sub},
+      end
+    )
+  )
+)
 
 end
 
