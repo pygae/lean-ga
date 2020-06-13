@@ -43,11 +43,11 @@ def fᵥ : G₁ →+ G := f₁ G₀
 
 def fₛ : G₀ →+* G := algebra_map G₀ G
 
--- lemma assoc : ∀ A B C : G, (A * B) * C = A * (B * C) := λ A B C, semigroup.mul_assoc A B C
+lemma assoc : ∀ A B C : G, (A * B) * C = A * (B * C) := λ A B C, semigroup.mul_assoc A B C
 
--- lemma left_distrib : ∀ A B C : G, A * (B + C) = (A * B) + (A * C) := λ A B C, distrib.left_distrib A B C
+lemma left_distrib : ∀ A B C : G, A * (B + C) = (A * B) + (A * C) := λ A B C, distrib.left_distrib A B C
 
--- lemma right_distrib : ∀ A B C : G, (A + B) * C = (A * C) + (B * C) := λ A B C, distrib.right_distrib A B C
+lemma right_distrib : ∀ A B C : G, (A + B) * C = (A * C) + (B * C) := λ A B C, distrib.right_distrib A B C
 
 def prod_vec (a b : G₁) := fᵥ a * fᵥ b
 
@@ -69,8 +69,6 @@ local infix `*₊`:75 := sym_prod
 
 local infix `*₊ᵥ`:75 := sym_prod_vec
 
--- #check ⇑fᵥ
-
 /-
   Symmetrised product of two vectors must be a scalar
 -/
@@ -78,9 +76,7 @@ lemma vec_sym_prod_scalar:
 ∀ (a b : G₁), ∃ k : G₀, a *₊ᵥ b = fₛ k :=
 assume a b,
 have h1 : (a + b)²ᵥ = a²ᵥ + b²ᵥ + a *₊ᵥ b, from begin
-  repeat {rw square_vec},
-  repeat {rw sym_prod_vec},
-  repeat {rw prod_vec},
+  unfold square_vec sym_prod_vec prod_vec,
   rw add_monoid_hom.map_add fᵥ a b,
   rw left_distrib,
   repeat {rw right_distrib},
@@ -99,17 +95,43 @@ exists.elim (vec_sq_scalar (a + b))
       assume kb,
       begin
         intros hb ha hab,
+        /-
+          G₀ : Type u_1,
+          _inst_1 : field G₀,
+          G₁ : Type u_2,
+          _inst_2 : add_comm_group G₁,
+          _inst_3 : vector_space G₀ G₁,
+          G : Type u_3,
+          _inst_4 : ring G,
+          _inst_5 : algebra G₀ G,
+          _inst_6 : geometric_algebra G₀ G₁ G,
+          a b : G₁,
+          h1 : (a + b)²ᵥ = a²ᵥ + b²ᵥ + a*₊ᵥ b,
+          vec_sq_scalar : ∀ (v : G₁), ∃ (k : G₀), v²ᵥ = ⇑fₛ k,
+          kab ka kb : G₀,
+          hb : b²ᵥ = ⇑fₛ kb,
+          ha : a²ᵥ = ⇑fₛ ka,
+          hab : (a + b)²ᵥ = ⇑fₛ kab
+          ⊢ ∃ (k : G₀), a*₊ᵥ b = ⇑fₛ k
+        -/
         rw [hb, ha, hab] at h1,
-        use - ka - kb + kab,
-        simp only [ring_hom.map_add],
+        use (-ka) + (-kb) + kab,
+        -- a*₊ᵥ b = ⇑fₛ (-ka - kb + kab)
+        rw ring_hom.map_add,
         rw h1,
+        -- a*₊ᵥ b = ⇑fₛ (-ka + -kb) + (⇑fₛ ka + ⇑fₛ kb + a*₊ᵥ b)
         rw ←add_assoc,
+        -- a*₊ᵥ b = ⇑fₛ (-ka + -kb) + (⇑fₛ ka + ⇑fₛ kb) + a*₊ᵥ b
         rw ←add_assoc,
-        unfold has_sub.sub,
-        unfold algebra.sub,
-        repeat {rw ←ring_hom.map_add},
+        -- a*₊ᵥ b = ⇑fₛ (-ka + -kb) + ⇑fₛ ka + ⇑fₛ kb + a*₊ᵥ b
+        rw ←ring_hom.map_add,
+        -- a*₊ᵥ b = ⇑fₛ (-ka + -kb + ka) + ⇑fₛ kb + a*₊ᵥ b
+        rw ←ring_hom.map_add,
+        -- a*₊ᵥ b = ⇑fₛ (-ka + -kb + ka + kb) + a*₊ᵥ b
         rw add_comm (-ka) (-kb),
+        -- a*₊ᵥ b = ⇑fₛ (-kb + -ka + ka + kb) + a*₊ᵥ b
         rw add_assoc (-kb) (-ka) ka,
+        -- a*₊ᵥ b = ⇑fₛ (-kb + (-ka + ka) + kb) + a*₊ᵥ b
         simp only [add_zero, ring_hom.map_zero, add_left_neg, zero_add],
       end
     )
