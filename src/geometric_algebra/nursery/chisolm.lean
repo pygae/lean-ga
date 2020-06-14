@@ -95,44 +95,10 @@ exists.elim (vec_sq_scalar (a + b))
       assume kb,
       begin
         intros hb ha hab,
-        /-
-          G₀ : Type u_1,
-          _inst_1 : field G₀,
-          G₁ : Type u_2,
-          _inst_2 : add_comm_group G₁,
-          _inst_3 : vector_space G₀ G₁,
-          G : Type u_3,
-          _inst_4 : ring G,
-          _inst_5 : algebra G₀ G,
-          _inst_6 : geometric_algebra G₀ G₁ G,
-          a b : G₁,
-          h1 : (a + b)²ᵥ = a²ᵥ + b²ᵥ + a*₊ᵥ b,
-          vec_sq_scalar : ∀ (v : G₁), ∃ (k : G₀), v²ᵥ = ⇑fₛ k,
-          kab ka kb : G₀,
-          hb : b²ᵥ = ⇑fₛ kb,
-          ha : a²ᵥ = ⇑fₛ ka,
-          hab : (a + b)²ᵥ = ⇑fₛ kab
-          ⊢ ∃ (k : G₀), a*₊ᵥ b = ⇑fₛ k
-        -/
         rw [hb, ha, hab] at h1,
-        use (-ka) + (-kb) + kab,
-        -- a*₊ᵥ b = ⇑fₛ (-ka - kb + kab)
-        rw ring_hom.map_add,
-        rw h1,
-        -- a*₊ᵥ b = ⇑fₛ (-ka + -kb) + (⇑fₛ ka + ⇑fₛ kb + a*₊ᵥ b)
-        rw ←add_assoc,
-        -- a*₊ᵥ b = ⇑fₛ (-ka + -kb) + (⇑fₛ ka + ⇑fₛ kb) + a*₊ᵥ b
-        rw ←add_assoc,
-        -- a*₊ᵥ b = ⇑fₛ (-ka + -kb) + ⇑fₛ ka + ⇑fₛ kb + a*₊ᵥ b
-        rw ←ring_hom.map_add,
-        -- a*₊ᵥ b = ⇑fₛ (-ka + -kb + ka) + ⇑fₛ kb + a*₊ᵥ b
-        rw ←ring_hom.map_add,
-        -- a*₊ᵥ b = ⇑fₛ (-ka + -kb + ka + kb) + a*₊ᵥ b
-        rw add_comm (-ka) (-kb),
-        -- a*₊ᵥ b = ⇑fₛ (-kb + -ka + ka + kb) + a*₊ᵥ b
-        rw add_assoc (-kb) (-ka) ka,
-        -- a*₊ᵥ b = ⇑fₛ (-kb + (-ka + ka) + kb) + a*₊ᵥ b
-        simp only [add_zero, ring_hom.map_zero, add_left_neg, zero_add],
+        use kab - ka - kb,
+        simp [fₛ.map_add, h1],
+        abel,
       end
     )
   )
