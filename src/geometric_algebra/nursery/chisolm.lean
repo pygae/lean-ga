@@ -97,7 +97,8 @@ exists.elim (vec_sq_scalar (a + b))
         intros hb ha hab,
         rw [hb, ha, hab] at h1,
         use kab - ka - kb,
-        simp [fₛ.map_add, h1],
+        repeat {rw ring_hom.map_sub},
+        rw h1,
         abel,
       end
     )
