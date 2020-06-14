@@ -80,7 +80,7 @@ have h1 : (a + b)²ᵥ = a²ᵥ + b²ᵥ + a *₊ᵥ b, from begin
   rw add_monoid_hom.map_add fᵥ a b,
   rw left_distrib,
   repeat {rw right_distrib},
-  cc,
+  abel,
 end,
 have vec_sq_scalar : ∀ v : G₁, ∃ k : G₀, v²ᵥ = fₛ k, from
   λ v, geometric_algebra.vec_sq_scalar(v),
