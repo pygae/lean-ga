@@ -15,7 +15,8 @@ GA & Lean related
 - free module: https://gist.github.com/sflicht/53bdcdb1e3536e668736f7b4eb63cd79
 - "ForTheL texts and Lean texts" in http://www.andrew.cmu.edu/user/avigad/meetings/fomm2020/slides/fomm_koepke.pdf
 - grassmann algebra and clifford algebra: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/cleaning.20up.20this.20tactic.20proof.20%28regarding.20closures%29/near/193026381
-- Huber_pair: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/synthesized.20not.20defeq.20inferred/near/200026861
+- Huber_pair: https://github.com/leanprover-community/lean-perfectoid-spaces/blob/master/src/Huber_pair.lean#L72
+- https://github.com/leanprover-community/mathlib/blob/master/docs/tutorial/category_theory/intro.lean
 
 - https://github.com/leanprover/lean/blob/master/library/init/core.lean
 - on fold notation: https://gitter.im/leanprover_public/Lobby?at=5a5686366117191e614e3ce4
@@ -23,6 +24,8 @@ GA & Lean related
     - https://github.com/leanprover-community/lean/blob/master/tests/lean/fold.lean
 - https://github.com/leanprover-community/lean/blob/master/tests/lean/over_notation.lean
 - https://github.com/leanprover/vscode-lean/blob/master/translations.json
+  - https://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts
+  - https://en.wikipedia.org/wiki/List_of_mathematical_symbols_by_subject
 - https://leanprover-community.github.io/mathlib_docs/analysis/normed_space/real_inner_product.html#inner_product_space
 
 - https://github.com/lean-forward/field
@@ -43,12 +46,23 @@ GA & Lean related
 - http://math.uga.edu/~pete/quadraticforms.pdf
 
 - https://github.com/leanprover-community/leanprover-community.github.io/blob/newsite/templates/contribute/style.md
+
 - https://www.cs.cornell.edu/courses/cs3110/2018sp/a5/coq-tactics-cheatsheet.html
 - http://www.inf.ed.ac.uk/teaching/courses/tspl/cheatsheet.pdf
+- https://leanprover-community.github.io/extras/tactic_writing.html#marios-monadic-symbols-cheat-sheet
+- https://www.imo.universite-paris-saclay.fr/~pmassot/enseignement/math114/tactiques.pdf (in French)
 
 - https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/Some.20olympiad.20formalisations/near/197858180
 - https://github.com/leanprover-community/mathlib/pull/2720/files
 - https://github.com/jsm28/bmo2-2020-lean/
+
+- [Diagram Chasing in Interactive Theorem Proving](https://pp.ipd.kit.edu/uploads/publikationen/himmel20bachelorarbeit.pdf)
+- [Homological algebra in Lean](https://github.com/TwoFX/lean-homological-algebra)
+
+- 4 Defining Codatatypes in [Defining (Co)datatypes and Primitively (Co)recursive Functions in Isabelle/HOL](http://isabelle.in.tum.de/dist/doc/datatypes.pdf)
+- [A Tutorial on (Co-)Inductive Types in Coq](https://www.labri.fr/perso/casteran/RecTutorial.pdf)
+
+- [Canonical Structures for the working Coq user](https://hal.inria.fr/hal-00816703/file/main.pdf)
 
 GA Formalization Related
 --------------------------
@@ -77,15 +91,21 @@ GA related
 -------------
 
 - https://en.wikipedia.org/wiki/Geometric_algebra
+  - https://en.wikipedia.org/wiki/Sedenion
 - [Geometrization of the Real Number System by Garret Sobczyk](https://arxiv.org/abs/1707.02338)
 - [Projective Geometric Algebra as a Subalgebra of Conformal Geometric algebra](https://arxiv.org/abs/2002.05993)
 - [Versor Cheat Sheet](http://versor.mat.ucsb.edu/masters_appendix.pdf)
+- https://github.com/pygae/GAlgebra.jl/blob/master/test/runtests.jl
+- Chapter 2 Clifford Algebra in [A Theory of Neural Computation
+with Clifford Algebras](https://macau.uni-kiel.de/servlets/MCRFileNodeServlet/dissertation_derivate_00001402/d1402.pdf)
+    - Chapter 14 Definitions of Clifford Algebra in Clifford Algebras and Spinors by Lounesto
 
 Lean related
 ------------------
 
 - [lean](https://github.com/leanprover-community/lean) - Lean Theorem Prover
 - [format_lean](https://github.com/leanprover-community/format_lean) - A Lean file formatter
+  - https://sphinx-litprog.readthedocs.io/en/stable/
 - [mathlib-tools](https://github.com/leanprover-community/mathlib-tools) - Development tools for https://github.com/leanprover-community/mathlib
 - [lean-client-python](https://github.com/leanprover-community/lean-client-python) - Python talking to the Lean theorem prover
 - [doc-gen](https://github.com/leanprover-community/doc-gen) - Generate HTML documentation for mathlib and Lean
@@ -111,12 +131,18 @@ Lean related
 - [M1P1-lean](https://github.com/ImperialCollegeLondon/M1P1-lean) - Material from M1P1, formalised in Lean
 - [M4000x_LEAN_formalisation](https://github.com/JasonKYi/M4000x_LEAN_formalisation) - Formalising lecture notes from 1st year Imperial Mathematics course.
 - [M40001_lean](https://github.com/ImperialCollegeLondon/M40001_lean)
+- [Theorem proving hello world: prove a+0=a and 0+a=a](https://www.codewars.com/kata/5c879811bc562909bf65c8e6/train/lean)
+- https://leanprover-community.github.io/learn.html
 
-- [xena](https://github.com/kbuzzard/xena) - Lean Library currently studying for a degree at Imperial College
 - [formalabstracts](https://github.com/formalabstracts/formalabstracts) - 
 - [formal-encoding](https://github.com/IMO-grand-challenge/formal-encoding) - Formal encoding of IMO problems
-- [lean](https://github.com/groupoid/lean) - Ground Zero: cubical base library for Lean 3
-- [xena-UROP-2018](https://github.com/ImperialCollegeLondon/xena-UROP-2018) - A place to put our 2018 Xena project UROP thoughts and programs.
+- [cubical lean](https://github.com/groupoid/lean) - Ground Zero: cubical base library for Lean 3
+- [xena](https://github.com/kbuzzard/xena) - Lean Library currently studying for a degree at Imperial College
+  - http://wwwf.imperial.ac.uk/~buzzard/xena/
+  - [xena-UROP-2018](https://github.com/ImperialCollegeLondon/xena-UROP-2018) - A place to put our 2018 Xena project UROP thoughts and programs.
+    - [Geometry in Lean](https://github.com/ImperialCollegeLondon/xena-UROP-2018/tree/master/src/Geometry)
+    - [vector space](https://github.com/ImperialCollegeLondon/xena-UROP-2018/blob/master/src/vector_space.lean)
+  - [The Xena Project summer projects, 2020](http://wwwf.imperial.ac.uk/~buzzard/xena/UROP2020.html)
 - [mathematica](https://github.com/robertylewis/mathematica) - Lean-independent implementation of the MM-Lean link
 - [mm-lean](https://github.com/minchaowu/mm-lean) - One direction of the MM-Lean link
 - [two-level](https://github.com/annenkov/two-level) - Two-Level Type Theory
@@ -131,3 +157,4 @@ Type theory related
 - [lean-type-theory](https://github.com/digama0/lean-type-theory) - LaTeX code for a paper on lean's type theory
 - [Category theory for scientists](https://arxiv.org/abs/1302.6946)
 - [Rethinking set theory](https://arxiv.org/abs/1212.6543)
+- https://leanprover-community.github.io/lean-perfectoid-spaces/type_theory.html
