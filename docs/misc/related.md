@@ -151,6 +151,8 @@ Lean related
 - [tptp-lean-puzzles](https://github.com/FredsoNerd/tptp-lean-puzzles)
 - https://github.com/unitb/temporal-logic
 
+- [chore(*): replace rec_on with induction and match for readability](https://github.com/leanprover-community/mathlib/commit/f02a88b817a86450ce95514851f582dc9bdc460e)
+
 Type theory related
 ---------------------
 
