@@ -160,6 +160,8 @@ Lean related
 
 - [chore(*): replace rec_on with induction and match for readability](https://github.com/leanprover-community/mathlib/commit/f02a88b817a86450ce95514851f582dc9bdc460e)
 
+- [An Infinitely Large Napkin](https://github.com/vEnhance/napkin/)
+
 Type theory related
 ---------------------
 
