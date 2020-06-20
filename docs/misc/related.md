@@ -105,7 +105,7 @@ GA related
 - https://github.com/pygae/GAlgebra.jl/blob/master/test/runtests.jl
 - Chapter 2 Clifford Algebra in [A Theory of Neural Computation
 with Clifford Algebras](https://macau.uni-kiel.de/servlets/MCRFileNodeServlet/dissertation_derivate_00001402/d1402.pdf)
-    - Chapter 14 Definitions of Clifford Algebra in Clifford Algebras and Spinors by Lounesto
+- Chapter 14 Definitions of Clifford Algebra in Clifford Algebras and Spinors by Lounesto
 
 Lean related
 ------------------
