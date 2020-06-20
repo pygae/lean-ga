@@ -64,6 +64,13 @@ GA & Lean related
 
 - [Canonical Structures for the working Coq user](https://hal.inria.fr/hal-00816703/file/main.pdf)
 
+- [All Hail Geometric Algebra!](https://crypto.stanford.edu/~blynn/haskell/ga.html)
+- [Formalizing Euclid's Axioms](https://github.com/vaibhavkarve/leanteach2020/blob/master/src/euclid.lean)
+- [Chris Doran's Geometric Algebra Haskell Package](https://github.com/ga/haskell)
+    - http://geometry.mrao.cam.ac.uk/2016/10/geometric-algebra-2016/
+
+- [Lean Cheatsheet](https://gist.github.com/utensil/dc635f2991255f76d8da797efdabbf15)
+
 GA Formalization Related
 --------------------------
 
