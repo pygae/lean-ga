@@ -4,72 +4,79 @@ Related References
 GA & Lean related
 --------------------
 
+### Lean/Mathlib Src
+
+- [init/core](https://github.com/leanprover/lean/blob/master/library/init/core.lean)
+- [data/matrix/basic](https://github.com/leanprover-community/mathlib/blob/master/src/data/matrix/basic.lean)
+- [geometry/euclidean](https://github.com/leanprover-community/mathlib/blob/master/src/geometry/euclidean.lean)
+  - https://github.com/jsm28/bmo2-2020-lean/
+- [geometry/manifold/real_instances](https://github.com/leanprover-community/mathlib/blob/master/src/geometry/manifold/real_instances.lean)
+- [analysis/convex/cone](https://github.com/leanprover-community/mathlib/blob/master/src/analysis/convex/cone.lean)
+- [analysis/normed_space/real_inner_product](https://github.com/leanprover-community/mathlib/blob/master/src/analysis/normed_space/real_inner_product.lean)
+  - [doc](https://leanprover-community.github.io/mathlib_docs/analysis/normed_space/real_inner_product.html#inner_product_space)
+
+### Lean/Mathlib PRs
+
 - [`feat(data/quaternion): define quaternions and prove some basic properties #2339`](https://github.com/leanprover-community/mathlib/pull/2339/)
 - https://github.com/leanprover-community/mathlib/blob/master/src/data/complex/basic.lean
 - [refactor(algebra/module): change module into an abbreviation for semimodule #2848](https://github.com/leanprover-community/mathlib/pull/2848)
-- https://github.com/leanprover-community/mathlib/blob/master/src/data/matrix/basic.lean
-- https://github.com/leanprover-community/mathlib/blob/master/src/geometry/manifold/real_instances.lean
-- https://github.com/leanprover-community/mathlib/blob/master/src/analysis/convex/cone.lean
-- https://github.com/leanprover-community/mathlib/blob/master/src/analysis/normed_space/real_inner_product.lean
-- commutative differential graded algebras: https://gist.github.com/kbuzzard/f5ee35457c5d257ceec58c66d7da0c38
-- free module: https://gist.github.com/sflicht/53bdcdb1e3536e668736f7b4eb63cd79
-- "ForTheL texts and Lean texts" in http://www.andrew.cmu.edu/user/avigad/meetings/fomm2020/slides/fomm_koepke.pdf
-- grassmann algebra and clifford algebra: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/cleaning.20up.20this.20tactic.20proof.20%28regarding.20closures%29/near/193026381
-- Huber_pair: https://github.com/leanprover-community/lean-perfectoid-spaces/blob/master/src/Huber_pair.lean#L72
-- https://github.com/leanprover-community/mathlib/blob/master/docs/tutorial/category_theory/intro.lean
+- [feat(algebra/add_torsor): torsors of additive group actions #2720](https://github.com/leanprover-community/mathlib/pull/2720/files)
 
-- https://github.com/leanprover/lean/blob/master/library/init/core.lean
-- on fold notation: https://gitter.im/leanprover_public/Lobby?at=5a5686366117191e614e3ce4
-    - `(fold* <sep> <fun> <init> <terminator>)`
-    - https://github.com/leanprover-community/lean/blob/master/tests/lean/fold.lean
-- https://github.com/leanprover-community/lean/blob/master/tests/lean/over_notation.lean
-- https://github.com/leanprover/vscode-lean/blob/master/translations.json
-  - https://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts
-  - https://en.wikipedia.org/wiki/List_of_mathematical_symbols_by_subject
-- https://leanprover-community.github.io/mathlib_docs/analysis/normed_space/real_inner_product.html#inner_product_space
+### Inspiring Lean Code
 
-- https://github.com/lean-forward/field
-- https://github.com/lean-forward/ring_exp
-- [A Lean tactic for normalising ring expressions with exponents (short paper)](https://lean-forward.github.io/ring_exp/paper.pdf)
-- [Simplifying casts and coercions](https://lean-forward.github.io/norm_cast/norm_cast.pdf)
+- [Formalizing Euclid's Axioms](https://github.com/vaibhavkarve/leanteach2020/blob/master/src/euclid.lean)
+- [commutative differential graded algebras](https://gist.github.com/kbuzzard/f5ee35457c5d257ceec58c66d7da0c38)
+- [free module](https://gist.github.com/sflicht/53bdcdb1e3536e668736f7b4eb63cd79)
+- [Huber_pair](https://github.com/leanprover-community/lean-perfectoid-spaces/blob/master/src/Huber_pair.lean#L72)
+
+### Lean/Mathlib Doc
+
+- https://leanprover-community.github.io/mathlib-overview.html
+- https://leanprover-community.github.io/mathlib_docs/
+- [data/overview.yaml](https://github.com/leanprover-community/leanprover-community.github.io/blob/newsite/data/overview.yaml)
+  - https://leanprover-community.github.io/undergrad.html
+  - https://leanprover-community.github.io/undergrad_todo.html
+- [style guide](https://github.com/leanprover-community/leanprover-community.github.io/blob/newsite/templates/contribute/style.md)
+- https://lean-forward.github.io/
+- [tutorial/category_theory/intro](https://github.com/leanprover-community/mathlib/blob/master/docs/tutorial/category_theory/intro.lean)
+
+### Inspiring Papers and Slides
 
 - [The Lean Mathematical Library](https://arxiv.org/abs/1910.09336)
 - [Maintaining a library of formal mathematics](https://lean-forward.github.io/mathlib-maintenance/paper.pdf)
-- https://leanprover-community.github.io/mathlib-overview.html
-- https://leanprover-community.github.io/mathlib_docs/
-- https://github.com/leanprover-community/leanprover-community.github.io/blob/newsite/data/overview.yaml
-- https://leanprover-community.github.io/overview.html
-
-- https://lean-forward.github.io/
-- [https://manishearth.github.io/blog/2017/03/04/what-are-sum-product-and-pi-types/](https://manishearth.github.io/blog/2017/03/04/what-are-sum-product-and-pi-types/)
-
-- http://math.uga.edu/~pete/quadraticforms.pdf
-
-- https://github.com/leanprover-community/leanprover-community.github.io/blob/newsite/templates/contribute/style.md
-
-- https://www.cs.cornell.edu/courses/cs3110/2018sp/a5/coq-tactics-cheatsheet.html
-- http://www.inf.ed.ac.uk/teaching/courses/tspl/cheatsheet.pdf
-- https://leanprover-community.github.io/extras/tactic_writing.html#marios-monadic-symbols-cheat-sheet
-- https://www.imo.universite-paris-saclay.fr/~pmassot/enseignement/math114/tactiques.pdf (in French)
-
-- https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/Some.20olympiad.20formalisations/near/197858180
-- https://github.com/leanprover-community/mathlib/pull/2720/files
-- https://github.com/jsm28/bmo2-2020-lean/
-
+- [Formalising perfectoid spaces](https://arxiv.org/abs/1910.12320)
+- "ForTheL texts and Lean texts" in http://www.andrew.cmu.edu/user/avigad/meetings/fomm2020/slides/fomm_koepke.pdf
 - [Diagram Chasing in Interactive Theorem Proving](https://pp.ipd.kit.edu/uploads/publikationen/himmel20bachelorarbeit.pdf)
 - [Homological algebra in Lean](https://github.com/TwoFX/lean-homological-algebra)
 
-- 4 Defining Codatatypes in [Defining (Co)datatypes and Primitively (Co)recursive Functions in Isabelle/HOL](http://isabelle.in.tum.de/dist/doc/datatypes.pdf)
-- [A Tutorial on (Co-)Inductive Types in Coq](https://www.labri.fr/perso/casteran/RecTutorial.pdf)
+### Inspiring Chats
 
-- [Canonical Structures for the working Coq user](https://hal.inria.fr/hal-00816703/file/main.pdf)
+- [grassmann algebra and clifford algebra](https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/cleaning.20up.20this.20tactic.20proof.20%28regarding.20closures%29/near/193026381)
+- [fold notation](https://gitter.im/leanprover_public/Lobby?at=5a5686366117191e614e3ce4)
+    - `(fold* <sep> <fun> <init> <terminator>)`
+    - [tests/lean/fold](https://github.com/leanprover-community/lean/blob/master/tests/lean/fold.lean)
+    - [tests/lean/over_notation](https://github.com/leanprover-community/lean/blob/master/tests/lean/over_notation.lean)
+- [euclidean_vector_space](https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/Some.20olympiad.20formalisations/near/197858180)
 
-- [All Hail Geometric Algebra!](https://crypto.stanford.edu/~blynn/haskell/ga.html)
-- [Formalizing Euclid's Axioms](https://github.com/vaibhavkarve/leanteach2020/blob/master/src/euclid.lean)
-- [Chris Doran's Geometric Algebra Haskell Package](https://github.com/ga/haskell)
-    - http://geometry.mrao.cam.ac.uk/2016/10/geometric-algebra-2016/
+### Notation
+
+- https://github.com/leanprover/vscode-lean/blob/master/translations.json
+  - https://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts
+  - https://en.wikipedia.org/wiki/List_of_mathematical_symbols_by_subject
+
+
+### Tactics
 
 - [Lean Cheatsheet](https://gist.github.com/utensil/dc635f2991255f76d8da797efdabbf15)
+  - https://www.imo.universite-paris-saclay.fr/~pmassot/enseignement/math114/tactiques.pdf (in French)
+- https://www.cs.cornell.edu/courses/cs3110/2018sp/a5/coq-tactics-cheatsheet.html
+- http://www.inf.ed.ac.uk/teaching/courses/tspl/cheatsheet.pdf
+- https://leanprover-community.github.io/extras/tactic_writing.html#marios-monadic-symbols-cheat-sheet
+
+- [A Lean tactic for normalising ring expressions with exponents (short paper)](https://lean-forward.github.io/ring_exp/paper.pdf)
+- [Simplifying casts and coercions](https://lean-forward.github.io/norm_cast/norm_cast.pdf)
+- https://github.com/lean-forward/field
+- https://github.com/lean-forward/ring_exp
 
 GA Formalization Related
 --------------------------
@@ -91,9 +98,6 @@ GA Formalization Related
         - https://devel.isa-afp.org/browser_info/current/AFP/Quaternions/
         - https://www.isa-afp.org/browser_info/current/AFP/Octonions/
 
-- [Comparison of Two Theorem Provers: Isabelle/HOL and Coq](https://arxiv.org/abs/1808.09701)
-- [A Survey of Languages for Formalizing Mathematics](https://arxiv.org/abs/2005.12876)
-
 GA related
 -------------
 
@@ -106,6 +110,10 @@ GA related
 - Chapter 2 Clifford Algebra in [A Theory of Neural Computation
 with Clifford Algebras](https://macau.uni-kiel.de/servlets/MCRFileNodeServlet/dissertation_derivate_00001402/d1402.pdf)
 - Chapter 14 Definitions of Clifford Algebra in Clifford Algebras and Spinors by Lounesto
+- [All Hail Geometric Algebra!](https://crypto.stanford.edu/~blynn/haskell/ga.html)
+- [Chris Doran's Geometric Algebra Haskell Package](https://github.com/ga/haskell)
+    - http://geometry.mrao.cam.ac.uk/2016/10/geometric-algebra-2016/
+- http://math.uga.edu/~pete/quadraticforms.pdf
 
 Lean related
 ------------------
@@ -162,10 +170,16 @@ Lean related
 
 - [An Infinitely Large Napkin](https://github.com/vEnhance/napkin/)
 
-Type theory related
----------------------
+Theorem Prover/Type theory related
+-------------------------------------
 
 - [lean-type-theory](https://github.com/digama0/lean-type-theory) - LaTeX code for a paper on lean's type theory
+- https://leanprover-community.github.io/lean-perfectoid-spaces/type_theory.html
+- [https://manishearth.github.io/blog/2017/03/04/what-are-sum-product-and-pi-types/](https://manishearth.github.io/blog/2017/03/04/what-are-sum-product-and-pi-types/)
+- 4 Defining Codatatypes in [Defining (Co)datatypes and Primitively (Co)recursive Functions in Isabelle/HOL](http://isabelle.in.tum.de/dist/doc/datatypes.pdf)
+- [A Tutorial on (Co-)Inductive Types in Coq](https://www.labri.fr/perso/casteran/RecTutorial.pdf)
+- [Canonical Structures for the working Coq user](https://hal.inria.fr/hal-00816703/file/main.pdf)
+- [Comparison of Two Theorem Provers: Isabelle/HOL and Coq](https://arxiv.org/abs/1808.09701)
+- [A Survey of Languages for Formalizing Mathematics](https://arxiv.org/abs/2005.12876)
 - [Category theory for scientists](https://arxiv.org/abs/1302.6946)
 - [Rethinking set theory](https://arxiv.org/abs/1212.6543)
-- https://leanprover-community.github.io/lean-perfectoid-spaces/type_theory.html
