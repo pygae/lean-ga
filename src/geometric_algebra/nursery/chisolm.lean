@@ -69,6 +69,28 @@ local infix `*₊`:75 := sym_prod
 
 local infix `*₊ᵥ`:75 := sym_prod_vec
 
+
+def is_orthogonal (a : G₁) (b : G₁) : Prop := sym_prod_vec a b = 0
+
+theorem zero_is_orthogonal (a : G₁) : is_orthogonal 0 a := begin
+  unfold is_orthogonal,
+  unfold sym_prod_vec,
+  unfold prod_vec,
+  simp
+end
+
+class inductive blade (b : G): nat → Type u
+| scalar :
+  -- equals a scalar
+  (∃ (k: G₀),
+   b = fₛ k)
+  → blade 0
+| graded {n : ℕ} :
+  -- or a product of orthogonal vectors
+  (∃ (v : {l : vector G₁ (n + 1) // l.val.pairwise (λ a b, is_orthogonal a b ∧ a ≠ b)}),
+   b = list.foldl (λ (b : G) (a : G₁), fᵥ a * b) (fᵥ v.val.head) v.val.tail.val)
+  → blade(n + 1)
+
 /-
   Symmetrised product of two vectors must be a scalar
 -/
@@ -104,6 +126,17 @@ exists.elim (vec_sq_scalar (a + b))
     )
   )
 )
+
+/- The scalars are 0-blades, as is the result of the vector/vector sym_prod -/
+instance scalar_blade0 (a : G₀) : blade (fₛ a) 0 := blade.scalar (by use a)
+instance vec_sym_prod_blade0 (a b : G₁) : blade (a *₊ᵥ b) 0 := blade.scalar (vec_sym_prod_scalar a b)
+
+/- The vectors are 1-blades -/
+instance vector_blade1 (a : G₁) : blade (fᵥ a) 1 := blade.graded (begin
+  use ⟨(vector.cons a vector.nil), list.pairwise_singleton _ _⟩,
+  unfold vector.nil,
+  simp,
+end)
 
 end
 
