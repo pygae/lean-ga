@@ -132,10 +132,10 @@ namespace Bᵣ
   instance has_coe_from_G₀ : has_coe G₀ (Bᵣ 0) := { coe := λ k, ⟨fₛ k, all_G₀_is_rblade0 k⟩}
   instance has_coe_from_G₁ : has_coe G₁ (Bᵣ 1) := { coe := λ a, ⟨fᵥ a, all_G₁_is_rblade1 a⟩}
 
-  -- these are trivial, but somehow still needed
+  -- these are trivial, but maybe still needed
   instance has_coe_to_G : has_coe (Bᵣ r) G := { coe := subtype.val }
   @[simp]
-  lemma is_rblade (b : Bᵣ r) : is_rblade r b := b.property
+  lemma coe_is_rblade (b : Bᵣ r) : is_rblade r b := b.property
 
   /- todo: do we want this? -/
   -- instance has_zero : has_zero (Bᵣ r) := {
@@ -145,14 +145,14 @@ namespace Bᵣ
   --   end⟩ 
   -- }
 
-  def neg (b : Bᵣ r) : Bᵣ r := ⟨-b.val, begin
-    cases b with b' hb,
+  lemma neg_rblade_is_rblade {b : G} (hb : is_rblade r b) : (is_rblade r (-b)) := begin
     exact exists.elim hb begin
       intros a ha,
       use -a,
       simp [ha],
     end
-  end⟩
+  end
+  def neg (b : Bᵣ r) : Bᵣ r := ⟨-b.val, neg_rblade_is_rblade b.property⟩
 
   instance has_neg (r : ℕ) : has_neg (Bᵣ r) := { neg := neg}
 end Bᵣ
