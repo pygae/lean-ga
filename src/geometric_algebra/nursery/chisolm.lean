@@ -145,14 +145,42 @@ namespace Bᵣ
   --   end⟩ 
   -- }
 
-  lemma neg_rblade_is_rblade {b : G} (hb : is_rblade r b) : (is_rblade r (-b)) := begin
+  -- scalar multiplication remains an r-blade
+  lemma mul_rblade_is_rblade {b : G} {k : G₀} (hb : is_rblade r b) : (is_rblade r ((fₛ k) * b)) := begin
     exact exists.elim hb begin
       intros a ha,
-      use -a,
-      simp [ha],
+      use k*a,
+      exact exists.elim ha begin
+        intros a_1 ha_1,
+        use a_1,
+        rw ha_1,
+        rw ring_hom.map_mul,
+        rw mul_assoc
+      end
     end
   end
+  /- this one is hard, we need to show scalars commute -/
+  lemma rblade_mul_is_rblade {b : G} {k : G₀} (hb : is_rblade r b) : (is_rblade r (b * (fₛ k))) := sorry
+  lemma neg_rblade_is_rblade {b : G} (hb : is_rblade r b) : (is_rblade r (-b)) := begin
+    rw neg_eq_neg_one_mul,
+    rw ← ring_hom.map_one fₛ,
+    rw ← ring_hom.map_neg fₛ,
+    exact mul_rblade_is_rblade hb,
+  end
+
+
   def neg (b : Bᵣ r) : Bᵣ r := ⟨-b.val, neg_rblade_is_rblade b.property⟩
+  def smul (k : G₀) (b : Bᵣ r) : Bᵣ r := ⟨(fₛ k) * b.val, mul_rblade_is_rblade b.property⟩ 
+
+  instance Bᵣ_has_scalar (r : ℕ) : has_scalar G₀ (Bᵣ r) := { smul := smul }
+  
+  def rblade_smul_one_is_self (b : Bᵣ r) : smul (1 : G₀) b = b := by simp [smul]
+  def rblade_smul_assoc (k1 k2 : G₀) (b : Bᵣ r) : smul (k1 * k2) b =  smul k1 (smul k2 b) := by simp [smul, mul_assoc]
+
+  instance Bᵣ_mul_action : mul_action G₀ (Bᵣ r):= {
+    one_smul := rblade_smul_one_is_self,
+    mul_smul := rblade_smul_assoc, 
+    ..Bᵣ_has_scalar r}
 
   instance has_neg (r : ℕ) : has_neg (Bᵣ r) := { neg := neg}
 
@@ -161,6 +189,9 @@ end Bᵣ
 -- r-vectors
 def Gᵣ (r : ℕ) := add_subgroup.closure (Bᵣ r)
 example (r : ℕ) : add_comm_group (Gᵣ r) := by apply_instance
+namespace Gᵣ
+  instance Gᵣ_semimodule (r : ℕ) : semimodule G₀ (Gᵣ r) := sorry
+end Gᵣ
 
 -- multi-vectors
 def Mᵣ (r : ℕ) := add_subgroup.closure (⋃ (r : ℕ), (Gᵣ r).carrier)
