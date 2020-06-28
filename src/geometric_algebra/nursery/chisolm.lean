@@ -161,14 +161,14 @@ end Bᵣ
 def Gᵣ (r : ℕ) := add_subgroup.closure (Bᵣ r)
 namespace Gᵣ
   variables {r : ℕ}
-  instance addgroup : add_group (Gᵣ r) := (Gᵣ r).to_add_group
+  instance addgroup : add_comm_group (Gᵣ r) := (Gᵣ r).to_add_comm_group
 end Gᵣ
 
 -- multi-vectors
 def Mᵣ (r : ℕ) := add_subgroup.closure (⋃ (r : ℕ), (Gᵣ r).carrier)
 namespace Mᵣ
   variables {r : ℕ}
-  instance addgroup : add_group (Mᵣ r) := (Mᵣ r).to_add_group
+  instance addgroup : add_comm_group (Mᵣ r) := (Mᵣ r).to_add_comm_group
 end Mᵣ
 
 @[simp]
