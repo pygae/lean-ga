@@ -159,17 +159,11 @@ end Bᵣ
 
 -- r-vectors
 def Gᵣ (r : ℕ) := add_subgroup.closure (Bᵣ r)
-namespace Gᵣ
-  variables {r : ℕ}
-  instance addgroup : add_comm_group (Gᵣ r) := (Gᵣ r).to_add_comm_group
-end Gᵣ
+example (r : ℕ) : add_comm_group (Gᵣ r) := by apply_instance
 
 -- multi-vectors
 def Mᵣ (r : ℕ) := add_subgroup.closure (⋃ (r : ℕ), (Gᵣ r).carrier)
-namespace Mᵣ
-  variables {r : ℕ}
-  instance addgroup : add_comm_group (Mᵣ r) := (Mᵣ r).to_add_comm_group
-end Mᵣ
+example (r : ℕ) : add_comm_group (Mᵣ r) := by apply_instance
 
 @[simp]
 def is_scalar : G → Prop := is_rblade 0
