@@ -15,6 +15,19 @@ import tactic
 
 universes u u₀ u₁
 
+/- Needed for zero_pairwise_ortho_vector -/
+-- lemma pairwise_of_repeat {X : Type*} {x : X} {n : ℕ} {r : X → X → Prop} (hr : r x x) :
+--   list.pairwise r (list.repeat x n) :=
+-- begin
+--   induction n with d hd,
+--   { exact list.pairwise.nil},
+--   { apply list.pairwise.cons _ hd,
+--     intros a ha,
+--     convert hr,
+--     exact list.eq_of_mem_repeat ha,
+--   }
+-- end
+
 class geometric_algebra
 -- Axiom 2: G contains a field G0 of characteristic zero which includes 0 and 1.
 (G₀ : Type*) [field G₀]
@@ -49,7 +62,7 @@ lemma left_distrib : ∀ A B C : G, A * (B + C) = (A * B) + (A * C) := λ A B C,
 
 lemma right_distrib : ∀ A B C : G, (A + B) * C = (A * C) + (B * C) := λ A B C, distrib.right_distrib A B C
 
-def prod_vec (a b : G₁) := fᵥ a * fᵥ b
+def prod_vec (a b : G₁) : G := fᵥ a * fᵥ b
 
 local infix `*ᵥ`:75 := prod_vec
 
@@ -79,24 +92,92 @@ theorem zero_is_orthogonal (a : G₁) : is_orthogonal 0 a := begin
   simp
 end
 
-class inductive blade (b : G): nat → Type u
-| scalar :
-  -- equals a scalar
-  (∃ (k: G₀),
-   b = fₛ k)
-  → blade 0
-| graded {n : ℕ} :
-  -- or a product of orthogonal vectors
-  (∃ (v : {l : vector G₁ (n + 1) // l.val.pairwise (λ a b, is_orthogonal a b ∧ a ≠ b)}),
-   b = list.foldl (λ (b : G) (a : G₁), fᵥ a * b) (fᵥ v.val.head) v.val.tail.val)
-  → blade(n + 1)
+/- a list of r orthogonal vectors, which may be non-unique -/
+def pairwise_ortho_vector (r : ℕ) := {l : vector G₁ r // l.val.pairwise is_orthogonal}
+
+/- need this for later, can't seem to get the type inference to work if I inline it-/
+-- def zero_pairwise_ortho_vector (r : ℕ) : pairwise_ortho_vector r := ⟨
+--   vector.repeat (0 : G₁) r, begin
+--   unfold vector.repeat subtype.val,
+--   apply pairwise_of_repeat,
+--   apply zero_is_orthogonal,
+-- end⟩
+
+
+-- r-blades
+def is_rblade (r : ℕ) (b : G) : Prop :=
+  -- a product of orthogonal vectors an a scalar
+  (∃ (k: G₀) (v : pairwise_ortho_vector r),
+   b = fₛ k * list.prod (v.val.val.map fᵥ))
+
+def Bᵣ (r : ℕ) := set_of (is_rblade r)
+
+namespace Bᵣ
+  variables {r : ℕ}
+
+  lemma all_G₀_is_rblade0 (k : G₀) : is_rblade 0 (fₛ k) := begin
+    use [k, list.pairwise.nil],
+    unfold vector.nil subtype.val list.map,
+    rw list.prod_nil,
+    simp,
+  end
+  lemma all_G₁_is_rblade1 (a : G₁) : is_rblade 1 (fᵥ a) := begin
+    use 1,
+    use ⟨(vector.cons a vector.nil), list.pairwise_singleton _ a⟩,
+    unfold vector.cons vector.nil subtype.val list.map,
+    rw [list.prod_cons, list.prod_nil],
+    simp,
+  end
+
+  instance has_coe_from_G₀ : has_coe G₀ (Bᵣ 0) := { coe := λ k, ⟨fₛ k, all_G₀_is_rblade0 k⟩}
+  instance has_coe_from_G₁ : has_coe G₁ (Bᵣ 1) := { coe := λ a, ⟨fᵥ a, all_G₁_is_rblade1 a⟩}
+
+  -- these are trivial, but somehow still needed
+  instance has_coe_to_G : has_coe (Bᵣ r) G := { coe := subtype.val }
+  @[simp]
+  lemma is_rblade (b : Bᵣ r) : is_rblade r b := b.property
+
+  /- todo: do we want this? -/
+  -- instance has_zero : has_zero (Bᵣ r) := {
+  --   zero := ⟨(0 : G), begin
+  --     use [0, zero_pairwise_ortho_vector r],
+  --     simp,
+  --   end⟩ 
+  -- }
+
+  def neg (b : Bᵣ r) : Bᵣ r := ⟨-b.val, begin
+    cases b with b' hb,
+    exact exists.elim hb begin
+      intros a ha,
+      use -a,
+      simp [ha],
+    end
+  end⟩
+
+  instance has_neg (r : ℕ) : has_neg (Bᵣ r) := { neg := neg}
+end Bᵣ
+
+-- r-vectors
+def Gᵣ (r : ℕ) := add_subgroup.closure (Bᵣ r)
+namespace Gᵣ
+  variables {r : ℕ}
+  instance addgroup : add_group (Gᵣ r) := (Gᵣ r).to_add_group
+end Gᵣ
+
+-- multi-vectors
+def Mᵣ (r : ℕ) := add_subgroup.closure (⋃ (r : ℕ), (Gᵣ r).carrier)
+namespace Mᵣ
+  variables {r : ℕ}
+  instance addgroup : add_group (Mᵣ r) := (Mᵣ r).to_add_group
+end Mᵣ
+
+@[simp]
+def is_scalar : G → Prop := is_rblade 0
 
 /-
   Symmetrised product of two vectors must be a scalar
 -/
-lemma vec_sym_prod_scalar:
-∀ (a b : G₁), ∃ k : G₀, a *₊ᵥ b = fₛ k :=
-assume a b,
+lemma vec_sym_prod_scalar (a b : G₁) : is_scalar (a *₊ᵥ b) :=
 have h1 : (a + b)²ᵥ = a²ᵥ + b²ᵥ + a *₊ᵥ b, from begin
   unfold square_vec sym_prod_vec prod_vec,
   rw add_monoid_hom.map_add fᵥ a b,
@@ -118,26 +199,21 @@ exists.elim (vec_sq_scalar (a + b))
       begin
         intros hb ha hab,
         rw [hb, ha, hab] at h1,
-        use kab - ka - kb,
-        repeat {rw ring_hom.map_sub},
-        rw h1,
-        abel,
+        have h2 : (fₛ (kab - ka - kb : G₀) : G) = sym_prod_vec a b, by {
+          repeat {rw ring_hom.map_sub},
+          rw h1,
+          abel,
+        },
+        rw ← h2,
+        rw is_scalar,
+        apply Bᵣ.all_G₀_is_rblade0, -- this feels clumsy, can I make this automatic?
       end
     )
   )
 )
 
-/- The scalars are 0-blades, as is the result of the vector/vector sym_prod -/
-instance scalar_blade0 (a : G₀) : blade (fₛ a) 0 := blade.scalar (by use a)
-instance vec_sym_prod_blade0 (a b : G₁) : blade (a *₊ᵥ b) 0 := blade.scalar (vec_sym_prod_scalar a b)
-
-/- The vectors are 1-blades -/
-instance vector_blade1 (a : G₁) : blade (fᵥ a) 1 := blade.graded (begin
-  use ⟨(vector.cons a vector.nil), list.pairwise_singleton _ _⟩,
-  unfold vector.nil,
-  simp,
-end)
 
 end
+
 
 end geometric_algebra
