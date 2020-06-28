@@ -155,6 +155,7 @@ namespace Bᵣ
   def neg (b : Bᵣ r) : Bᵣ r := ⟨-b.val, neg_rblade_is_rblade b.property⟩
 
   instance has_neg (r : ℕ) : has_neg (Bᵣ r) := { neg := neg}
+
 end Bᵣ
 
 -- r-vectors
@@ -164,6 +165,14 @@ example (r : ℕ) : add_comm_group (Gᵣ r) := by apply_instance
 -- multi-vectors
 def Mᵣ (r : ℕ) := add_subgroup.closure (⋃ (r : ℕ), (Gᵣ r).carrier)
 example (r : ℕ) : add_comm_group (Mᵣ r) := by apply_instance
+
+  
+def grade_select {r : ℕ} (m : Mᵣ r) (g : ℕ) : Gᵣ g := sorry
+
+lemma grade_iff {r : ℕ} {a : Mᵣ r} {g : ℕ} : a ∈ Gᵣ g ↔ a = grade_select a g := sorry
+lemma grade_add {r : ℕ} {a b : Mᵣ r} {g : ℕ} : grade_select (a + b) g = grade_select a g + grade_select b g:= sorry
+lemma grade_scale {r : ℕ} {a : Mᵣ r} {k : G₀} {g : ℕ} : grade_select (k*a) g = k * grade_select a g := sorry
+lemma grade_compose {r : ℕ} {a : Mᵣ r} {g1 : ℕ} {g2 : ℕ} : grade_select (grade_select a g1) g2 = if g1 = g2 then grade_select a g1 else 0 := sorry
 
 @[simp]
 def is_scalar : G → Prop := is_rblade 0
