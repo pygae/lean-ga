@@ -145,8 +145,8 @@ namespace Bᵣ
   --   end⟩ 
   -- }
 
-  -- scalar multiplication remains an r-blade
-  lemma mul_rblade_is_rblade {b : G} {k : G₀} (hb : is_rblade r b) : (is_rblade r ((fₛ k) * b)) := begin
+  /- scalar multiple of an element of Bᵣ is also in Bᵣ -/
+  lemma smul_mem_Bᵣ {b : G} {k : G₀} (hb : is_rblade r b) : (is_rblade r ((fₛ k) * b)) := begin
     exact exists.elim hb begin
       intros a ha,
       use k*a,
@@ -159,38 +159,69 @@ namespace Bᵣ
       end
     end
   end
-  /- this one is hard, we need to show scalars commute -/
-  lemma rblade_mul_is_rblade {b : G} {k : G₀} (hb : is_rblade r b) : (is_rblade r (b * (fₛ k))) := sorry
-  lemma neg_rblade_is_rblade {b : G} (hb : is_rblade r b) : (is_rblade r (-b)) := begin
-    rw neg_eq_neg_one_mul,
-    rw ← ring_hom.map_one fₛ,
-    rw ← ring_hom.map_neg fₛ,
-    exact mul_rblade_is_rblade hb,
-  end
 
-
-  def neg (b : Bᵣ r) : Bᵣ r := ⟨-b.val, neg_rblade_is_rblade b.property⟩
-  def smul (k : G₀) (b : Bᵣ r) : Bᵣ r := ⟨(fₛ k) * b.val, mul_rblade_is_rblade b.property⟩ 
-
-  instance Bᵣ_has_scalar (r : ℕ) : has_scalar G₀ (Bᵣ r) := { smul := smul }
+  /- now show via trivial proofs that Bᵣ is a mul_action and has_neg -/
+  def smul (k : G₀) (b : Bᵣ r) : Bᵣ r := ⟨(fₛ k) * b.val, smul_mem_Bᵣ b.property⟩ 
+  instance has_scalar (r : ℕ) : has_scalar G₀ (Bᵣ r) := { smul := smul }
   
-  def rblade_smul_one_is_self (b : Bᵣ r) : smul (1 : G₀) b = b := by simp [smul]
-  def rblade_smul_assoc (k1 k2 : G₀) (b : Bᵣ r) : smul (k1 * k2) b =  smul k1 (smul k2 b) := by simp [smul, mul_assoc]
+  def one_smul (b : Bᵣ r) : smul (1 : G₀) b = b := by simp [smul]
+  def mul_smul (k1 k2 : G₀) (b : Bᵣ r) : smul (k1 * k2) b =  smul k1 (smul k2 b) := by simp [smul, mul_assoc]
+  instance mul_action : mul_action G₀ (Bᵣ r) := {one_smul := one_smul, mul_smul := mul_smul, ..has_scalar r}
 
-  instance Bᵣ_mul_action : mul_action G₀ (Bᵣ r):= {
-    one_smul := rblade_smul_one_is_self,
-    mul_smul := rblade_smul_assoc, 
-    ..Bᵣ_has_scalar r}
-
+  def neg (b : Bᵣ r) : Bᵣ r := smul (-1 : G₀) b
   instance has_neg (r : ℕ) : has_neg (Bᵣ r) := { neg := neg}
 
 end Bᵣ
 
 -- r-vectors
 def Gᵣ (r : ℕ) := add_subgroup.closure (Bᵣ r)
+
 example (r : ℕ) : add_comm_group (Gᵣ r) := by apply_instance
 namespace Gᵣ
-  instance Gᵣ_semimodule (r : ℕ) : semimodule G₀ (Gᵣ r) := sorry
+  variables {r : ℕ}
+
+  -- this is trivial, but maybe needed
+  -- instance has_coe_from_Bᵣ : has_coe (Bᵣ r) (Gᵣ r) := { coe := λ b, ⟨b.val, add_subgroup.subset_closure b.property⟩ }
+
+  -- scalar multiple of an element of Gᵣ is also in Gᵣ
+  lemma smul_mem_Gᵣ {v : G} {k : G₀} (hv : v ∈ Gᵣ r) : ((fₛ k) * v) ∈ Gᵣ r := begin
+    apply add_subgroup.closure_induction hv,
+    {
+      intros x hx,
+      apply add_subgroup.subset_closure,
+      exact Bᵣ.smul_mem_Bᵣ hx,
+    },
+    {
+      rw mul_zero,
+      exact (0 : Gᵣ r).property,
+    },
+    {
+      intros a b,
+      rw mul_add,
+      exact add_subgroup.add_mem (Gᵣ r)
+    },
+    {
+      intros a,
+      rw ← neg_mul_eq_mul_neg,
+      exact add_subgroup.neg_mem (Gᵣ r)
+    }
+  end
+
+  -- now show via trivial proofs that Gᵣ is a semimodule (basically a vector space)
+  def smul (k : G₀) (v : Gᵣ r) : Gᵣ r := ⟨fₛ k * v, smul_mem_Gᵣ v.property⟩
+  instance has_scalar (r : ℕ) : has_scalar G₀ (Gᵣ r) := { smul := smul }
+  
+  def one_smul (v : Gᵣ r) : smul (1 : G₀) v = v := by simp [smul]
+  def mul_smul (k1 k2 : G₀) (v : Gᵣ r) : smul (k1 * k2) v =  smul k1 (smul k2 v) := by simp [smul, mul_assoc]
+  instance mul_action : mul_action G₀ (Gᵣ r) := {one_smul := one_smul, mul_smul := mul_smul, ..has_scalar r}
+
+  def smul_add (k : G₀) (x y : Gᵣ r) : smul k (x + y) = smul k x + smul k y := by {simp [smul, mul_add], refl}
+  def smul_zero (k : G₀) : smul k (0 : Gᵣ r) = 0 := by {simp [smul], refl}
+  instance distrib_mul_action : distrib_mul_action G₀ (Gᵣ r) := { smul_add := smul_add, smul_zero := smul_zero, ..mul_action }
+    
+  def add_smul (k1 k2 : G₀) (v : Gᵣ r) : smul (k1 + k2) v = smul k1 v + smul k2 v := by {simp [smul, add_mul], refl}
+  def zero_smul (v : Gᵣ r) : smul (0 : G₀) v = 0 := by {simp [smul], refl}
+  instance semimodule (r : ℕ) : semimodule G₀ (Gᵣ r) := {add_smul := add_smul, zero_smul := zero_smul, ..distrib_mul_action }
 end Gᵣ
 
 -- multi-vectors
