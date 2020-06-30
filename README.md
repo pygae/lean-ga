@@ -11,6 +11,12 @@ Early. Currently it's only in the design phase and the infrastructure is being s
 Formalization Goals
 --------------------
 
+TL;DR:
+
+The primary goal is to have a series of loosely coupled definitions of GA, some are constructive, some the algorithmic, some are mathematical, but they can all be shown to be an instance of one or a few general type classes focusing on the behaviors and propertie rather than representations and thus a lot of theorems/identities proven for the general type classes will automatically apply. During the process, keep the formalization as readable as the math in the usual GA literature, and in a coordinate-free fashion as long as possible.
+
+The full version:
+
 1. Formalize Geometric Algebra in a generic way that
     - doesn't depend on data structures, not even canonical structures
     - contains only how the algebra works and its natural relations to other abstract mathematical structures by leveraging the power of Type Class in Lean 
