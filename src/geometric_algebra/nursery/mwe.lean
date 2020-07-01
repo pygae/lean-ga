@@ -61,7 +61,7 @@ noncomputable instance rrc_ga : geometric_algebra ? ? ? := {
     intro v,
     use v * v,
     simp only [add_monoid_hom.coe_mk, ring_hom.map_mul],
-    sorry /- here -/
+    refl,
   end
 }
 
