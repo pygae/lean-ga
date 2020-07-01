@@ -15,9 +15,7 @@ import algebra.group.hom
 import ring_theory.algebra
 import data.real.basic
 import data.complex.basic
--- import data.complex.module
-
-import tactic.apply_fun
+import data.complex.module
 import tactic
 
 universes u u? u?
@@ -50,32 +48,6 @@ def f? : G? ?+ G := f? G?
 
 def f? : G? ?+* G := algebra_map G? G
 
-lemma assoc : ? A B C : G, (A * B) * C = A * (B * C) := ? A B C, semigroup.mul_assoc A B C
-
-lemma left_distrib : ? A B C : G, A * (B + C) = (A * B) + (A * C) := ? A B C, distrib.left_distrib A B C
-
-lemma right_distrib : ? A B C : G, (A + B) * C = (A * C) + (B * C) := ? A B C, distrib.right_distrib A B C
-
-def prod_vec (a b : G?) : G := f? a * f? b
-
-local infix `*?`:75 := prod_vec
-
-def square (a : G) := a * a
-
-def square_vec (a : G?) := a *? a
-
-local postfix `²`:80 := square
-
-local postfix `²?`:80 := square_vec
-
-def sym_prod (a b : G) := a * b + b * a
-
-def sym_prod_vec (a b : G?) := a *? b + b *? a
-
-local infix `*?`:75 := sym_prod
-
-local infix `*??`:75 := sym_prod_vec
-
 instance field_ga (K : Type*) [field K] : geometric_algebra K K K := {
   f? := {
     to_fun := id,
@@ -91,66 +63,44 @@ instance field_ga (K : Type*) [field K] : geometric_algebra K K K := {
   end
 }
 
-noncomputable instance rc_alg : algebra ? ? := {
-  smul := ? r c, r * c,
-  to_fun := ?x, ?x, 0?,
-  map_one' := rfl,
-  map_mul' := begin
-      intros x y,
-      apply complex.ext,
-      {
-        simp only [complex.mul_re, sub_zero, mul_zero]
-      },
-      {
-        simp only [add_zero, zero_mul, complex.mul_im, mul_zero]
-      }
-  end,
-  map_zero' := rfl,
-  map_add' := begin
-    intros x y,
-    apply complex.ext,
-    {
-      rw [complex.add_re],
-    },
-    {
-      rw [complex.add_im, add_zero],
-    }
-  end,
-  commutes' := begin
-    intros r x,
-    simp only [],
-    cc,
-  end,
-  smul_def' := begin
-    intros r x,
-    simp only [],
-    abel,
-  end
-}
+-- noncomputable instance rc_alg : algebra ? ? := {
+--   smul := ? r c, r * c,
+--   to_fun := ?x, x,
+--   map_one' := rfl,
+--   map_mul' := begin
+--       intros x y,
+--       norm_cast,
+--   end,
+--   map_zero' := rfl,
+--   map_add' := begin
+--     intros x y,
+--     norm_cast,
+--   end,
+--   commutes' := begin
+--     intros r x,
+--     simp only [],
+--     cc,
+--   end,
+--   smul_def' := begin
+--     intros r x,
+--     simp only [],
+--   end
+-- }
 
 noncomputable instance rrc_ga : geometric_algebra ? ? ? := {
   f? := {
-    to_fun := ?x, ?x, 0?,
+    to_fun := ?x, x,
     map_zero' := rfl,
     map_add' := begin
       intros x y,
-      apply complex.ext,
-      {
-        rw [complex.add_re],
-      },
-      {
-        rw [complex.add_im, add_zero],
-      }
+      norm_cast,
     end
   },
   vec_sq_scalar := begin
     intro v,
     use v * v,
-    simp only [add_monoid_hom.coe_mk],
-    /-
-      v : ?
-      ? {re := v, im := 0} * {re := v, im := 0} = ?(algebra_map ? ?) (v * v)
-    -/    
+    simp only [add_monoid_hom.coe_mk, ring_hom.map_mul],
+    sorry
   end
 }
 
