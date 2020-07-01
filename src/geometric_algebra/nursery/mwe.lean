@@ -48,6 +48,25 @@ def f? : G? ?+ G := f? G?
 
 def f? : G? ?+* G := algebra_map G? G
 
+noncomputable instance rrc_ga : geometric_algebra ? ? ? := {
+  f? := {
+    to_fun := ?x, x,
+    map_zero' := rfl,
+    map_add' := begin
+      intros x y,
+      norm_cast,
+    end
+  },
+  vec_sq_scalar := begin
+    intro v,
+    use v * v,
+    simp only [add_monoid_hom.coe_mk, ring_hom.map_mul],
+    sorry /- here -/
+  end
+}
+
+/- For later discussion, the below doesn't matter for this question -/
+
 instance field_ga (K : Type*) [field K] : geometric_algebra K K K := {
   f? := {
     to_fun := id,
@@ -63,57 +82,15 @@ instance field_ga (K : Type*) [field K] : geometric_algebra K K K := {
   end
 }
 
--- noncomputable instance rc_alg : algebra ? ? := {
---   smul := ? r c, r * c,
---   to_fun := ?x, x,
---   map_one' := rfl,
---   map_mul' := begin
---       intros x y,
---       norm_cast,
---   end,
---   map_zero' := rfl,
---   map_add' := begin
---     intros x y,
---     norm_cast,
---   end,
---   commutes' := begin
---     intros r x,
---     simp only [],
---     cc,
---   end,
---   smul_def' := begin
---     intros r x,
---     simp only [],
---   end
--- }
-
-noncomputable instance rrc_ga : geometric_algebra ? ? ? := {
-  f? := {
-    to_fun := ?x, x,
-    map_zero' := rfl,
-    map_add' := begin
-      intros x y,
-      norm_cast,
-    end
-  },
-  vec_sq_scalar := begin
-    intro v,
-    use v * v,
-    simp only [add_monoid_hom.coe_mk, ring_hom.map_mul],
-    sorry
-  end
-}
-
--- noncomputable instance complex_ga : geometric_algebra ? ? ? := {
+-- noncomputable instance rcc_ga : geometric_algebra ? ? ? := {
 --   f? := {
 --     to_fun := id,
 --     map_zero' := rfl,
 --     map_add' := by simp,
 --   },
---   vec_sq_scalar := /- false -/
+--   vec_sq_scalar := /- mathematically false due to the wrong mul equiped with ? -/
 -- } 
 
 end
-
 
 end geometric_algebra
