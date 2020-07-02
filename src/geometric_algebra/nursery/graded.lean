@@ -65,25 +65,31 @@ namespace graded_module
   variables [graded_module_components A] [add_comm_group G] [module (A 0) G]
   variables [graded_module A G]
 
+  /-- locally bind the notation above to our A and G-/
+  local notation `⟨`:0 g`⟩_`:0 r:100 := @has_grade_select.select A G _ _ _ _ g r
+
   /-- convert from r-vectors to multi-vectors -/
   instance has_coe (r : ℤ) : has_coe (A r) G := { coe := to_fun }
 
+  @[simp]
+  lemma coe_def {r : ℤ} (v : A r) : (v : G) = to_fun v := rfl
+
   /-- An r-vector has only a single grade
       Discussed at https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/Expressing.20a.20sum.20with.20finitely.20many.20nonzero.20terms/near/202657281-/
-  lemma select_coe_is_single {r : ℤ} (v : A r) : has_grade_select.select (to_fun v : G) = dfinsupp.single r v := begin
+  lemma select_coe_is_single {r : ℤ} (v : A r) : has_grade_select.select (v : G) = dfinsupp.single r v := begin
     symmetry,
-    rw is_complete (to_fun v : G) (dfinsupp.single r v),
+    rw is_complete (v : G) (dfinsupp.single r v),
     symmetry,
     apply dfinsupp.sum_single_index,
     exact linear_map.map_zero _,
   end
 
-  def is_r_vector (r : ℤ) (a : G) := to_fun (⟨a⟩_r : A r) = a
+  def is_r_vector (r : ℤ) (a : G) := (⟨a⟩_r : G) = a
   
   /-- Chisholm 6a, ish.
       This says A = ⟨A}_r for r-vectors.
       Chisholm aditionally wants proof that A != ⟨A}_r for non-rvectors -/
-  lemma r_grade_of_coe {r : ℤ} (v : A r) : ⟨(to_fun v : G)⟩_r = v := begin
+  lemma r_grade_of_coe {r : ℤ} (v : A r) : ⟨v⟩_r = v := begin
     rw select_coe_is_single,
     rw dfinsupp.single_apply,
     simp,
@@ -94,18 +100,19 @@ namespace graded_module
     intros a b h,
     rw ← r_grade_of_coe a,
     rw ← r_grade_of_coe b,
+    simp only [coe_def],
     rw h,
+    apply_instance,
   end
   
   /-- Chisholm 6b -/
-  lemma grade_of_sum (r : ℤ) (a b : G) : (⟨a + b⟩_r : A r) = ⟨a⟩_r + ⟨b⟩_r := by simp
+  lemma grade_of_sum (r : ℤ) (a b : G) : ⟨a + b⟩_r = ⟨a⟩_r + ⟨b⟩_r := by simp
 
   /-- Chisholm 6c -/
-  lemma grade_smul (r : ℤ) (k : A 0) (a : G) : (⟨k • a⟩_r : A r) = k • ⟨a⟩_r := by simp
+  lemma grade_smul (r : ℤ) (k : A 0) (a : G) : ⟨k • a⟩_r = k • ⟨a⟩_r := by simp
 
-  /-- chisholm 6d. This is super awkward to express due to all the casting -/
-  lemma grade_grade (r s : ℤ) (a : G) :
-    (to_fun (⟨ (to_fun (⟨a⟩_r : A r) : G) ⟩_s : A s) : G) = if r = s then to_fun (⟨a⟩_r : A r) else 0
+  /-- chisholm 6d. Modifid to use `_s` instead of `_r` on the right, to keep the statement cast-free -/
+  lemma grade_grade (r s : ℤ) (a : G) : ⟨⟨a⟩_r⟩_s = if r = s then ⟨a⟩_s else 0
   := begin
     rw select_coe_is_single,
     rw dfinsupp.single_apply,
@@ -120,7 +127,7 @@ namespace graded_module
   /-- chisholm 6e. The phrasing is made a little awkward by the construction of the finite decomposition of select --/
   lemma grade_sum (g : G) : g = (has_grade_select.select g).sum (λ r, (to_fun : A r → G)) := begin
     apply (is_complete g (has_grade_select.select g)).1,
-    simp,
+    refl,
   end
 
 end graded_module
