@@ -158,6 +158,35 @@ exists.elim (vec_sq_scalar (a + b))
   )
 )
 
+lemma vec_sym_prod_scalar':
+∀ (a b : G₁), ∃ k : G₀, a *₊ᵥ b = fₛ k :=
+assume a b,
+have h1 : (a + b)²ᵥ = a²ᵥ + b²ᵥ + a *₊ᵥ b,
+  by {
+    unfold square_vec sym_prod_vec prod_vec,
+    rw add_monoid_hom.map_add fᵥ a b,
+    rw left_distrib,
+    repeat {rw right_distrib},
+    abel
+  },
+have vec_sq_scalar : ∀ v : G₁, ∃ k : G₀, v²ᵥ = fₛ k,
+  by apply geometric_algebra.vec_sq_scalar,
+begin
+  apply exists.elim (vec_sq_scalar (a + b)),
+  intro kab,
+  apply exists.elim (vec_sq_scalar a),
+  intro ka,
+  apply exists.elim (vec_sq_scalar b),
+  intro kb,
+  intros hb ha hab,
+  rw [hb, ha, hab] at h1,
+  use kab - ka - kb,
+  repeat {rw ring_hom.map_sub},
+  rw h1,
+  abel,
+end
+
+
 end basic
 
 end geometric_algebra
