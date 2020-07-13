@@ -73,7 +73,7 @@ The latter presumably is already in mathlib and has a lot of structures and prop
 
 As for geometric product, I'm thinking about the following short name instead of `geomprod`, `gp` etc.:
 
-```
+```lean
 class has_gmul (α : Type u) := (gmul : α → α → α)
 ```
 
@@ -96,9 +96,9 @@ We'll always use `local` notations waiting for to be `open_locale`ed. I expect c
 
 ## Defining without defining
 
-There're really millions of products defined in GA and they're based on geometric product. But the definition might not be the most effient one or the most intuitive one.
+There're really millions of products defined in GA and they're based on the geometric product. But the definition might not be the most efficient one or the most intuitive one.
 
-So instead of using `def`, we should make these products just a product with a Prop assering that they're equal to the definition based on gp and let the implementation prove it when intantiate the instance.
+So instead of using `def`, we should make these products just a product with a `Prop` asserting that they're equal to the definition based on gp and let the implementation prove it when intantiate the instance.
 
 ```lean
 class has_ga_wedge (α : Type u) extends has_wedge :=
@@ -166,4 +166,3 @@ induced topology
 ## Clifford and Grassmann
 
 ## graded comes later
-
