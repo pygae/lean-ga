@@ -10,11 +10,11 @@ import tactic.lint
 
 -- import geometric_algebra.generic.operators
 
-universes ur uv ug
+universes u₀ u₁ u₂
 
-variables {R : Type ur} [field R]
-variables {V : Type uv} [add_comm_group V] [vector_space R V]
-variables {G : Type ug} [ring G]
+variables {R : Type u₀} [field R]
+variables {V : Type u₁} [add_comm_group V] [vector_space R V]
+variables {G : Type u₂} [ring G]
 
 section prio
 -- set_option default_priority 200 -- see Note [default priority]
@@ -25,15 +25,15 @@ set_option old_structure_cmd true
 -/
 @[ancestor algebra]
 class semi_geometric_algebra
-(R : Type ur) [field R]
-(V : Type uv) [add_comm_group V] [vector_space R V]
-(G : Type ug) [ring G]
+(R : Type u₀) [field R]
+(V : Type u₁) [add_comm_group V] [vector_space R V]
+(G : Type u₂) [ring G]
 extends algebra R G
 
 class weak_geometric_algebra
-(R : Type ur) [field R]
-(V : Type uv) [add_comm_group V] [vector_space R V]
-(G : Type ug) [ring G]
+(R : Type u₀) [field R]
+(V : Type u₁) [add_comm_group V] [vector_space R V]
+(G : Type u₂) [ring G]
 extends semi_geometric_algebra R V G
 :=
 (fᵣ : R →+* G)
@@ -44,9 +44,9 @@ extends semi_geometric_algebra R V G
 (vector_contract' : ∀ v, ∃ r, fᵥ v * fᵥ v = fᵣ r )
 
 class geometric_algebra
-(R : Type ur) [field R]
-(V : Type uv) [add_comm_group V] [vector_space R V]
-(G : Type ug) [ring G]
+(R : Type u₀) [field R]
+(V : Type u₁) [add_comm_group V] [vector_space R V]
+(G : Type u₂) [ring G]
 extends weak_geometric_algebra R V G
 :=
 (q : quadratic_form R V)
