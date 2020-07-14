@@ -41,11 +41,12 @@ class geometric_algebra
 :=
 (f₁ : G₁ →+ G)
 -- Axiom 4: The square of every vector is a scalar.
+-- TODO clearly this should be nameed following "contraction rule", I'm thinking maybe `contract`?
 (vec_sq_scalar : ∀ v : G₁, ∃ k : G₀, f₁ v * f₁ v = algebra_map _ _ k )
 
 namespace geometric_algebra
 
-section
+section basic
 
 parameters
 {G₀ : Type*} [field G₀]
@@ -66,22 +67,13 @@ def prod_vec (a b : G₁) : G := fᵥ a * fᵥ b
 
 local infix `*ᵥ`:75 := prod_vec
 
-def square (a : G) := a * a
-
 def square_vec (a : G₁) := a *ᵥ a
-
-local postfix `²`:80 := square
 
 local postfix `²ᵥ`:80 := square_vec
 
-def sym_prod (a b : G) := a * b + b * a
-
 def sym_prod_vec (a b : G₁) := a *ᵥ b + b *ᵥ a
 
-local infix `*₊`:75 := sym_prod
-
 local infix `*₊ᵥ`:75 := sym_prod_vec
-
 
 def is_orthogonal (a : G₁) (b : G₁) : Prop := sym_prod_vec a b = 0
 
@@ -228,14 +220,6 @@ end Gᵣ
 def Mᵣ (r : ℕ) := add_subgroup.closure (⋃ (r : ℕ), (Gᵣ r).carrier)
 example (r : ℕ) : add_comm_group (Mᵣ r) := by apply_instance
 
-  
-def grade_select {r : ℕ} (m : Mᵣ r) (g : ℕ) : Gᵣ g := sorry
-
-lemma grade_iff {r : ℕ} {a : Mᵣ r} {g : ℕ} : a ∈ Gᵣ g ↔ a = grade_select a g := sorry
-lemma grade_add {r : ℕ} {a b : Mᵣ r} {g : ℕ} : grade_select (a + b) g = grade_select a g + grade_select b g:= sorry
-lemma grade_scale {r : ℕ} {a : Mᵣ r} {k : G₀} {g : ℕ} : grade_select (k*a) g = k * grade_select a g := sorry
-lemma grade_compose {r : ℕ} {a : Mᵣ r} {g1 : ℕ} {g2 : ℕ} : grade_select (grade_select a g1) g2 = if g1 = g2 then grade_select a g1 else 0 := sorry
-
 @[simp]
 def is_scalar : G → Prop := is_rblade 0
 
@@ -252,33 +236,25 @@ have h1 : (a + b)²ᵥ = a²ᵥ + b²ᵥ + a *₊ᵥ b, from begin
 end,
 have vec_sq_scalar : ∀ v : G₁, ∃ k : G₀, v²ᵥ = fₛ k, from
   λ v, geometric_algebra.vec_sq_scalar(v),
-exists.elim (vec_sq_scalar (a + b))
-(
-  assume kab,
-  exists.elim (vec_sq_scalar a)
-  (
-    assume ka,
-    exists.elim (vec_sq_scalar b)
-    (
-      assume kb,
-      begin
-        intros hb ha hab,
-        rw [hb, ha, hab] at h1,
-        have h2 : (fₛ (kab - ka - kb : G₀) : G) = sym_prod_vec a b, by {
-          repeat {rw ring_hom.map_sub},
-          rw h1,
-          abel,
-        },
-        rw ← h2,
-        rw is_scalar,
-        apply Bᵣ.all_G₀_is_rblade0, -- this feels clumsy, can I make this automatic?
-      end
-    )
-  )
-)
-
-
+begin
+  apply exists.elim (vec_sq_scalar (a + b)),
+  intro kab,
+  apply exists.elim (vec_sq_scalar a),
+  intro ka,
+  apply exists.elim (vec_sq_scalar b),
+  intro kb,
+  intros hb ha hab,
+  rw [hb, ha, hab] at h1,
+  have h2 : (fₛ (kab - ka - kb : G₀) : G) = sym_prod_vec a b, by {
+    repeat {rw ring_hom.map_sub},
+    rw h1,
+    abel,
+  },
+  rw ← h2,
+  rw is_scalar,
+  apply Bᵣ.all_G₀_is_rblade0, -- this feels clumsy, can I make this automatic?
 end
 
+end basic
 
 end geometric_algebra
