@@ -12,18 +12,13 @@ import tactic.lint
 
 universes u₀ u₁ u₂
 
-variables {R : Type u₀} [field R]
-variables {V : Type u₁} [add_comm_group V] [vector_space R V]
-variables {G : Type u₂} [ring G]
-
 section prio
 -- set_option default_priority 200 -- see Note [default priority]
 set_option default_priority 100
-set_option old_structure_cmd true
+-- set_option old_structure_cmd true
 
 /--
 -/
-@[ancestor algebra]
 class semi_geometric_algebra
 (R : Type u₀) [field R]
 (V : Type u₁) [add_comm_group V] [vector_space R V]
@@ -36,9 +31,7 @@ class weak_geometric_algebra
 (G : Type u₂) [ring G]
 extends semi_geometric_algebra R V G
 :=
-(fᵣ : R →+* G)
--- this follows normed_algebra in analysis.normed_space.basic
-(fᵣ_algebra_map_eq : fᵣ = algebra_map R G)
+(fᵣ : R →+* G := algebra_map R G)
 (fᵥ : V →+ G)
 -- this is the weaker form of the contraction rule for vectors
 (vector_contract' : ∀ v, ∃ r, fᵥ v * fᵥ v = fᵣ r )
@@ -58,9 +51,44 @@ end prio
 
 namespace geometric_algebra
 
-variables [geometric_algebra R V G]
+variables {R : Type u₀} [field R]
+variables {V : Type u₁} [add_comm_group V] [vector_space R V]
+variables {G : Type u₂} [ring G]
+variables (GA : geometric_algebra R V G)
 
--- instance : inhabited (geometric_algebra R V G) := ⟨0⟩
+/-
+@[reducible]
+def weak_geometric_algebra.vector_contract' : ∀ {R : Type u₀} [_inst_1 : field R] {V : Type u₁} [_inst_2 : add_comm_group V] [_inst_3 : vector_space R V]
+{G : Type u₂} [_inst_4 : ring G] [c : weak_geometric_algebra R V G] (v : V),
+  ∃ (r : R),
+    ⇑(weak_geometric_algebra.fᵥ R) v * ⇑(weak_geometric_algebra.fᵥ R) v = ⇑(weak_geometric_algebra.fᵣ V) r :=
+λ (R : Type u₀) [_inst_1 : field R] (V : Type u₁) [_inst_2 : add_comm_group V] [_inst_3 : vector_space R V]
+(G : Type u₂) [_inst_4 : ring G] [c : weak_geometric_algebra R V G], [weak_geometric_algebra.vector_contract' c]
+-/
+#print weak_geometric_algebra.vector_contract'
+
+/-
+@[reducible]
+def geometric_algebra.vector_contract : ∀ {R : Type u₀} [_inst_1 : field R] {V : Type u₁} [_inst_2 : add_comm_group V] [_inst_3 : vector_space R V]
+{G : Type u₂} [_inst_4 : ring G] [c : geometric_algebra R V G] (v : V),
+  ⇑(weak_geometric_algebra.fᵥ R) v * ⇑(weak_geometric_algebra.fᵥ R) v =
+    ⇑(weak_geometric_algebra.fᵣ V) (⇑(q G) v) :=
+λ (R : Type u₀) [_inst_1 : field R] (V : Type u₁) [_inst_2 : add_comm_group V] [_inst_3 : vector_space R V]
+(G : Type u₂) [_inst_4 : ring G] [c : geometric_algebra R V G], [geometric_algebra.vector_contract c]
+-/
+#print geometric_algebra.vector_contract
+
+/-
+theorem geometric_algebra.dummy : ∀ {R : Type u₀} [_inst_1 : field R] {V : Type u₁} [_inst_2 : add_comm_group V] [_inst_3 : vector_space R V]
+(v : V), ∃ (r : R), r = r ∧ v = v :=
+λ {R : Type u₀} [_inst_1 : field R] {V : Type u₁} [_inst_2 : add_comm_group V] [_inst_3 : vector_space R V], sorry
+-/
+lemma dummy : ∀ v : V, ∃ r : R, r = r ∧ v = v := sorry
+
+#print dummy
+
+-- example : ∀ v : V, ∃ r : R,
+--   ⇑(weak_geometric_algebra.fᵥ R) v * ⇑(weak_geometric_algebra.fᵥ R) v = ⇑(weak_geometric_algebra.fᵣ V) r
 
 end geometric_algebra
 
