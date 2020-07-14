@@ -33,11 +33,11 @@ noncomputable instance rrc_ga : geometric_algebra ℝ ℝ ℂ := {
   end
 }
 
-noncomputable instance rcc_ga : geometric_algebra ℝ ℂ ℂ := {
-  f₁ := {
-    to_fun := id,
-    map_zero' := rfl,
-    map_add' := by simp,
-  },
-  vec_sq_scalar := sorry /- mathematically false due to the wrong mul equiped with ? -/
-}
+-- noncomputable instance rcc_ga : geometric_algebra ℝ ℂ ℂ := {
+--   f₁ := {
+--     to_fun := id,
+--     map_zero' := rfl,
+--     map_add' := by simp,
+--   },
+--   vec_sq_scalar := sorry /- mathematically false due to the wrong mul equiped with ℂ -/
+-- }
