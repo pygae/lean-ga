@@ -4,23 +4,9 @@ Related References
 GA & Lean related
 --------------------
 
-### Lean/Mathlib Src
-
-- [init/core](https://github.com/leanprover/lean/blob/master/library/init/core.lean)
-- [data/complex/basic](https://github.com/leanprover-community/mathlib/blob/master/src/data/complex/basic.lean)
-- [data/matrix/basic](https://github.com/leanprover-community/mathlib/blob/master/src/data/matrix/basic.lean)
-- [geometry/euclidean](https://github.com/leanprover-community/mathlib/blob/master/src/geometry/euclidean.lean)
-  - https://github.com/jsm28/bmo2-2020-lean/
-- [geometry/manifold/real_instances](https://github.com/leanprover-community/mathlib/blob/master/src/geometry/manifold/real_instances.lean)
-- [analysis/convex/cone](https://github.com/leanprover-community/mathlib/blob/master/src/analysis/convex/cone.lean)
-- [analysis/normed_space/real_inner_product](https://github.com/leanprover-community/mathlib/blob/master/src/analysis/normed_space/real_inner_product.lean)
-  - [doc](https://leanprover-community.github.io/mathlib_docs/analysis/normed_space/real_inner_product.html#inner_product_space)
-
 ### Lean/Mathlib PRs
 
 - [`feat(data/quaternion): define quaternions and prove some basic properties #2339`](https://github.com/leanprover-community/mathlib/pull/2339/)
-- [refactor(algebra/module): change module into an abbreviation for semimodule #2848](https://github.com/leanprover-community/mathlib/pull/2848)
-- [feat(algebra/add_torsor): torsors of additive group actions #2720](https://github.com/leanprover-community/mathlib/pull/2720/files)
 
 ### Inspiring Lean Code
 
@@ -28,6 +14,8 @@ GA & Lean related
 - [commutative differential graded algebras](https://gist.github.com/kbuzzard/f5ee35457c5d257ceec58c66d7da0c38)
 - [free module](https://gist.github.com/sflicht/53bdcdb1e3536e668736f7b4eb63cd79)
 - [Huber_pair](https://github.com/leanprover-community/lean-perfectoid-spaces/blob/master/src/Huber_pair.lean#L72)
+- https://github.com/jsm28/bmo2-2020-lean/
+- https://github.com/GeoCoq/GeoCoq/tree/master/Highschool (in Coq)
 
 ### Lean/Mathlib Doc
 
@@ -63,6 +51,7 @@ GA & Lean related
 - https://github.com/leanprover/vscode-lean/blob/master/translations.json
   - https://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts
   - https://en.wikipedia.org/wiki/List_of_mathematical_symbols_by_subject
+  - [Unicode characters and corresponding LaTeX math mode commands](http://milde.users.sourceforge.net/LUCR/Math/unimathsymbols.pdf)
 
 
 ### Tactics
@@ -114,6 +103,24 @@ with Clifford Algebras](https://macau.uni-kiel.de/servlets/MCRFileNodeServlet/di
 - [Chris Doran's Geometric Algebra Haskell Package](https://github.com/ga/haskell)
     - http://geometry.mrao.cam.ac.uk/2016/10/geometric-algebra-2016/
 - http://math.uga.edu/~pete/quadraticforms.pdf
+- [Comparing Complex Numbers to Clifford Algebra](https://www.av8n.com/physics/complex-clifford.pdf)
+- [Euclidean Geometry and Geometric Algebra](http://geometry.mrao.cam.ac.uk/2020/06/euclidean-geometry-and-geometric-algebra/)
+
+Related Math Concepts
+------------------------
+
+- [Free module](https://en.wikipedia.org/wiki/Free_module)
+- [Free algebra](https://en.wikipedia.org/wiki/Free_algebra)
+- [Universal algebra](https://en.wikipedia.org/wiki/Universal_algebra)
+- [Sedenion](https://en.wikipedia.org/wiki/Sedenion)
+- [Alternative algebra](https://en.wikipedia.org/wiki/Alternative_algebra)
+- [Metric signature](https://en.wikipedia.org/wiki/Metric_signature)
+- [Complete lattice](https://en.wikipedia.org/wiki/Complete_lattice)
+- [Filters](https://en.wikipedia.org/wiki/Filter_(mathematics))
+  - [Topology in mathlib](https://www.imo.universite-paris-saclay.fr/~pmassot/topology.pdf)
+- [examples of fields](https://planetmath.org/examplesoffields)
+- [differential forms on simplices](https://ncatlab.org/nlab/show/differential+forms+on+simplices)
+  - [Differential graded algebras](https://stacks.math.columbia.edu/tag/061U)
 
 Lean related
 ------------------
@@ -183,3 +190,5 @@ Theorem Prover/Type theory related
 - [A Survey of Languages for Formalizing Mathematics](https://arxiv.org/abs/2005.12876)
 - [Category theory for scientists](https://arxiv.org/abs/1302.6946)
 - [Rethinking set theory](https://arxiv.org/abs/1212.6543)
+- [Lean versus Coq: The cultural chasm](https://artagnon.com/articles/leancoq)
+- [Equality of mathematical structures](https://www.cs.bham.ac.uk/~mhe/.talks/xii-pcc.pdf)
