@@ -73,12 +73,24 @@ variables (G : Type u₂) [ring G] [mwc R G]
 variables (r₀ : R)
 variables (v₀ : mwc.V R G)
 
+-- variables {GA : mwc R G}
+
+/-
+V_bundled.mwc.fᵣ : Π {R : Type u₀} [_inst_1 : field R] {G : Type u₂} [_inst_2 : ring G] [c : mwc R G], R →+* G
+-/
 #check mwc.fᵣ
 
 #check mwc.fᵣ r₀
 
+/-
+V_bundled.mwc.fᵥ : Π {R : Type u₀} [_inst_1 : field R] {G : Type u₂} [_inst_2 : ring G] [c : mwc R G], mwc.V R G →+ G
+
+-/
 #check mwc.fᵥ
 
+/-
+mwc.V : Π (R : Type u_2) [_inst_1 : field R] (G : Type u_4) [_inst_2 : ring G] [c : mwc R G], Type u_3
+-/
 #check mwc.V
 
 #check mwc.V R G
@@ -86,6 +98,14 @@ variables (v₀ : mwc.V R G)
 #check mwc.fᵥ v₀
 
 example : ∀ v : mwc.V R G, ∃ r : R,
+  mwc.fᵣ r = (mwc.fᵣ r : G)
+:= sorry
+
+example : ∀ v : mwc.V R G, ∃ r : R,
+  (mwc.fᵥ v) * (mwc.fᵥ v) = mwc.fᵣ r
+:= sorry
+
+example {GA : mwc R G} : ∀ v : GA.V, ∃ r : R,
   (mwc.fᵥ v) * (mwc.fᵥ v) = mwc.fᵣ r
 := sorry
 
