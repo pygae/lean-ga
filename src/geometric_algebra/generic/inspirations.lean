@@ -7,6 +7,7 @@ This file contains only imports which are just the lean files
 that the authors draw inspirations from.
 -/
 import init.core
+import init.function
 
 import algebra.group.defs
 import algebra.group.hom
@@ -36,6 +37,7 @@ import linear_algebra.tensor_product
 import linear_algebra.finite_dimensional
 import linear_algebra.affine_space
 
+import data.equiv.basic
 import data.real.basic
 import data.complex.basic
 import data.complex.module
