@@ -217,7 +217,7 @@ namespace Gᵣ
 end Gᵣ
 
 -- multi-vectors
-def Mᵣ (r : ℕ) := add_subgroup.closure (⋃ (r : ℕ), (Gᵣ r).carrier)
+def Mᵣ (r : ℕ) := add_subgroup.closure (⋃ (r' : fin r), (Gᵣ r').carrier)
 example (r : ℕ) : add_comm_group (Mᵣ r) := by apply_instance
 
 @[simp]
