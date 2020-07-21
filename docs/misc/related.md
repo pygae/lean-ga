@@ -140,6 +140,10 @@ Related Math Concepts
 - [Topics in Representation Theory: Clifford Algebras](http://www.math.columbia.edu/~woit/notes17.pdf)
 - [Clifford algebras and Lie theory](https://link.springer.com/chapter/10.1007%2F978-3-642-36216-3_2)
 
+- [Geometric Algebra FAQ](https://staff.science.uva.nl/l.dorst/clifford/faq.html)
+  - Q11. HOW IS IT DIFFERENT FROM CLIFFORD ALGEBRA?
+  - Q12. HOW IS IT DIFFERENT FROM GRASSMANN-CAYLEY ALGEBRA?
+
 Lean related
 ------------------
 
