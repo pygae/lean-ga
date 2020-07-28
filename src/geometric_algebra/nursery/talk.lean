@@ -7,6 +7,9 @@ universe u
 
 variables (α : Type u)
 
+/--
+Groups defined three ways
+-/
 namespace Group
 
 namespace extends_has
@@ -51,6 +54,9 @@ end in_real_lean
 
 end Group
 
+/--
+An example of a proof
+-/
 namespace proof_demo
 open int
 
@@ -78,6 +84,8 @@ show a = b, from
 end
 end proof_demo
 
+
+/-- An example of geometric algebra -/
 namespace GA
 
 namespace first
@@ -86,49 +94,54 @@ variables (K : Type u) [field K]
 
 variables (V : Type u) [add_comm_group V] [vector_space K V]
 
-structure GA
-(G : Type u)
-[ring G] extends algebra K G :=
+#print linear_map
+
+def sqr {α : Type u} [has_mul α] (x : α) := x*x
+local postfix `²`:80 := sqr
+
+structure GA (G : Type u) [ring G] [algebra K G] :=
 (fₛ : K →+* G)
-(fᵥ : V →+ G)
+(fᵥ : V →ₗ[K] G)
 -- (infix ` ❍ `:70 := has_mul.mul)
-(postfix `²`:80 := λ x, x * x)
 (contraction : ∀ v : V, ∃ k : K, (fᵥ v)² = fₛ k)
 
 -- local infix ` ❍ `:70 := has_mul.mul
-local postfix `²`:80 := λ x, x * x
 
 /-
   Symmetrised product of two vectors must be a scalar
 -/
 example
-(G : Type u) [ring G] [ga : GA K V G] :
+(G : Type u) [ring G] [algebra K G] [ga : GA K V G] :
 ∀ aᵥ bᵥ : V, ∃ kₛ : K,
-let a := ga.fᵥ aᵥ, b := ga.fᵥ bᵥ, k := ga.fₛ kₛ in
-a * b + b * a = k :=
+  let a := ga.fᵥ aᵥ, b := ga.fᵥ bᵥ, k := ga.fₛ kₛ in
+    a * b + b * a = k :=
 begin
   assume aᵥ bᵥ,
-  let a := ga.fᵥ aᵥ, 
-  let b := ga.fᵥ bᵥ,
-  have h1 : (a + b)² = a * b + b * a + a² + b², from begin
-    dsimp,
-    rw left_distrib,
-    repeat {rw right_distrib},
+  -- some tricks to unfold the `let`s and make things look tidy
+  delta,
+  set a := ga.fᵥ aᵥ,
+  set b := ga.fᵥ bᵥ,
+
+  -- collect square terms
+  rw (show a * b + b * a = (a + b)² - a² - b², from begin
+    unfold sqr,
+    simp only [left_distrib, right_distrib],
     abel,
-  end,
-  obtain ⟨kabₛ, hab⟩ := GA.contraction ga (aᵥ + bᵥ),
-  obtain ⟨kaₛ, ha⟩ := GA.contraction ga (aᵥ),
-  obtain ⟨kbₛ, hb⟩ := GA.contraction ga (bᵥ),
-  have h2 : ga.fₛ (kabₛ - kaₛ - kbₛ) = a * b + b * a, by {
-    repeat {rw ring_hom.map_sub},
-    apply_fun (λ x, x - b * b - a * a) at h1,
-    simp [] at h1 ha hb hab,
-    simp [←h1, ha, hb, hab],
-    abel,
-  },
+  end),
+  
+  -- replace them with a scalar using the ga axiom
+  obtain ⟨kabₛ, hab⟩ := ga.contraction (aᵥ + bᵥ),
+  obtain ⟨kaₛ, ha⟩ := ga.contraction (aᵥ),
+  obtain ⟨kbₛ, hb⟩ := ga.contraction (bᵥ),
+  rw [
+    show (a + b)² = ga.fₛ kabₛ, by rw [← hab, linear_map.map_add],
+    show a² = ga.fₛ kaₛ, by rw ha,
+    show b² = ga.fₛ kbₛ, by rw hb
+  ],
+
+  -- rearrange, solve by inspection
+  simp only [← ring_hom.map_sub],
   use kabₛ - kaₛ - kbₛ,
-  rw h2,
-  abel,
 end
 
 end first
