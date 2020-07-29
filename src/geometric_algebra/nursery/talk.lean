@@ -7,7 +7,7 @@ universe u
 
 variables (α : Type u)
 
-/--
+/-
 Groups defined three ways
 -/
 namespace Group
@@ -54,7 +54,7 @@ end in_real_lean
 
 end Group
 
-/--
+/-
 An example of a proof
 -/
 namespace proof_demo
@@ -85,7 +85,7 @@ end
 end proof_demo
 
 
-/-- An example of geometric algebra -/
+/- An example of geometric algebra -/
 namespace GA
 
 namespace first
@@ -94,18 +94,13 @@ variables (K : Type u) [field K]
 
 variables (V : Type u) [add_comm_group V] [vector_space K V]
 
-#print linear_map
-
-def sqr {α : Type u} [has_mul α] (x : α) := x*x
+def sqr {α : Type u} [has_mul α] (x : α) := x * x
 local postfix `²`:80 := sqr
 
 structure GA (G : Type u) [ring G] [algebra K G] :=
 (fₛ : K →+* G)
 (fᵥ : V →ₗ[K] G)
--- (infix ` ❍ `:70 := has_mul.mul)
 (contraction : ∀ v : V, ∃ k : K, (fᵥ v)² = fₛ k)
-
--- local infix ` ❍ `:70 := has_mul.mul
 
 /-
   Symmetrised product of two vectors must be a scalar
@@ -116,31 +111,40 @@ example
   let a := ga.fᵥ aᵥ, b := ga.fᵥ bᵥ, k := ga.fₛ kₛ in
     a * b + b * a = k :=
 begin
+  -- vectors aᵥ bᵥ
   assume aᵥ bᵥ,
-  -- some tricks to unfold the `let`s and make things look tidy
-  delta,
+
+  -- multivectors a b
   set a := ga.fᵥ aᵥ,
   set b := ga.fᵥ bᵥ,
 
-  -- collect square terms
+  -- simplify the goal by definition, i.e. remove let etc.
+  delta,
+
+  -- rewrite the goal to square terms
   rw (show a * b + b * a = (a + b)² - a² - b², from begin
     unfold sqr,
     simp only [left_distrib, right_distrib],
     abel,
   end),
   
-  -- replace them with a scalar using the ga axiom
+  -- rewrite square terms of vectors
+  -- to scalars using the contraction axiom
   obtain ⟨kabₛ, hab⟩ := ga.contraction (aᵥ + bᵥ),
   obtain ⟨kaₛ, ha⟩ := ga.contraction (aᵥ),
   obtain ⟨kbₛ, hb⟩ := ga.contraction (bᵥ),
+
+  -- map the above to multivectors
   rw [
     show (a + b)² = ga.fₛ kabₛ, by rw [← hab, linear_map.map_add],
-    show a² = ga.fₛ kaₛ, by rw ha,
-    show b² = ga.fₛ kbₛ, by rw hb
+    show a² = ga.fₛ kaₛ, by rw [← ha],
+    show b² = ga.fₛ kbₛ, by rw [← hb]
   ],
 
-  -- rearrange, solve by inspection
+  -- collect scalars
   simp only [← ring_hom.map_sub],
+
+  -- use the scalars as the witness of the existence
   use kabₛ - kaₛ - kbₛ,
 end
 
