@@ -130,13 +130,13 @@ The tensor algebra of the module `M` over the commutative semiring `R`.
 def tensor_algebra := quot (tensor_algebra.rel R M)
 
 
-class tensor_algebra_class
-  (T : Type u3) [semiring T] extends algebra R T :=
-(to_fun' : M →ₗ[R] T)
-(lifted : ℕ)
-(lift : Π {A : Type u4} [semiring A] [algebra R A], (M →ₗ[R] A) → (T →ₐ[R] A))
+-- class tensor_algebra_class
+--   (T : Type u3) [semiring T] extends algebra R T :=
+-- (to_fun' : M →ₗ[R] T)
+-- (lifted : ℕ)
+-- (lift : Π {A : Type u4} [semiring A] [algebra R A], (M →ₗ[R] A) → (T →ₐ[R] A))
 
-#check tensor_algebra_class
+-- #check tensor_algebra_class
 
 namespace tensor_algebra
 
