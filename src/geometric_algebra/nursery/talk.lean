@@ -150,6 +150,45 @@ end
 
 end unbundled_weak
 
+namespace unbundled_range
+
+variables (K : Type u) [field K]
+
+variables (V : Type u) [add_comm_group V] [vector_space K V]
+
+def sqr {α : Type u} [has_mul α] (x : α) := x * x
+local postfix `²`:80 := sqr
+
+structure GA (G : Type u) [ring G] [algebra K G] :=
+(fₛ : K →ₐ[K] G)
+(fᵥ : V →ₗ[K] G)
+(contraction : ∀ v ∈ fᵥ.range, v² ∈ fₛ.range )
+/-
+  Symmetrised product of two vectors must be a scalar
+-/
+example
+(G : Type u) [ring G] [algebra K G] [ga : GA K V G] :
+∀ a b ∈ ga.fᵥ.range, a * b + b * a ∈ ga.fₛ.range :=
+begin
+  assume a b,
+  -- collect square terms
+  rw (show a * b + b * a = (a + b)² - a² - b², from begin
+    unfold sqr,
+    simp only [left_distrib, right_distrib],
+    abel,
+  end),
+  -- obtain proofs that each term is a scalar
+  assume ha hb,
+  have ha2 := ga.contraction a ha,
+  have hb2 := ga.contraction b hb,
+  have hab2 := ga.contraction (a + b) (submodule.add_mem _ ha hb),
+  apply subalgebra.sub_mem,
+  apply subalgebra.sub_mem,
+  repeat {assumption},
+end
+
+end unbundled_range
+
 namespace bundled_quad
 
 variables (K : Type u) [field K]
