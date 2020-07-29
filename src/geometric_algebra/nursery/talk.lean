@@ -123,9 +123,11 @@ begin
 
   -- rewrite the goal to square terms
   rw (show a * b + b * a = (a + b)² - a² - b², from begin
-    unfold sqr,
-    simp only [left_distrib, right_distrib],
-    abel,
+    calc a * b + b * a
+        = a * b + b * a + a * a - a * a + b * b - b * b   : by simp only [add_sub_cancel]
+    ... = a * a + a * b + (b * a + b * b) - a * a - b * b : by abel
+    ... = (a + b) * (a + b) - a * a - b * b               : by simp only [left_distrib, right_distrib]
+    ... = (a + b)² - a² - b²                              : by refl
   end),
   
   -- rewrite square terms of vectors
@@ -173,9 +175,11 @@ begin
   assume a b,
   -- collect square terms
   rw (show a * b + b * a = (a + b)² - a² - b², from begin
-    unfold sqr,
-    simp only [left_distrib, right_distrib],
-    abel,
+    calc a * b + b * a
+        = a * b + b * a + a * a - a * a + b * b - b * b   : by simp only [add_sub_cancel]
+    ... = a * a + a * b + (b * a + b * b) - a * a - b * b : by abel
+    ... = (a + b) * (a + b) - a * a - b * b               : by simp only [left_distrib, right_distrib]
+    ... = (a + b)² - a² - b²                              : by refl
   end),
   -- obtain proofs that each term is a scalar
   assume ha hb,
