@@ -88,7 +88,7 @@ end proof_demo
 /- An example of geometric algebra -/
 namespace GA
 
-namespace first
+namespace unbundled_weak
 
 variables (K : Type u) [field K]
 
@@ -100,7 +100,7 @@ local postfix `²`:80 := sqr
 structure GA (G : Type u) [ring G] [algebra K G] :=
 (fₛ : K →+* G)
 (fᵥ : V →ₗ[K] G)
-(contraction : ∀ v : V, ∃ k : K, (fᵥ v)² = fₛ k)
+(vec_contraction : ∀ v : V, ∃ k : K, (fᵥ v)² = fₛ k)
 
 /-
   Symmetrised product of two vectors must be a scalar
@@ -111,15 +111,15 @@ example
   let a := ga.fᵥ aᵥ, b := ga.fᵥ bᵥ, k := ga.fₛ kₛ in
     a * b + b * a = k :=
 begin
+  -- simplify the goal by definition, i.e. remove let etc.
+  delta,
+
   -- vectors aᵥ bᵥ
   assume aᵥ bᵥ,
 
   -- multivectors a b
   set a := ga.fᵥ aᵥ,
   set b := ga.fᵥ bᵥ,
-
-  -- simplify the goal by definition, i.e. remove let etc.
-  delta,
 
   -- rewrite the goal to square terms
   rw (show a * b + b * a = (a + b)² - a² - b², from begin
@@ -129,10 +129,10 @@ begin
   end),
   
   -- rewrite square terms of vectors
-  -- to scalars using the contraction axiom
-  obtain ⟨kabₛ, hab⟩ := ga.contraction (aᵥ + bᵥ),
-  obtain ⟨kaₛ, ha⟩ := ga.contraction (aᵥ),
-  obtain ⟨kbₛ, hb⟩ := ga.contraction (bᵥ),
+  -- to scalars using the vector contraction axiom
+  obtain ⟨kabₛ, hab⟩ := ga.vec_contraction (aᵥ + bᵥ),
+  obtain ⟨kaₛ, ha⟩ := ga.vec_contraction (aᵥ),
+  obtain ⟨kbₛ, hb⟩ := ga.vec_contraction (bᵥ),
 
   -- map the above to multivectors
   rw [
@@ -148,6 +148,52 @@ begin
   use kabₛ - kaₛ - kbₛ,
 end
 
-end first
+end unbundled_weak
+
+namespace bundled_quad
+
+variables (K : Type u) [field K]
+
+-- variables (V : Type u) [add_comm_group V] [vector_space K V]
+
+def sqr {α : Type u} [has_mul α] (x : α) := x * x
+local postfix `²`:80 := sqr
+
+structure GA (G : Type u) [ring G] [algebra K G] := 
+(V : Type u) [vec_is_acg : add_comm_group V] [vec_is_vs : vector_space K V]
+(fₛ : K →+* G)
+(fᵥ : V →ₗ[K] G)
+(q : quadratic_form K V)
+(vec_contraction : ∀ v : V, (fᵥ v)² = fₛ (q v))
+
+attribute [instance] GA.vec_is_acg
+attribute [instance] GA.vec_is_vs
+
+/-
+  Symmetrised product of two vectors must be a scalar
+-/
+example (G : Type u) [ring G] [algebra K G] [ga : GA K G] :
+∀ aᵥ bᵥ : ga.V, let a := ga.fᵥ aᵥ, b := ga.fᵥ bᵥ in
+    a * b + b * a = ga.fₛ (quadratic_form.polar ga.q aᵥ bᵥ) :=
+begin
+  -- simplify the goal by definition, i.e. remove let etc.
+  delta,
+
+  -- vectors aᵥ bᵥ
+  assume aᵥ bᵥ,
+
+  -- multivectors a b
+  set a := ga.fᵥ aᵥ with ha,
+  set b := ga.fᵥ bᵥ with hb,
+
+  rw [ha, hb],
+  unfold quadratic_form.polar,
+  simp only [ring_hom.map_add, ring_hom.map_sub, ←GA.vec_contraction],
+  unfold sqr,
+  simp only [linear_map.map_add, linear_map.map_sub],
+  noncomm_ring,
+end
+
+end bundled_quad
 
 end GA
