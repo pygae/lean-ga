@@ -40,9 +40,9 @@ variables {α}
 
 -- coercions
 def coe_α : Π {n}, α → Gₙ α n
-| 0 k := k 
+| 0 k := k
 | (n + 1) k := (coe_α 0, coe_α k)
-instance has_coe_α : Π n, has_coe α (Gₙ α n) := λ n, ⟨coe_α⟩ 
+instance has_coe_α : Π n, has_coe α (Gₙ α n) := λ n, ⟨coe_α⟩
 def coe_Kₙ : Π {n}, Kₙ α n → Gₙ α n
 | 0 k := 0
 | (n + 1) ⟨x₁, x₂⟩ := (x₁, coe_Kₙ x₂)
@@ -59,14 +59,18 @@ prefix `̅`:max := conj  -- this unicode is probably a bad idea...
 notation `̅`:max x `ᵈ` := conj_d x -- this unicode is definitly a bad idea!
 
 -- vee and wedge
+reserve infix `⋎`:70
 def vee : Π {n}, Gₙ α n → Gₙ α n → Gₙ α n
-| 0 x y := by {unfold Gₙ, exact x * y}
-| (n + 1) ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ := (vee x₁ y₂ + vee ̅x₂ y₁, vee x₂ y₂)
-infix ` ⋎ `:70 := vee
+| 0 x y := (x * y : α)
+| (n + 1) ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ := let infix ` ⋎ ` := vee in
+    (x₁ ⋎ y₂ + ̅x₂ ⋎ y₁, x₂ ⋎ y₂)
+infix ` ⋎ ` := vee
+reserve infix `⋏`:70
 def wedge : Π {n}, Gₙ α n → Gₙ α n → Gₙ α n
-| 0 x y := by {unfold Gₙ, exact x * y}
-| (n + 1) ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ := (wedge x₂ y₂, wedge x₁ y₂ + wedge x₂ ̅y₁ᵈ)
-infix ` ⋏ `:70 := wedge
+| 0 x y := (x * y : α)
+| (n + 1) ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ := let infix ` ⋏ ` := wedge in
+    (x₂ ⋏ y₂, x₁ ⋏ y₂ + x₂ ⋏ ̅y₁ᵈ)
+infix ` ⋏ ` := wedge
 
 variables {a b : Gₙ α 2}
 #check (a + b) ⋎ (a ⋏ b)
