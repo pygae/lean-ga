@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./dist/reveal.css" />
     <link rel="stylesheet" href="./dist/theme/black.css" id="theme" />
     <link rel="stylesheet" href="./css/highlight/railscasts.css" />
-    <link rel="stylesheet" href="./_assets/./css/common.css" />
+    <link rel="stylesheet" href="./css/common.css" />
 
   </head>
   <body>
@@ -374,13 +374,16 @@ the language a viable option for simultaneously writing and proving correctness 
 
 </div>
 
-<aside class="notes"><p>The idea of kernel-elaborator architecture is basically to try to write a small piece of code to create a trusted kernel (the trust can be verified by a few checkers written in other languages). And let an elaborator to elaborate from human-written, human-readable proofs, fill in the elided details that can be inferred. So, say, a page of proof is elaborated into a dozen pages of proof with atomic steps and every detail for the kernel to consume and verify.</p>
-<p>This introduction above is oversimplified and technically inaccurate. But the point is that being rigorous and correct doesn&#39;t mean that it has to be intimidating or obscure, or far away from how humans are doing math on pen and paper. The key ideas are properly mix in some automation, inference, or elaboration.</p>
-<p>Lean did this by pushing the tactics to the extreme towards human friendliness, it&#39;s battle-tested in pure math education in a few colleges and the process of formalization of a few research-level modern math definitions or theorem proofs. They vary from syntax sugar, small automation (such as a small simp set), and large automation(complex heuristic logic).</p>
+<aside class="notes"><p>Lean&#39;s architecture breaks into three pieces - high-level tactics, for intuitive construction of proofs;
+a medium-level elaborator, which fills out uninteresting gaps in these proofs to make them explicit;
+and finally a trusted kernel to verify them.</p>
+<p>The core idea here is that you only need to trust the kernel to know that you have constructed a correct proof,
+while not being forced to write out trivial proofs in incredible precision and length.
+The kernel itself can then be checked via other tools, or even by hand.</p>
 <hr />
 
-<p>Lean shares the same type-theoretic foundation as Coq and Adga, which is a stronger and more powerful setting,</p>
-<p>but it is equivalent to and can mimic the look&amp;feel of a set theory that many are more familiar with.</p>
+<p>Lean shares the same type-theoretic foundation as Coq and Adga, which is a stronger and more powerful setting,
+but can mimic the look&amp;feel of the Set Theory that many are more familiar with.</p>
 </aside></script></section><section data-markdown><script type="text/template">
 <!-- .slide: style="font-size: 70%" id="design-of-lean2" -->
 
@@ -1706,9 +1709,9 @@ This being an entirely social phenomenon that separates Coq and Lean despite the
       var options = extend(defaultOptions, {"controls":true,"controlsTutorial":true,"help":true,"progress":true,"previewLinks":true,"transition":"slide","#showNotes":"separate-page","center":false,"showSlideNumber":"all","slideNumber":"h.v"}, queryOptions);
     </script>
 
-    <script src="./_assets/./js/vendor/Chart.min.js"></script>
-    <script src="./_assets/./js/vendor/lean.min.js"></script>
-    <script src="./_assets/./js/common.js"></script>
+    <script src="./js/vendor/Chart.min.js"></script>
+    <script src="./js/vendor/lean.min.js"></script>
+    <script src="./js/common.js"></script>
 
     <script>
       Reveal.initialize(options);
