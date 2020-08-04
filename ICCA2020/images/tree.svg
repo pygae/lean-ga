@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="115.8568mm" height="26.736595mm" version="1.1" viewBox="0 0 115.8568 26.736595" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <style>
+   /* tweaked by hand */
+   .main {
+    font-size: 3.16315px;
+    font-weight: bold;
+   }
+   .wedge {
+    font-size: 3.16315px;
+   }
+   .strike {
+    font-size: 3.16315px;
+    font-weight: 900;
+    font-style: italic;
+    fill: cyan;
+   }
+   .small {
+    font-size: 1.75729px;
+   }
+ </style>
+ <g transform="translate(-53.451208,-39.026296)">
+  <path d="m115.34148 39.092539-28.500209 10.000191-15.000463 7.000169m-18.319397 9.599436h19.638786v-5.199238h-19.638786z" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="54.604794" y="64.051567" class="main"><tspan x="54.604794" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="56.044125" y="62.696888" class="small"><tspan x="56.044125" y="62.696888" stroke-width=".352778">0</tspan></text>
+   <text x="56.044125" y="64.601898" class="small"><tspan x="56.044125" y="64.601898" stroke-width=".352778">3</tspan></text>
+   <text x="58.541794" y="64.051567" class="wedge"><tspan x="58.541794" y="64.051567" stroke-width=".352778">∨</tspan></text>
+   <text x="61.928455" y="64.051567" class="main"><tspan x="61.928455" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="63.36779" y="62.696888" class="small"><tspan x="63.36779" y="62.696888" stroke-width=".352778">1</tspan></text>
+   <text x="63.36779" y="64.601898" class="small"><tspan x="63.36779" y="64.601898" stroke-width=".352778">3</tspan></text>
+   <text x="65.865456" y="64.051567" class="wedge"><tspan x="65.865456" y="64.051567" stroke-width=".352778">∨</tspan></text>
+   <text x="69.294106" y="64.051567" class="main"><tspan x="69.294106" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="70.733795" y="62.696888" class="small"><tspan x="70.733795" y="62.696888" stroke-width=".352778">2</tspan></text>
+   <text x="70.733795" y="64.601898" class="small"><tspan x="70.733795" y="64.601898" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m71.840808 56.092899-5.258506 4.329995" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="66.35688" y="57.846195" class="main"><tspan x="66.35688" y="57.846195" stroke-width=".352778">e</tspan></text>
+   <text x="67.796211" y="56.491543" class="small"><tspan x="67.796211" y="56.491543" stroke-width=".352778">2</tspan></text>
+   <text x="67.796211" y="58.396526" class="small"><tspan x="67.796211" y="58.396526" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m74.185369 65.692335h12.311591v-5.199238h-12.311591z" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="75.268745" y="64.051567" class="main"><tspan x="75.268745" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="76.708084" y="62.696888" class="small"><tspan x="76.708084" y="62.696888" stroke-width=".352778">0</tspan></text>
+   <text x="76.708084" y="64.601898" class="small"><tspan x="76.708084" y="64.601898" stroke-width=".352778">3</tspan></text>
+   <text x="79.20575" y="64.051567" class="wedge"><tspan x="79.20575" y="64.051567" stroke-width=".352778">∨</tspan></text>
+   <text x="82.592415" y="64.051567" class="main"><tspan x="82.592415" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="84.031746" y="62.696888" class="small"><tspan x="84.031746" y="62.696888" stroke-width=".352778">1</tspan></text>
+   <text x="84.031746" y="64.601898" class="small"><tspan x="84.031746" y="64.601898" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m71.840808 56.092899 5.258505 4.329995" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="75.041206" y="57.613373" class="main"><tspan x="75.041206" y="57.613373" stroke-width=".352778">e</tspan></text>
+   <text x="76.480537" y="56.258694" class="small"><tspan x="76.480537" y="56.258694" stroke-width=".352778">2</tspan></text>
+   <text x="76.480537" y="58.163704" class="small"><tspan x="76.480537" y="58.163704" stroke-width=".352778">3</tspan></text>
+   <text x="75.422203" y="57.613373" class="strike"><tspan x="75.422203" y="57.613373" stroke-width=".352778">/</tspan></text>
+   <text x="78.063812" y="50.882366" class="main"><tspan x="78.063812" y="50.882366" stroke-width=".352778">e</tspan></text>
+   <text x="79.502785" y="49.52771" class="small"><tspan x="79.502785" y="49.52771" stroke-width=".352778">1</tspan></text>
+   <text x="79.502785" y="51.432697" class="small"><tspan x="79.502785" y="51.432697" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m86.841271 49.09273 15.000109 7.000169m-14.655797 9.599789h12.311591v-5.199239h-12.311591z" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="88.268608" y="64.051567" class="main"><tspan x="88.268608" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="89.707947" y="62.696888" class="small"><tspan x="89.707947" y="62.696888" stroke-width=".352778">0</tspan></text>
+   <text x="89.707947" y="64.601898" class="small"><tspan x="89.707947" y="64.601898" stroke-width=".352778">3</tspan></text>
+   <text x="92.205963" y="64.051567" class="wedge"><tspan x="92.205963" y="64.051567" stroke-width=".352778">∨</tspan></text>
+   <text x="95.592628" y="64.051567" class="main"><tspan x="95.592628" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="97.031967" y="62.696888" class="small"><tspan x="97.031967" y="62.696888" stroke-width=".352778">2</tspan></text>
+   <text x="97.031967" y="64.601898" class="small"><tspan x="97.031967" y="64.601898" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m101.84138 56.092899-5.258503 4.329995" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="96.357101" y="57.846195" class="main"><tspan x="96.357101" y="57.846195" stroke-width=".352778">e</tspan></text>
+   <text x="97.796432" y="56.491543" class="small"><tspan x="97.796432" y="56.491543" stroke-width=".352778">2</tspan></text>
+   <text x="97.796432" y="58.396526" class="small"><tspan x="97.796432" y="58.396526" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m107.84954 65.692335h4.98404v-5.199238h-4.98404z" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="108.93256" y="64.051567" class="main"><tspan x="108.93256" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="110.3719" y="62.696888" class="small"><tspan x="110.3719" y="62.696888" stroke-width=".352778">0</tspan></text>
+   <text x="110.3719" y="64.601898" class="small"><tspan x="110.3719" y="64.601898" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m101.84138 56.092899 5.93796 4.890559" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="105.58506" y="58.061405" class="main"><tspan x="105.58506" y="58.061405" stroke-width=".352778">e</tspan></text>
+   <text x="107.02439" y="56.70673" class="small"><tspan x="107.02439" y="56.70673" stroke-width=".352778">2</tspan></text>
+   <text x="107.02439" y="58.61174" class="small"><tspan x="107.02439" y="58.61174" stroke-width=".352778">3</tspan></text>
+   <text x="105.96606" y="58.061405" class="strike"><tspan x="105.96606" y="58.061405" stroke-width=".352778">/</tspan></text>
+   <text x="93.334503" y="50.649544" class="main"><tspan x="93.334503" y="50.649544" stroke-width=".352778">e</tspan></text>
+   <text x="94.773834" y="49.294865" class="small"><tspan x="94.773834" y="49.294865" stroke-width=".352778">1</tspan></text>
+   <text x="94.773834" y="51.199875" class="small"><tspan x="94.773834" y="51.199875" stroke-width=".352778">3</tspan></text>
+   <text x="93.7155" y="50.649544" class="strike"><tspan x="93.7155" y="50.649544" stroke-width=".352778">/</tspan></text>
+   <text x="99.813965" y="42.383961" class="main"><tspan x="99.813965" y="42.383961" stroke-width=".352778">e</tspan></text>
+   <text x="101.2533" y="41.029285" class="small"><tspan x="101.2533" y="41.029285" stroke-width=".352778">0</tspan></text>
+   <text x="101.2533" y="42.934296" class="small"><tspan x="101.2533" y="42.934296" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m115.34148 39.092539 28.50021 10.000191-15.00011 7.000169m-14.6558 9.599436h12.31159v-5.199238h-12.31159z" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="115.26916" y="64.051567" class="main"><tspan x="115.26916" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="116.7085" y="62.696888" class="small"><tspan x="116.7085" y="62.696888" stroke-width=".352778">1</tspan></text>
+   <text x="116.7085" y="64.601898" class="small"><tspan x="116.7085" y="64.601898" stroke-width=".352778">3</tspan></text>
+   <text x="119.20616" y="64.051567" class="wedge"><tspan x="119.20616" y="64.051567" stroke-width=".352778">∨</tspan></text>
+   <text x="122.59283" y="64.051567" class="main"><tspan x="122.59283" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="124.03216" y="62.696888" class="small"><tspan x="124.03216" y="62.696888" stroke-width=".352778">2</tspan></text>
+   <text x="124.03216" y="64.601898" class="small"><tspan x="124.03216" y="64.601898" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m128.84158 56.092899-5.2585 4.329995" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="123.3573" y="57.846195" class="main"><tspan x="123.3573" y="57.846195" stroke-width=".352778">e</tspan></text>
+   <text x="124.79664" y="56.491543" class="small"><tspan x="124.79664" y="56.491543" stroke-width=".352778">2</tspan></text>
+   <text x="124.79664" y="58.396526" class="small"><tspan x="124.79664" y="58.396526" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m134.84974 65.692335h4.98404v-5.199238h-4.98404z" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="135.93312" y="64.051567" class="main"><tspan x="135.93312" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="137.37245" y="62.696888" class="small"><tspan x="137.37245" y="62.696888" stroke-width=".352778">1</tspan></text>
+   <text x="137.37245" y="64.601898" class="small"><tspan x="137.37245" y="64.601898" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m128.84158 56.092899 5.93796 4.890559" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="132.58527" y="58.061405" class="main"><tspan x="132.58527" y="58.061405" stroke-width=".352778">e</tspan></text>
+   <text x="134.0246" y="56.70673" class="small"><tspan x="134.0246" y="56.70673" stroke-width=".352778">2</tspan></text>
+   <text x="134.0246" y="58.61174" class="small"><tspan x="134.0246" y="58.61174" stroke-width=".352778">3</tspan></text>
+   <text x="132.96626" y="58.061405" class="strike"><tspan x="132.96626" y="58.061405" stroke-width=".352778">/</tspan></text>
+   <text x="135.06458" y="50.882366" class="main"><tspan x="135.06458" y="50.882366" stroke-width=".352778">e</tspan></text>
+   <text x="136.50357" y="49.52771" class="small"><tspan x="136.50357" y="49.52771" stroke-width=".352778">1</tspan></text>
+   <text x="136.50357" y="51.432697" class="small"><tspan x="136.50357" y="51.432697" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m143.84169 49.09273 15.00011 7.000169m-10.9922 9.599789h4.98404v-5.199239h-4.98404z" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="148.93333" y="64.051567" class="main"><tspan x="148.93333" y="64.051567" stroke-width=".352778">e</tspan></text>
+   <text x="150.37267" y="62.696888" class="small"><tspan x="150.37267" y="62.696888" stroke-width=".352778">2</tspan></text>
+   <text x="150.37267" y="64.601898" class="small"><tspan x="150.37267" y="64.601898" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m158.84216 56.092899-5.93761 4.890559" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="152.81424" y="58.294231" class="main"><tspan x="152.81424" y="58.294231" stroke-width=".352778">e</tspan></text>
+   <text x="154.25359" y="56.939575" class="small"><tspan x="154.25359" y="56.939575" stroke-width=".352778">2</tspan></text>
+   <text x="154.25359" y="58.844563" class="small"><tspan x="154.25359" y="58.844563" stroke-width=".352778">3</tspan></text>
+  </g>
+  <path d="m165.44616 65.193162h3.79165v-4.200525h-3.79165z" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <text x="166.52954" y="64.111534" fill="#000000" class="main" stroke-width=".352778"><tspan x="166.52954" y="64.111534" stroke-width=".352778">1</tspan></text>
+  <path d="m158.84216 56.092899 6.53379 5.381273" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width=".140406"/>
+  <g fill="#000000" stroke-width=".352778">
+   <text x="163.06279" y="58.452984" class="main"><tspan x="163.06279" y="58.452984" stroke-width=".352778">e</tspan></text>
+   <text x="164.50212" y="57.098309" class="small"><tspan x="164.50212" y="57.098309" stroke-width=".352778">2</tspan></text>
+   <text x="164.50212" y="59.003319" class="small"><tspan x="164.50212" y="59.003319" stroke-width=".352778">3</tspan></text>
+   <text x="163.44379" y="58.452984" class="strike"><tspan x="163.44379" y="58.452984" stroke-width=".352778">/</tspan></text>
+   <text x="150.33527" y="50.649544" class="main"><tspan x="150.33527" y="50.649544" stroke-width=".352778">e</tspan></text>
+   <text x="151.77461" y="49.294865" class="small"><tspan x="151.77461" y="49.294865" stroke-width=".352778">1</tspan></text>
+   <text x="151.77461" y="51.199875" class="small"><tspan x="151.77461" y="51.199875" stroke-width=".352778">3</tspan></text>
+   <text x="150.71628" y="50.649544" class="strike"><tspan x="150.71628" y="50.649544" stroke-width=".352778">/</tspan></text>
+   <text x="128.58511" y="42.147583" class="main"><tspan x="128.58511" y="42.147583" stroke-width=".352778">e</tspan></text>
+   <text x="130.02444" y="40.792931" class="small"><tspan x="130.02444" y="40.792931" stroke-width=".352778">0</tspan></text>
+   <text x="130.02444" y="42.697918" class="small"><tspan x="130.02444" y="42.697918" stroke-width=".352778">3</tspan></text>
+   <text x="128.96611" y="42.147583" class="strike"><tspan x="128.96611" y="42.147583" stroke-width=".352778">/</tspan></text>
+  </g>
+ </g>
+</svg>

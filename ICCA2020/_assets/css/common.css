@@ -1,0 +1,453 @@
+iframe {
+  height: 550px;
+  width: 100%;
+  background-color: white;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  text-transform: none;
+}
+
+.reveal section img {
+  border: 0;
+  background-color: #eeeeee;
+}
+
+.reveal section img.img-300 {
+  height: 300px;
+}
+
+.reveal section img.img-450 {
+  height: 450px;
+}
+
+.reveal section img.img-500 {
+  height: 500px;
+}
+
+.reveal section img.img-550 {
+  height: 550px;
+}
+
+.reveal section img.img-left {
+  float: left;
+  width: 49%;
+}
+
+.reveal section img.img-right {
+  float: right;
+  width: 49%;
+}
+
+.reveal section img.img-code {
+  position: absolute;
+  top: 30%;
+  right: 5%;
+  float: right;
+  max-width: 30%;
+}
+
+.print-pdf .reveal section img.img-code {
+  display: none;
+}
+  
+
+/* .reveal section .img-h-50 img {
+  max-height: 50%;
+  height: 200px;
+  margin-left: auto;
+  margin-right: auto;
+} */
+
+.reveal .hljs-ln-line, .reveal code.hljs, .try-this { 
+  font-family: Fira Code, Fantasque Sans Mono, DejaVu Mono, Consolas, 'Courier New', monospace, Microsoft YaHei;
+  display: block;
+}
+
+/* YaHei has full width chinese quotes, which look weird in roman text */
+q {
+  font-family: Calibri, sans-serif;
+}
+
+.reveal :not(pre) > code {
+  background: #232323;
+  padding: 0px 3px 0px 3px;
+  font-size: 90%;
+}
+
+.reveal .hljs.has-highlights:not(.show-unhighlighted)[data-line-numbers=""] tr { opacity: 0; }
+.reveal .hljs.has-highlights:not(.show-unhighlighted) tr.highlight-line ~ tr:not(.highlight-line) { opacity: 0; }
+
+.reveal blockquote {
+  padding: 20px;
+  position: relative;
+  margin-bottom: 70px;
+  text-align: left;
+}
+.reveal blockquote.long {
+  font-style: inherit;
+  width: auto;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+/* black.css does something wacky here */
+.reveal blockquote p:first-child,
+.reveal blockquote p:last-child {
+  display: initial; }
+
+blockquote p.reference {
+    text-align: right;
+    position: absolute;
+    font-style: normal;
+    top: 100%;
+    right: 60px;
+    font-size: 80%;
+    margin-top: 5px;
+    min-height: 50px;
+    vertical-align: bottom;
+}
+blockquote p.reference::before {
+    position: absolute;
+    top: -5px;
+    right: -60px;
+    width: 0px;
+    height: 0px;
+    content: "";
+    border-left: 50px solid #ffffff0d;
+    border-bottom: 50px solid transparent;
+}
+.reveal blockquote.long p.reference {
+  font-size: 60%;
+}
+
+.parent-title {
+  display: table;
+  margin: auto;
+  padding-left: 20px;
+}
+.parent-title > span {
+  opacity: 0.5;
+  text-align: left;
+  display: block;
+  font-size: 50%;
+  margin-left: -20px;
+  margin-bottom: -5px;
+}
+.checklist {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  margin: auto;
+  flex-wrap: wrap;
+}
+.checklist div{
+  font-size: 75%;
+  flex-shrink: 0;
+  margin-bottom: 10px;
+}
+.checklist .check {
+  color: #80FF80;
+}
+.checklist .maybe {
+  color: #FFFF80;
+}
+.checklist .cross {
+  color: #FF8080;
+}
+.checklist .check span {
+  color: green;
+}
+.checklist .maybe span {
+  color: yellow;
+  font-weight: bold;
+}
+.checklist .cross span {
+  color: red;
+}
+
+/* .print-pdf .reveal pre code {
+  min-height: 550px;
+} */
+
+/* .reveal .slides section .fragment {
+  visibility: visible;
+  display: none;
+}
+
+.reveal .slides section .fragment.current-fragment {
+  display: block;
+} */
+
+.reveal .slides section .fragment.fade-semi-out {
+  opacity: 1;
+  visibility: inherit;
+}
+.reveal .slides section .fragment.fade-semi-out.visible {
+  opacity: 0.25;
+  visibility: inherit;
+}
+
+.reveal .slides section .fragment.current-only.current-fragment {
+  display: block;
+}
+
+.reveal .slides section .fragment.current-only {
+  visibility: visible;
+  display: none;
+}
+
+.reveal .slides section .fragment.current-overlay:not(.visible) {
+  display: none;
+}
+
+/* .slide-background.present iframe {
+  height: 99vh;
+} */
+
+.iframe-source {
+  position: fixed;
+  bottom: 0px;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  margin-top: 0px;
+  width: 100%;
+  text-align: center;
+  padding: 7px 7px 7px 7px;
+  /* background-color: #BED4EB;
+  background-color: hsl(200, 60%, 15%); */
+  background-color: #222222;
+  font-size: 12px;
+  color: white;
+  z-index: 20; /* .progress is 10 and .controls is 30 */
+  opacity: 0;
+  filter: alpha(opacity=0);
+  -webkit-transition: opacity .15s ease-in-out;
+  -moz-transition: opacity .15s ease-in-out;
+  -ms-transition: opacity .15s ease-in-out;
+  -o-transition: opacity .15s ease-in-out;
+  transition: opacity .15s ease-in-out;
+  /* border-radius: 10px; */
+  /* box-shadow: 0 1px 0 rgba(12,13,14,0.1), 0 1px 3px rgba(12,13,14,0.1), 0 4px 20px rgba(12,13,14,0.035), 0 1px 1px rgba(12,13,14,0.025); */
+}
+
+.iframe-source:hover {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+.iframe-source a {
+  color: #42affa;
+  text-decoration: none;
+  -webkit-transition: color .15s ease;
+  -moz-transition: color .15s ease;
+  transition: color .15s ease; 
+}
+
+.iframe-source a:hover {
+  color: #8dcffc;
+  text-shadow: none;
+  border: none; 
+}
+
+.reveal .slides section {
+  font-family: Microsoft YaHei;
+  line-height: 120%;
+}
+
+.reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+  font-family: Microsoft YaHei;
+}
+
+.reveal .slides section .mermaidSvg {
+  font-size: 13px;
+  line-height: 100%;
+}
+
+.print-pdf .reveal .slides section .mermaidSvg {
+  transform: scale(0.70);
+}
+
+/* .reveal .slides section div.mermaidSvg object, .reveal .slides section div.mermaidSvg foreignObject, .reveal .slides section div.mermaidSvg embed {
+  font-size: 13px;
+  zoom: 2;
+} */
+
+.print-pdf .reveal .iframe-source {
+  position: absolute;
+  bottom: 0px;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  margin-top: 0px;
+  width: 100%;
+  text-align: center;
+  padding: 7px 7px 7px 7px;
+  background-color: #222222;
+  font-size: 13px;
+  color: white;
+  z-index: 40; /* .progress is 10 and .controls is 30 */
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+.print-pdf .reveal .iframe-source a {
+  color: #42affa;
+  text-decoration: none;
+  -webkit-transition: color .15s ease;
+  -moz-transition: color .15s ease;
+  transition: color .15s ease; 
+}
+
+.print-pdf .reveal .iframe-source a:hover {
+  color: #8dcffc;
+  text-shadow: none;
+  border: none; 
+}
+
+/**
+  Using !important to override element style
+*/
+.print-pdf .reveal .slides section[data-background-iframe] {
+  width: 100vw !important;
+  height: 100vh !important;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+  top: 0px !important;
+  left: 0px !important;
+}
+
+.reveal a.figcaption {
+  font-size: 14px;
+  text-align: center;
+  display: block;
+}
+
+.reveal .figcaption:before {
+  content: "Source: ";
+  color: rgb(109,109,109);
+  font-size: 14px;
+  text-align: center;
+}
+
+.reveal .figcaption.see-also:before {
+  content: "See also: ";
+}
+
+.img-ref {
+  /* position: relative; */
+}
+
+.img-ref:hover {
+  cursor: pointer;
+}
+
+.img-pop {
+  position: absolute;
+  visibility: hidden;
+  right: 10vw;
+  top: 10vh;
+  min-width: 15vw;
+  width: 50vw;
+  height: 80vh;
+  float: right;
+}
+.img-ref:hover + .img-pop {
+  visibility: visible;
+}
+
+.lean-demo {
+  display: flex;
+  width: 90%;
+  margin: auto;
+}
+.lean-demo > pre {
+  flex: 3;
+}
+.lean-demo .lean-state {
+  flex: 1;
+  padding-left: 10px;
+}
+.goal-done {
+  color: #569cd6;
+  font-weight: bolder;
+}
+.lean-state pre {
+  background: #232323;
+  padding: 5px;
+  margin-bottom: -10px;
+}
+.goal-done {
+  font-size: 1.25rem;
+  font-family: sans-serif;
+}
+.goal-hyp {
+  font-weight: bold;
+  color: #ffcc00;
+}
+.goal-sym {
+  font-weight: bold;
+  color: #569cd6;
+}
+.try-this {
+  color: #3794ff !important;
+  display: block;
+  white-space: pre-wrap;
+  padding-left: 2em;
+  font-size: smaller;
+  width: 100%;
+}
+.reveal .slides section .lean-state .fragment.visible:not(.current-fragment) {
+  opacity: 0.6;
+}
+
+p.reference {
+  font-size: 50%;
+}
+p.reference > cite {
+  display: block;
+}
+p.reference > cite a {
+  color: white;
+}
+p.reference > span {
+  opacity: 0.6;
+  display: block;
+}
+
+.reveal .iframe-title {
+  /* color: #3794ff; */
+  background-color: #222222;
+  border-radius: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  /* width: 80vw;
+  margin-left: auto;
+  margin-right: auto; */
+}
+
+.reveal .wish-list em {
+  color: #3794ff !important;
+}
+
+/* .reveal-fancybox .fancybox-slide .fancybox-image-wrap {
+  background: #eeeeee;
+  font-size: 13px;
+  line-height: 100%;
+}
+
+.reveal a[data-fancybox] {
+  color:inherit;
+  transition: none;
+}
+
+.reveal a[data-fancybox]:hover {
+  color:inherit;
+} */
