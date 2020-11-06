@@ -1,6 +1,7 @@
 -- Definition of a graded algebra, with no other operations defined
 import algebra.group
 import linear_algebra.tensor_product
+import linear_algebra.dfinsupp
 import tactic.ring
 
 universes u
@@ -24,8 +25,8 @@ class graded_module_components
 
   -- all the types form commutative vector spaces
   -- TODO change to meaningful names
-  [b: ∀ r, add_comm_group (A r)]
-  [c: ∀ r, module (A 0) (A r)]
+  [b: ∀ r, add_comm_monoid (A r)]
+  [c: ∀ r, semimodule (A 0) (A r)]
 
 attribute [instance] graded_module_components.zc
 attribute [instance] graded_module_components.b
@@ -39,8 +40,6 @@ attribute [instance] graded_module_components.c
 --   instance has_coe (r s : ℕ) (h: r = s) : has_coe (A r) (A s) := { coe := by {subst h, exact id}}
 -- end graded_module_components
 
--- needed for the definition of `select`
-attribute [instance] dfinsupp.to_semimodule
 
 /-- Grade selection maps from objects in G to a finite set of components of substituent grades -/
 -- TODO how about place it under namespace graded and name it has_select
