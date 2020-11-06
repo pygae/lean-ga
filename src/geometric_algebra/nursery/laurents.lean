@@ -2,16 +2,18 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
-
-This file is based on
-A Formalization of Grassmann-Cayley Algebra in Coq and Its Application to Theorem Proving in Projective Geometry
-by Laurent Fuchs and Laurent Théry
 -/
 import algebra.field
 import algebra.module.prod
 import algebra.punit_instances
 import data.vector
 import tactic
+
+/-!
+# Derived from "A Formalization of Grassmann-Cayley Algebra in Coq and Its Application to Theorem Proving in Projective Geometry"
+
+by Laurent Fuchs and Laurent Théry
+-/
 
 variables (α : Type) [field α]
 
