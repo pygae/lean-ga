@@ -2,18 +2,20 @@
 Copyright (c) 2020 Eric Wieser, Utensil Song. All rights reserved.
 Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser, Utensil Song
-
-This file is based on
-A New Formalization of Origami in Geometric Algebra
-by Tetsuo Ida, Jacques Fleuriot, and Fadoua Ghourabi
 -/
 
 import data.real.basic
+import algebra.algebra.basic
 import algebra.direct_sum
-import ring_theory.algebra
 import linear_algebra.direct_sum_module
 
+/-!
+# Derived from "A New Formalization of Origami in Geometric Algebra"
+
+by Tetsuo Ida, Jacques Fleuriot, and Fadoua Ghourabi
+-/
 open_locale big_operators
+open_locale direct_sum
 
 -- explicitly give coordinates
 def rvector : fin 4 → Type
@@ -32,7 +34,7 @@ instance : Π i, add_comm_group (rvector i)
 | ⟨n + 4, _⟩ := by linarith
 
 -- lean has all we need to define multivector composition!
-abbreviation multivector := direct_sum _ rvector
+abbreviation multivector := ⨁ i, rvector i
 def grade (m : multivector) (i) : rvector i := m i
 def multivector.of (i) := direct_sum.of rvector i
 
