@@ -188,6 +188,44 @@ section reverse
     induction x using clifford_algebra.induction; simp [*],
   end
 
+  /-- helper lemma for expanding the sign of reverse -/
+  lemma reverse_prod_sign_aux (n : ℕ) :
+    (-1 : R)^((n + 1)*(n + 1 + 1)/2) = (-1 : R)^(n*(n + 1)/2) * (-1 : R)^(n + 1) :=
+  begin
+    rw ←pow_add,
+    conv_rhs { rw neg_one_pow_eq_pow_mod_two },
+    conv_lhs { rw neg_one_pow_eq_pow_mod_two },
+    congr' 1,
+    rw [add_mul, one_mul, mul_add _ (n + 1), mul_one, add_assoc, add_assoc n 1 1, ←add_assoc n n],
+    rw nat.add_div,
+    rw nat.add_div,
+    rw nat.div_self,
+    rw nat.mod_self,
+    rw add_zero,
+    rw nat.add_mod (n + n),
+    rw nat.mod_self,
+    rw add_zero,
+    rw nat.mod_mod,
+    have h1 : (n + n) % 2 = 0 := by {rw ←mul_two, simp},
+    have h2 : n * (n + 1) % 2 = 0 := sorry, -- should be in mathlib, i hope?
+    have h3 : 2 ≠ 0 := by linarith,
+    simp [h1, h2, if_neg h3, ←mul_two],
+    linarith,
+    linarith,
+    linarith
+  end
+  
+  /-- TODO: this needs an assumption that the vectors are othogonal -/
+  lemma reverse_prod_map_sign (l : list M):
+    reverse (l.map $ ι Q).prod = ((-1 : R)^(l.length*(l.length + 1)/2)) • (l.map $ ι Q).prod :=
+  begin
+    induction l with x xs hxs,
+    { simp },
+    simp [hxs, reverse_prod_sign_aux, mul_smul],
+    congr,
+    sorry, -- this needs to be an assumption
+  end
+
 end reverse
 
 section grades'
