@@ -182,6 +182,12 @@ section reverse
     simp [hxs],
   end
 
+  lemma reverse_involute_commute : function.commute (reverse : clifford_algebra Q → clifford_algebra Q) involute :=
+  begin
+    intro x,
+    induction x using clifford_algebra.induction; simp [*],
+  end
+
 end reverse
 
 section grades'
