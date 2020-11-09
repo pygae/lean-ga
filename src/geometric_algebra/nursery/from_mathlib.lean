@@ -66,6 +66,70 @@ begin
   exact of_id a,
 end
 
+#check algebra.adjoin
+
+variables (Q)
+/-- The versors are the elements made up of products of vectors.begin
+
+TODO: are scalars ≠1 considered versors? -/
+def versors := submonoid.closure (set.range (algebra_map R _) ∪ set.range (ι Q) )
+
+variables {Q}
+
+namespace versors
+
+  @[simp] lemma ι_mem (m : M) : ι Q m ∈ versors Q :=
+  submonoid.subset_closure $ or.inr $ set.mem_range_self m
+
+  @[simp] lemma algebra_map_mem (r : R) : algebra_map R _ r ∈ versors Q :=
+  submonoid.subset_closure $ or.inl $ set.mem_range_self r
+
+  /-- The versors are closed under scalar multiplication -/
+  instance : mul_action R (versors Q) :=
+  { smul := λ k v, ⟨k • v, by {
+      rw algebra.smul_def,
+      exact (versors Q).mul_mem (algebra_map_mem k) v.prop,
+    }⟩,
+    one_smul := λ v, subtype.eq $ one_smul _ v,
+    mul_smul := λ k₁ k₂ v, subtype.eq $ mul_smul k₁ k₂ v, }
+
+end versors
+
+variables (Q)
+/-- The rotors are the versors with an even number of factors -/
+def rotors := submonoid.closure (set.range (algebra_map R _) ∪ set.range (ι Q) * set.range (ι Q) )
+variables {Q}
+
+namespace rotors
+
+  /-- The rotors are versors -/
+  lemma subset_versors : rotors Q ≤ versors Q :=
+  begin
+    unfold rotors versors,
+    rw submonoid.closure_union,
+    rw submonoid.closure_union,
+    apply sup_le_sup_left _ _,
+    rw submonoid.closure_le,
+    exact submonoid.mul_subset_closure _,
+  end
+
+  @[simp] lemma ι_mul_mem (m n : M) : ι Q m * ι Q n ∈ rotors Q :=
+  submonoid.subset_closure $ or.inr $ set.mul_mem_mul (set.mem_range_self m) (set.mem_range_self n)
+
+  @[simp] lemma algebra_map_mem (r : R) : algebra_map R _ r ∈ rotors Q :=
+  submonoid.subset_closure $ or.inl $ set.mem_range_self r
+
+  /-- The rotors are closed under scalar multiplication -/
+  instance : mul_action R (rotors Q) :=
+  { smul := λ k v, ⟨k • v, by {
+      rw algebra.smul_def,
+      exact (rotors Q).mul_mem (algebra_map_mem k) v.prop,
+    }⟩,
+    one_smul := λ v, subtype.eq $ one_smul _ v,
+    mul_smul := λ k₁ k₂ v, subtype.eq $ mul_smul k₁ k₂ v, }
+
+end rotors
+
 section involute
 
   /-- Grade involution, inverting the sign of each basis vector -/
@@ -84,6 +148,22 @@ section involute
   begin
     intro x,
     induction x using clifford_algebra.induction; simp [*],
+  end
+
+  @[simp]
+  lemma involute_rotor (r : rotors Q) : involute (r : clifford_algebra Q) = r :=
+  begin
+    refine submonoid.closure_induction r.prop (λ x hx, _) _ (λ x y hx hy, _),
+    { cases hx,
+      { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
+        simp only [involute_algebra_map], },
+      { obtain ⟨a, b, ha, hb, rfl⟩ := set.mem_mul.mpr hx,
+        obtain ⟨av, rfl⟩ := ha,
+        obtain ⟨bv, rfl⟩ := hb,
+        rw involute.map_mul,
+        simp only [involute_ι, neg_mul_neg], } },
+    { rw involute.map_one, },
+    { rw [involute.map_mul, hx, hy], }
   end
 
   lemma involute_prod_map_ι (l : list M) : involute (l.map $ ι Q).prod = ((-1 : R)^l.length) • (l.map $ ι Q).prod :=

@@ -64,3 +64,16 @@ def op_linear_equiv : M ≃ₗ[R] Mᵒᵖ :=
   ((op_linear_equiv R).symm.to_linear_map : Mᵒᵖ → M) = unop := rfl
 
 end opposite
+
+namespace submonoid
+
+lemma mul_subset_closure {A : Type*} [monoid A] (s : set A) : s * s ⊆ submonoid.closure s :=
+begin
+  rw set.subset_def,
+  intros x hx,
+  rw submonoid.mem_coe,
+  obtain ⟨p, q, hp, hq, rfl⟩ := set.mem_mul.mp hx,
+  exact submonoid.mul_mem _ (submonoid.subset_closure hp) (submonoid.subset_closure hq),
+end
+
+end submonoid
