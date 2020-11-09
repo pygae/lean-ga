@@ -1,0 +1,16 @@
+on:
+  push:
+
+jobs:
+  update_lean_xyz_branch_and_build:
+    runs-on: ubuntu-latest
+    name: Build project
+    steps:
+
+    - name: checkout project
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: build project
+      uses: leanprover-contrib/lean-build-action@master
