@@ -5,6 +5,9 @@ Authors: Eric Wieser
 -/
 import linear_algebra.clifford_algebra
 import data.zmod.basic
+import data.nat.parity
+
+import missing_from_mathlib
 
 /-!
 # Tools built on top of Mathlib's `linear_algebra.clifford_algebra`
@@ -12,67 +15,15 @@ import data.zmod.basic
 Many things here may become "generalized out" as mathlib grows, or end up being PR'd upstream
 -/
 
-/-! Random theorems that belong in mathlib not related to GA -/
-section to_upstream
-
-  namespace finsupp
-
-  variables {α : Type*} {M : Type*} [has_zero M]
-
-  lemma single_of_single_apply (a a' : α) (b : M) :
-    single a ((single a' b) a) = single a' (single a' b) a :=
-  begin
-    rw [single_apply, single_apply],
-    ext,
-    split_ifs,
-    { rw h, },
-    { rw [zero_apply, single_apply, if_t_t], },
-  end
-
-  end finsupp
-
-  namespace add_monoid_algebra
-
-  variables (k : Type*) {G : Type*}
-  /--
-  The `alg_hom` which maps from a grading of an algebra `A` back to that algebra.
-  -/
-  noncomputable def sum_id {A : Type*} [comm_semiring k] [semiring A] [algebra k A] [add_monoid G] :
-    add_monoid_algebra A G →ₐ[k] A :=
-  lift_nc_alg_hom (alg_hom.id k A) ⟨λ g, 1, by simp, λ a b, by simp⟩ (by simp)
-
-  lemma sum_id_apply {A : Type*} [comm_semiring k] [semiring A] [algebra k A] [add_monoid G] (g : add_monoid_algebra A G) :
-    sum_id k g = g.sum (λ _ gi, gi) :=
-  by simp [sum_id, lift_nc_alg_hom, lift_nc_ring_hom, lift_nc, alg_hom.id, ring_hom.id]
-
-  end add_monoid_algebra
-
-  namespace opposite
-
-  variables (R : Type*) {M : Type*} [comm_semiring R] [semiring M] [algebra R M]
-
-  @[simps apply]
-  def op_linear_equiv : M ≃ₗ[R] Mᵒᵖ :=
-  { map_smul' := opposite.op_smul, .. op_add_equiv }
-
-  @[simp] lemma coe_op_linear_equiv : (op_linear_equiv R : M → Mᵒᵖ) = op := rfl
-  @[simp] lemma coe_op_linear_equiv_symm :
-    ((op_linear_equiv R).symm : Mᵒᵖ → M) = unop := rfl
-
-  @[simp] lemma coe_op_linear_equiv_to_linear_map : ((op_linear_equiv R).to_linear_map : M → Mᵒᵖ) = op := rfl
-  @[simp] lemma coe_op_linear_equiv_symm_to_linear_map :
-    ((op_linear_equiv R).symm.to_linear_map : Mᵒᵖ → M) = unop := rfl
-
-  end opposite
-
-end to_upstream
-
 
 variables {R : Type*} [comm_ring R]
 variables {M : Type*} [add_comm_group M] [module R M]
 variables {Q : quadratic_form R M}
 
 namespace clifford_algebra
+
+-- if this fails then you have the wrong branch of mathlib
+example : ring (clifford_algebra Q) := infer_instance
 
 /-- An induction principle for the `clifford_algebra` derived from `free_algebra.induction`.
 
@@ -192,27 +143,20 @@ section reverse
   lemma reverse_prod_sign_aux (n : ℕ) :
     (-1 : R)^((n + 1)*(n + 1 + 1)/2) = (-1 : R)^(n*(n + 1)/2) * (-1 : R)^(n + 1) :=
   begin
+    -- work with just the exponents
     rw ←pow_add,
     conv_rhs { rw neg_one_pow_eq_pow_mod_two },
     conv_lhs { rw neg_one_pow_eq_pow_mod_two },
     congr' 1,
-    rw [add_mul, one_mul, mul_add _ (n + 1), mul_one, add_assoc, add_assoc n 1 1, ←add_assoc n n],
-    rw nat.add_div,
-    rw nat.add_div,
-    rw nat.div_self,
-    rw nat.mod_self,
-    rw add_zero,
-    rw nat.add_mod (n + n),
-    rw nat.mod_self,
-    rw add_zero,
-    rw nat.mod_mod,
-    have h1 : (n + n) % 2 = 0 := by {rw ←mul_two, simp},
-    have h2 : n * (n + 1) % 2 = 0 := sorry, -- should be in mathlib, i hope?
-    have h3 : 2 ≠ 0 := by linarith,
-    simp [h1, h2, if_neg h3, ←mul_two],
-    linarith,
-    linarith,
-    linarith
+    -- work through the ugly nat proof
+    rw [add_mul, one_mul, mul_add _ (n + 1), mul_one, add_assoc, add_assoc n 1 1, ←add_assoc n n, ←mul_two, ←mul_two],
+    have : 0 < 2 := by linarith,
+    rw [nat.add_div_eq_of_add_mod_lt _, nat.add_div_eq_of_add_mod_lt _, nat.mul_div_cancel _ this, nat.mul_div_cancel _ this],
+    -- extra goals created by `add_div_eq_of_add_mod_lt`
+    { rw [nat.mul_mod_left, nat.mul_mod_left, zero_add],
+      exact this },
+    { rw [nat.add_mod (n * 2), nat.mul_mod_left, nat.mul_mod_left, add_zero, nat.zero_mod, add_zero],
+      exact nat.mod_lt _ this },
   end
   
   /-- TODO: this needs an assumption that the vectors are othogonal -/
