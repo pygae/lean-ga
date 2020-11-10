@@ -133,58 +133,66 @@ namespace rotors
 end rotors
 
 variables (Q)
-/-- The elements of at most grade `n` -/
-def r_multivectors : ℕ → submodule R (clifford_algebra Q)
+private def r_multivectors.def : ℕ → submodule R (clifford_algebra Q)
 | 0 := 1
 -- union needed here so that `r_multivectors Q 0 ≤ r_multivectors Q 1`
-| (n + 1) := (r_multivectors n * (ι Q).range) ⊔ r_multivectors n 
-variables {Q}
+| (n + 1) := (r_multivectors.def n * (ι Q).range) ⊔ r_multivectors.def n
 
-namespace r_multivectors
+private lemma r_multivectors.map_add {ai bi : ℕ} :
+  r_multivectors.def Q (ai + bi) = r_multivectors.def Q ai * r_multivectors.def Q bi :=
+begin
+  induction bi,
+  { ext x,
+    simp [r_multivectors.def, algebra.of_id_apply],
+  },
+  { simp [nat.succ_eq_add_one, ←nat.add_assoc, r_multivectors.def],
+    rw submodule.mul_sup,
+    rw [←submodule.mul_assoc, bi_ih], }
+end
 
-  lemma mono : monotone (r_multivectors Q) :=
-  λ n n' h, nat.le_induction (le_of_eq rfl) (λ n hn ih, ih.trans le_sup_right) _ h
+private lemma r_multivectors.mono : monotone (r_multivectors.def Q) :=
+λ n n' h, nat.le_induction (le_of_eq rfl) (λ n hn ih, ih.trans le_sup_right) _ h
 
-  /-- The r-vectors behave as a filtration -/
-  lemma mul_eq {ai bi : ℕ} :
-    r_multivectors Q ai * r_multivectors Q bi = r_multivectors Q (ai + bi) :=
-  begin
-    induction bi,
-    { ext x,
-      simp [r_multivectors, algebra.of_id_apply],
-    },
-    { simp [nat.succ_eq_add_one, ←nat.add_assoc, r_multivectors],
-      rw submodule.mul_sup,
-      rw [←submodule.mul_assoc, bi_ih], }
-  end
-
-  /-- All elements are r-multivectors -/
-  lemma exists_r (x : clifford_algebra Q) : ∃ n, x ∈ r_multivectors Q n :=
-  begin
+/-- The elements of at most grade `n` are a filtration -/
+def r_multivectors : algebra.filtration R (clifford_algebra Q) ℕ :=
+{ to_fun := r_multivectors.def Q,
+  mono' := r_multivectors.mono Q,
+  map_add' := λ i j, r_multivectors.map_add Q,
+  complete' := λ x, begin
     induction x using clifford_algebra.induction,
-    { use 0, simp [r_multivectors], },
-    { use 1, simp [r_multivectors],
+    { use 0, simp [r_multivectors.def], },
+    { use 1, simp [r_multivectors.def],
       refine submodule.mem_sup_left _,
       simp, },
     case h_mul : a b ha hb {
       obtain ⟨na, hna⟩ := ha,
       obtain ⟨nb, hnb⟩ := hb,
       use na + nb,
-      rw ← mul_eq,
+      rw r_multivectors.map_add,
       exact submodule.mul_mem_mul hna hnb,
     },
     case h_add : a b ha hb {
       obtain ⟨na, hna⟩ := ha,
       obtain ⟨nb, hnb⟩ := hb,
       use (na ⊔ nb),
-      replace hna := submodule.le_def'.mpr (mono le_sup_left) hna,
-      replace hnb := submodule.le_def'.mpr (mono le_sup_right) hnb,
+      replace hna := submodule.le_def'.mpr (r_multivectors.mono Q le_sup_left) hna,
+      replace hnb := submodule.le_def'.mpr (r_multivectors.mono Q le_sup_right) hnb,
       exact submodule.add_mem _ hna hnb,
     }
-  end
+  end,
+}
+variables {Q}
+
+namespace r_multivectors
   
-  /-- Another way of stating `exists_r` -/
-  lemma supr_eq_top (x : clifford_algebra Q) : supr (r_multivectors Q) = ⊤ :=
+  @[simp] lemma map_zero : r_multivectors Q 0 = 1 := rfl
+  @[simp] lemma map_succ (n) : r_multivectors Q (n + 1) = (r_multivectors Q n * (ι Q).range) ⊔ r_multivectors Q n := rfl
+
+  /-- Since the sets are monotonic, we can coerce up to a large set -/
+  instance (n r) : has_coe_t (r_multivectors Q n) (r_multivectors Q $ n + r) :=
+  { coe := λ x, ⟨x, submodule.le_def'.mpr ((r_multivectors Q).mono (nat.le_add_right n r)) x.prop⟩ }
+
+end r_multivectors
   begin
     rw submodule.supr_eq_span,
     suffices : (⋃ (i : ℕ), (r_multivectors Q i : set (clifford_algebra Q))) = ⊤,
