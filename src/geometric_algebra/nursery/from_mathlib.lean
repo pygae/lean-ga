@@ -193,16 +193,6 @@ namespace r_multivectors
   { coe := λ x, ⟨x, submodule.le_def'.mpr ((r_multivectors Q).mono (nat.le_add_right n r)) x.prop⟩ }
 
 end r_multivectors
-  begin
-    rw submodule.supr_eq_span,
-    suffices : (⋃ (i : ℕ), (r_multivectors Q i : set (clifford_algebra Q))) = ⊤,
-    { simp [this] },
-    refine set.eq_univ_of_forall (λ x, _),
-    simp only [set.mem_Union, submodule.mem_coe],
-    exact exists_r x,
-  end
-
-end r_multivectors
 
 section involute
 
