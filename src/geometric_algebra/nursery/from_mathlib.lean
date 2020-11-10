@@ -6,6 +6,8 @@ Authors: Eric Wieser
 import linear_algebra.clifford_algebra
 import data.zmod.basic
 import data.nat.parity
+import order.filter.basic
+import algebra.algebra.subalgebra
 
 import missing_from_mathlib
 
@@ -130,6 +132,70 @@ namespace rotors
 
 end rotors
 
+variables (Q)
+/-- The elements of at most grade `n` -/
+def r_multivectors : ℕ → submodule R (clifford_algebra Q)
+| 0 := 1
+-- union needed here so that `r_multivectors Q 0 ≤ r_multivectors Q 1`
+| (n + 1) := (r_multivectors n * (ι Q).range) ⊔ r_multivectors n 
+variables {Q}
+
+namespace r_multivectors
+
+  lemma mono : monotone (r_multivectors Q) :=
+  λ n n' h, nat.le_induction (le_of_eq rfl) (λ n hn ih, ih.trans le_sup_right) _ h
+
+  /-- The r-vectors behave as a filtration -/
+  lemma mul_eq {ai bi : ℕ} :
+    r_multivectors Q ai * r_multivectors Q bi = r_multivectors Q (ai + bi) :=
+  begin
+    induction bi,
+    { ext x,
+      simp [r_multivectors, algebra.of_id_apply],
+    },
+    { simp [nat.succ_eq_add_one, ←nat.add_assoc, r_multivectors],
+      rw submodule.mul_sup,
+      rw [←submodule.mul_assoc, bi_ih], }
+  end
+
+  /-- All elements are r-multivectors -/
+  lemma exists_r (x : clifford_algebra Q) : ∃ n, x ∈ r_multivectors Q n :=
+  begin
+    induction x using clifford_algebra.induction,
+    { use 0, simp [r_multivectors], },
+    { use 1, simp [r_multivectors],
+      refine submodule.mem_sup_left _,
+      simp, },
+    case h_mul : a b ha hb {
+      obtain ⟨na, hna⟩ := ha,
+      obtain ⟨nb, hnb⟩ := hb,
+      use na + nb,
+      rw ← mul_eq,
+      exact submodule.mul_mem_mul hna hnb,
+    },
+    case h_add : a b ha hb {
+      obtain ⟨na, hna⟩ := ha,
+      obtain ⟨nb, hnb⟩ := hb,
+      use (na ⊔ nb),
+      replace hna := submodule.le_def'.mpr (mono le_sup_left) hna,
+      replace hnb := submodule.le_def'.mpr (mono le_sup_right) hnb,
+      exact submodule.add_mem _ hna hnb,
+    }
+  end
+  
+  /-- Another way of stating `exists_r` -/
+  lemma supr_eq_top (x : clifford_algebra Q) : supr (r_multivectors Q) = ⊤ :=
+  begin
+    rw submodule.supr_eq_span,
+    suffices : (⋃ (i : ℕ), (r_multivectors Q i : set (clifford_algebra Q))) = ⊤,
+    { simp [this] },
+    refine set.eq_univ_of_forall (λ x, _),
+    simp only [set.mem_Union, submodule.mem_coe],
+    exact exists_r x,
+  end
+
+end r_multivectors
+
 section involute
 
   /-- Grade involution, inverting the sign of each basis vector -/
@@ -152,19 +218,18 @@ section involute
 
   @[simp]
   lemma involute_rotor (r : rotors Q) : involute (r : clifford_algebra Q) = r :=
-  begin
-    refine submonoid.closure_induction r.prop (λ x hx, _) _ (λ x y hx hy, _),
-    { cases hx,
-      { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
-        simp only [involute_algebra_map], },
-      { obtain ⟨a, b, ha, hb, rfl⟩ := set.mem_mul.mpr hx,
-        obtain ⟨av, rfl⟩ := ha,
-        obtain ⟨bv, rfl⟩ := hb,
-        rw involute.map_mul,
-        simp only [involute_ι, neg_mul_neg], } },
-    { rw involute.map_one, },
-    { rw [involute.map_mul, hx, hy], }
-  end
+  submonoid.closure_induction r.prop
+    (λ x hx, by {
+      cases hx,
+        { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
+          simp only [involute_algebra_map], },
+        { obtain ⟨a, b, ha, hb, rfl⟩ := set.mem_mul.mpr hx,
+          obtain ⟨av, rfl⟩ := ha,
+          obtain ⟨bv, rfl⟩ := hb,
+          rw involute.map_mul,
+          simp only [involute_ι, neg_mul_neg], } })
+    involute.map_one
+    (λ x y hx hy, by rw [involute.map_mul, hx, hy])
 
   lemma involute_prod_map_ι (l : list M) : involute (l.map $ ι Q).prod = ((-1 : R)^l.length) • (l.map $ ι Q).prod :=
   begin

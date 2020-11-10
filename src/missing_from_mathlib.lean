@@ -6,6 +6,8 @@ Authors: Eric Wieser
 import data.finsupp.basic
 import algebra.algebra.basic
 import algebra.monoid_algebra
+import algebra.algebra.operations
+import algebra.algebra.subalgebra
 
 /-! Random theorems that belong in mathlib which are not related to GA
 
@@ -77,3 +79,28 @@ begin
 end
 
 end submonoid
+
+namespace submodule
+
+variables {R : Type*} {A : Type*} [comm_semiring R] [semiring A] [algebra R A]
+
+def one_eq_algebra_of_id_range : (1 : submodule R A) = (algebra.of_id R A).range :=
+begin
+  dunfold has_one.one,
+  ext,
+  simp,
+end
+
+@[simp]
+def algebra_map_mem (r : R) : algebra_map R A r ∈ (1 : submodule R A) :=
+by simp [one_eq_algebra_of_id_range, algebra.of_id_apply]
+
+
+end submodule
+
+namespace set
+
+@[simp]
+lemma top_eq_univ (A : Type*) : (⊤ : set A) = set.univ := rfl
+
+end set
