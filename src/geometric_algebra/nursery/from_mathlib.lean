@@ -27,9 +27,11 @@ namespace clifford_algebra
 -- if this fails then you have the wrong branch of mathlib
 example : ring (clifford_algebra Q) := infer_instance
 
+local notation `↑ₐ`:max x:max := algebra_map _ _ x
+
 variables (Q)
 abbreviation clifford_hom (A : Type*) [semiring A] [algebra R A] :=
-{ f : M →ₗ[R] A // ∀ m, f m * f m = algebra_map R A (Q m) }
+{ f : M →ₗ[R] A // ∀ m, f m * f m = ↑ₐ(Q m) }
 variables {Q}
 
 /-- An induction principle for the `clifford_algebra` derived from `free_algebra.induction`.
@@ -69,6 +71,17 @@ begin
   simp [alg_hom.ext_iff] at of_id,
   exact of_id a,
 end
+
+/-- symmetric product of vectors is a scalar -/
+lemma vec_symm_prod (a b : M) : ι Q a * ι Q b + ι Q b * ι Q a = ↑ₐ(quadratic_form.polar Q a b) :=
+calc ι Q a * ι Q b + ι Q b * ι Q a
+      = ι Q (a + b) * ι Q (a + b) - ι Q a * ι Q a - ι Q b * ι Q b :
+          by { rw [(ι Q).map_add, mul_add, add_mul, add_mul], abel, }
+  ... = ↑ₐ(Q $ a + b) - ↑ₐ(Q a) - ↑ₐ(Q b) :
+          by rw [ι_square_scalar, ι_square_scalar, ι_square_scalar]
+  ... = ↑ₐ(Q (a + b) - Q a - Q b) :
+          by rw [←ring_hom.map_sub, ←ring_hom.map_sub]
+  ... = ↑ₐ(quadratic_form.polar Q a b) : rfl
 
 variables (Q)
 /-- The versors are the elements made up of products of vectors.
