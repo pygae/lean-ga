@@ -27,6 +27,11 @@ namespace clifford_algebra
 -- if this fails then you have the wrong branch of mathlib
 example : ring (clifford_algebra Q) := infer_instance
 
+variables (Q)
+abbreviation clifford_hom (A : Type*) [semiring A] [algebra R A] :=
+{ f : M →ₗ[R] A // ∀ m, f m * f m = algebra_map R A (Q m) }
+variables {Q}
+
 /-- An induction principle for the `clifford_algebra` derived from `free_algebra.induction`.
 
 If `C` holds for the `algebra_map` of `r : R` into `clifford_algebra Q`, the `ι` of `x : M`, and is
@@ -49,29 +54,24 @@ begin
     mul_mem' := h_mul,
     add_mem' := h_add,
     algebra_map_mem' := h_grade0, },
-  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = algebra_map R s (Q m) } :=
+  let of : clifford_hom Q s :=
   ⟨{
     to_fun := λ x, ⟨(ι Q) x, h_grade1 x⟩,
-    map_add' := λ x y, by { simp_rw (ι Q).map_add x y, refl, },
-    map_smul' := λ c x, by { simp_rw (ι Q).map_smul c x, refl, }, },
-    λ m, begin
-      change (⟨ι Q m * ι Q m, _⟩ : s) = ⟨algebra_map R (clifford_algebra Q) (Q m), _⟩,
-      simp_rw ι_square_scalar,
-    end ⟩,
+    map_add' := λ x y, subtype.eq $ (ι Q).map_add x y,
+    map_smul' := λ c x, subtype.eq $ (ι Q).map_smul c x, },
+    λ m, subtype.eq $ ι_square_scalar Q m ⟩,
   -- the mapping through the subalgebra is the identity
-  have of_id : alg_hom.id R (clifford_algebra Q) = s.val.comp (lift Q of of.prop),
+  have of_id : alg_hom.id R (clifford_algebra Q) = s.val.comp (lift Q of),
   { ext,
     simp [of, subtype.coind], },
   -- finding a proof is finding an element of the subalgebra
-  convert subtype.prop (lift Q of.1 of.prop a),
+  convert subtype.prop (lift Q of a),
   simp [alg_hom.ext_iff] at of_id,
   exact of_id a,
 end
 
-#check algebra.adjoin
-
 variables (Q)
-/-- The versors are the elements made up of products of vectors.begin
+/-- The versors are the elements made up of products of vectors.
 
 TODO: are scalars ≠1 considered versors? -/
 def versors := submonoid.closure (set.range (algebra_map R _) ∪ set.range (ι Q) )
@@ -198,7 +198,7 @@ section involute
 
   /-- Grade involution, inverting the sign of each basis vector -/
   def involute : clifford_algebra Q →ₐ[R] clifford_algebra Q :=
-  clifford_algebra.lift Q (-(ι Q)) $ λ m, by simp
+  clifford_algebra.lift Q ⟨-(ι Q), λ m, by simp⟩
 
   @[simp]
   lemma involute_ι (m : M) : involute (ι Q m) = -ι Q m :=
@@ -244,8 +244,8 @@ section reverse
   /-- Grade reversion, inverting the multiplication order of basis vectors -/
   def reverse : clifford_algebra Q →ₗ[R] clifford_algebra Q :=
   (op_linear_equiv R).symm.to_linear_map.comp (
-    clifford_algebra.lift Q ((opposite.op_linear_equiv R).to_linear_map.comp (ι Q))
-      $ λ m, unop_injective $ by simp).to_linear_map
+    clifford_algebra.lift Q ⟨(opposite.op_linear_equiv R).to_linear_map.comp (ι Q),
+      λ m, unop_injective $ by simp⟩).to_linear_map
 
   @[simp]
   lemma reverse_ι (m : M) : reverse (ι Q m) = ι Q m :=
@@ -328,12 +328,14 @@ section grades'
   This is _not_ the normal ℕ-graded definition that we usually use in GA. That definition is harder...
   -/
   noncomputable
-  def grades' : (clifford_algebra Q) →ₐ[R] add_monoid_algebra (clifford_algebra Q) (grade_type) :=
-  lift Q ((finsupp.lsingle 1).comp (ι Q)) $ λ x, begin
-    rw [linear_map.comp_apply, finsupp.lsingle_apply, add_monoid_algebra.single_mul_single],
-    simp,
-    congr,
-  end
+  def grades' : (clifford_algebra Q) →ₐ[R] add_monoid_algebra (clifford_algebra Q) grade_type :=
+  lift Q (⟨
+    (finsupp.lsingle 1).comp (ι Q),
+    λ x, begin
+      rw [linear_map.comp_apply, finsupp.lsingle_apply, add_monoid_algebra.single_mul_single],
+      simp,
+      congr, -- this requires 1 + 1 = 0, which is why we use `zmod 2` as our grading
+    end⟩ : clifford_hom Q (add_monoid_algebra (clifford_algebra Q) grade_type))
 
 
   /-- Recombining the grades recovers the original element-/

@@ -98,13 +98,6 @@ by simp [one_eq_algebra_of_id_range, algebra.of_id_apply]
 
 end submodule
 
-namespace set
-
-@[simp]
-lemma top_eq_univ (A : Type*) : (⊤ : set A) = set.univ := rfl
-
-end set
-
 namespace algebra
 
 /-- A filtration is an indexed family of submodules such that `i ≤ j → S i ≤ S j` and `S i * S j = S (i + j)` -/
