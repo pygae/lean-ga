@@ -157,3 +157,5 @@ namespace r_multivectors
   { coe := λ x, ⟨x, submodule.le_def'.mpr ((r_multivectors Q).mono (nat.le_add_right n r)) x.prop⟩ }
 
 end r_multivectors
+
+end clifford_algebra

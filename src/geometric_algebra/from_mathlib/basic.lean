@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2020 Eric Wieser. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
 import linear_algebra.clifford_algebra
 import missing_from_mathlib
 
