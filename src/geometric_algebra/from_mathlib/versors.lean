@@ -10,9 +10,9 @@ variables {R : Type*} [comm_ring R]
 variables {M : Type*} [add_comm_group M] [module R M]
 variables {Q : quadratic_form R M}
 /-!
-# Versors, Rotors, Multivectors, and other subspaces
+# Versors, spinors, Multivectors, and other subspaces
 
-This file defines the `versors`, `rotors`, and `r_multivectors`.
+This file defines the `versors`, `spinors`, and `r_multivectors`.
 -/
 
 namespace clifford_algebra
@@ -34,28 +34,108 @@ namespace versors
   @[simp] lemma algebra_map_mem (r : R) : ↑ₐr ∈ versors Q :=
   submonoid.subset_closure $ or.inl $ set.mem_range_self r
 
-  /-- The versors are closed under scalar multiplication -/
+  @[simp] lemma smul_mem (k : R) {v : clifford_algebra Q} (h : v ∈ versors Q) : k • v ∈ versors Q :=
+  begin
+    rw algebra.smul_def,
+    exact (versors Q).mul_mem (algebra_map_mem k) h,
+  end
+
+  @[simp] lemma neg_mem {v : clifford_algebra Q} (h : v ∈ versors Q) : -v ∈ versors Q :=
+  begin
+    rw neg_eq_neg_one_mul,
+    rw [←(algebra_map R _).map_one, ←(algebra_map R _).map_neg, ←algebra.smul_def],
+    exact versors.smul_mem (-1) h,
+  end
+
   instance : mul_action R (versors Q) :=
-  { smul := λ k v, ⟨k • v, by {
-      rw algebra.smul_def,
-      exact (versors Q).mul_mem (algebra_map_mem k) v.prop,
-    }⟩,
+  { smul := λ k v, ⟨k • v, smul_mem k v.prop⟩,
     one_smul := λ v, subtype.eq $ one_smul _ v,
     mul_smul := λ k₁ k₂ v, subtype.eq $ mul_smul k₁ k₂ v, }
+  
+  instance : has_neg (versors Q) :=
+  { neg := λ v, ⟨-v, neg_mem v.prop⟩ }
+
+  lemma induction_on {C : versors Q → Prop}
+    (v : versors Q)
+    (h_grade0 : ∀ (r : R), C ⟨↑ₐr, algebra_map_mem r⟩)
+    (h_grade1 : ∀ m, C ⟨ι Q m, ι_mem m⟩)
+    (h_mul : ∀ (a b : versors Q), C a → C b → C (a * b)) :
+    C v :=
+  submonoid.closure_induction' _ _
+    (λ x hx, by {
+      cases hx,
+        { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
+          exact h_grade0 a, },
+        { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
+          exact h_grade1 a, } })
+    (h_grade0 (1 : R))
+    h_mul v
+
+  /-- Involute of a versor is a versor -/
+  @[simp] lemma involute_mem (v : versors Q) : involute (v : clifford_algebra Q) ∈ versors Q :=
+  begin
+    apply induction_on v,
+    { intro r, simp, },
+    { intro m, simp, },
+    { intros a b ha hb, simp [(versors Q).mul_mem ha hb] }
+  end
+
+  /-- Reverse of a versor is a versor -/
+  @[simp] lemma reverse_mem (v : versors Q) : reverse (v : clifford_algebra Q) ∈ versors Q :=
+  begin
+    apply induction_on v,
+    { intro r, simp, },
+    { intro m, simp, },
+    { intros a b ha hb, simp [(versors Q).mul_mem hb ha] }
+  end
+
+  /-- A versor times its reverse is a scalar
+  
+  TODO: Can we compute `r` constructively? -/
+  lemma mul_self_reverse (v : versors Q) :
+    ∃ r : R, (v : clifford_algebra Q) * reverse (v : clifford_algebra Q) = ↑ₐr :=
+  begin
+    refine submonoid.closure_induction' _ _ (λ x hx, _) _ (λ x y hx hy, _) v,
+    { cases hx,
+      { obtain ⟨r, rfl⟩ := set.mem_range.mpr hx,
+        refine ⟨r * r, _⟩,
+        simp, },
+      { obtain ⟨m, rfl⟩ := set.mem_range.mpr hx,
+        refine ⟨Q m, _⟩,
+        simp, }, },
+    { refine ⟨1, _⟩, simp },
+    { obtain ⟨qx, hx⟩ := hx,
+      obtain ⟨qy, hy⟩ := hy,
+      refine ⟨qx * qy, _⟩,
+      simp only [reverse_mul, submonoid.coe_mul, ring_hom.map_mul],
+      rw [mul_assoc ↑x, ←mul_assoc ↑y, hy, algebra.commutes, ←mul_assoc, hx],
+    }
+  end
+
+  /-- A versor's reverse times itself is a scalar
+  
+  TODO: Can we compute `r` constructively? -/
+  lemma reverse_mul_self (v : versors Q) :
+    ∃ r : R, reverse (v : clifford_algebra Q) * (v : clifford_algebra Q) = ↑ₐr :=
+  begin
+    obtain ⟨r, hr⟩ := mul_self_reverse ⟨reverse (v : clifford_algebra Q), reverse_mem v⟩,
+    refine ⟨r, _⟩,
+    simpa [reverse_involutive ↑v] using hr,
+  end 
 
 end versors
 
 variables (Q)
-/-- The rotors are the versors with an even number of factors -/
-def rotors := submonoid.closure (set.range (algebra_map R _) ∪ set.range (ι Q) * set.range (ι Q) )
+/-- The spinors are the versors with an even number of factors -/
+def spinors := submonoid.closure (set.range (algebra_map R _) ∪ set.range (ι Q) * set.range (ι Q) )
 variables {Q}
 
-namespace rotors
+namespace spinors
 
-  /-- The rotors are versors -/
-  lemma subset_versors : rotors Q ≤ versors Q :=
+  /-- The spinors are versors -/
+  lemma subset_versors : spinors Q ≤ versors Q :=
   begin
-    unfold rotors versors,
+    unfold spinors versors,
     rw submonoid.closure_union,
     rw submonoid.closure_union,
     apply sup_le_sup_left _ _,
@@ -63,25 +143,71 @@ namespace rotors
     exact submonoid.mul_subset_closure _,
   end
 
-  @[simp] lemma ι_mul_mem (m n : M) : ι Q m * ι Q n ∈ rotors Q :=
+  @[simp] lemma ι_mul_mem (m n : M) : ι Q m * ι Q n ∈ spinors Q :=
   submonoid.subset_closure $ or.inr $ set.mul_mem_mul (set.mem_range_self m) (set.mem_range_self n)
 
-  @[simp] lemma algebra_map_mem (r : R) : ↑ₐr ∈ rotors Q :=
+  @[simp] lemma algebra_map_mem (r : R) : ↑ₐr ∈ spinors Q :=
   submonoid.subset_closure $ or.inl $ set.mem_range_self r
 
-  /-- The rotors are closed under scalar multiplication -/
-  instance : mul_action R (rotors Q) :=
-  { smul := λ k v, ⟨k • v, by {
-      rw algebra.smul_def,
-      exact (rotors Q).mul_mem (algebra_map_mem k) v.prop,
-    }⟩,
+  @[simp] lemma smul_mem (k : R) {v : clifford_algebra Q} (h : v ∈ spinors Q) : k • v ∈ spinors Q :=
+  begin
+    rw algebra.smul_def,
+    exact (spinors Q).mul_mem (algebra_map_mem k) h,
+  end
+
+  @[simp] lemma neg_mem {v : clifford_algebra Q} (h : v ∈ spinors Q) : -v ∈ spinors Q :=
+  begin
+    rw neg_eq_neg_one_mul,
+    rw [←(algebra_map R _).map_one, ←(algebra_map R _).map_neg, ←algebra.smul_def],
+    exact smul_mem (-1) h,
+  end
+
+  instance : mul_action R (spinors Q) :=
+  { smul := λ k v, ⟨k • v, smul_mem k v.prop⟩,
     one_smul := λ v, subtype.eq $ one_smul _ v,
     mul_smul := λ k₁ k₂ v, subtype.eq $ mul_smul k₁ k₂ v, }
 
-end rotors
+  instance : has_neg (spinors Q) :=
+  { neg := λ v, ⟨-v, neg_mem v.prop⟩ }
+
+  lemma induction_on {C : spinors Q → Prop}
+    (v : spinors Q)
+    (h_grade0 : ∀ (r : R), C ⟨↑ₐr, algebra_map_mem r⟩)
+    (h_grade2 : ∀ m n, C ⟨ι Q m * ι Q n, ι_mul_mem m n⟩)
+    (h_mul : ∀ (a b : spinors Q), C a → C b → C (a * b)) :
+    C v :=
+  submonoid.closure_induction' _ _
+    (λ x hx, by {
+      cases hx,
+        { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
+          exact h_grade0 a, },
+        { obtain ⟨_, _, ⟨a, rfl⟩, ⟨b, rfl⟩, rfl⟩ := set.mem_mul.mpr hx,
+          exact h_grade2 a b, } })
+    (h_grade0 (1 : R))
+    h_mul v
+
+  /-- Involute of a spinor is a spinor -/
+  @[simp] lemma involute_mem (v : spinors Q) : involute (v : clifford_algebra Q) ∈ spinors Q :=
+  begin
+    apply induction_on v,
+    { intro r, simp, },
+    { intros m n, simp, },
+    { intros a b ha hb, simp [(spinors Q).mul_mem ha hb] }
+  end
+
+  /-- Reverse of a spinor is a spinor -/
+  @[simp] lemma reverse_mem (v : spinors Q) : reverse (v : clifford_algebra Q) ∈ spinors Q :=
+  begin
+    apply induction_on v,
+    { intro r, simp, },
+    { intro m, simp, },
+    { intros a b ha hb, simp [(spinors Q).mul_mem hb ha] }
+  end
+
+end spinors
 
 @[simp]
-lemma involute_rotor (r : rotors Q) : involute (r : clifford_algebra Q) = r :=
+lemma involute_spinor (r : spinors Q) : involute (r : clifford_algebra Q) = r :=
 submonoid.closure_induction r.prop
   (λ x hx, by {
     cases hx,

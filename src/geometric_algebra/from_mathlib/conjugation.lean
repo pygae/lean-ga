@@ -72,6 +72,7 @@ section reverse
   lemma reverse_mul (a b : clifford_algebra Q) : reverse (a * b) = reverse b * reverse a :=
   by simp [reverse]
 
+  @[simp]
   lemma reverse_involutive : function.involutive (reverse : clifford_algebra Q → clifford_algebra Q) :=
   begin
     intro x,
