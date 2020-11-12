@@ -55,6 +55,13 @@ namespace versors
   instance : has_neg (versors Q) :=
   { neg := λ v, ⟨-v, neg_mem v.prop⟩ }
 
+  instance : has_zero (versors Q) :=
+  { zero := ⟨0, algebra_map_mem 0⟩ }
+
+  @[simp] lemma zero_mul (v : versors Q) : 0 * v = 0 := subtype.eq $ zero_mul ↑v
+  
+  @[simp] lemma mul_zero (v : versors Q) : v * 0 = 0 := subtype.eq $ mul_zero ↑v
+
   lemma induction_on {C : versors Q → Prop}
     (v : versors Q)
     (h_grade0 : ∀ (r : R), C ⟨↑ₐr, algebra_map_mem r⟩)
@@ -121,7 +128,69 @@ namespace versors
     obtain ⟨r, hr⟩ := mul_self_reverse ⟨reverse (v : clifford_algebra Q), reverse_mem v⟩,
     refine ⟨r, _⟩,
     simpa [reverse_involutive ↑v] using hr,
-  end 
+  end
+
+  /-- The magnitude of a versor.
+  
+  Note we can't put this in `R` unless we know `algebra_map` is injective.
+  This is kind of annoying, because it means that even if we have `field R`, we can't invert the
+  magnitude
+  -/
+  def magnitude : versors Q →* (algebra_map R $ clifford_algebra Q).range :=
+  { to_fun := λ v, ⟨(v : clifford_algebra Q) * reverse (v : clifford_algebra Q),
+      let ⟨r, hr⟩ := mul_self_reverse v in ring_hom.mem_range.mpr ⟨r, hr.symm⟩⟩,
+    map_mul' := λ x y, by {
+      ext,
+      simp only [subring.coe_mul, reverse_mul, submonoid.coe_mul, subtype.coe_mk],
+      obtain ⟨_, hx⟩ := mul_self_reverse x,
+      obtain ⟨_, hy⟩ := mul_self_reverse y,
+      rw [mul_assoc ↑x, ←mul_assoc ↑y, hy, algebra.commutes, ←mul_assoc, hx],
+    },
+    map_one' := by { ext, simp} }
+
+  section field
+
+  variables {R' : Type*} [field R'] {M' : Type*} [add_comm_group M'] [module R' M'] {Q' : quadratic_form R' M'}
+
+  /-- When `R'` is a field, we can define the inverse as `~V / (V * ~V)`.
+  
+  Until we resolve the problems above about getting `r` constructively, we are forced to use the axiom of choice here -/
+  @[simps inv]
+  noncomputable instance : has_inv (versors Q') :=
+  { inv := λ v, (classical.some (magnitude v).prop)⁻¹ • ⟨reverse (v : clifford_algebra Q'), reverse_mem v⟩ }
+
+  noncomputable instance [fact (∀ m ≠ 0, Q' m ≠ 0)] : group_with_zero (versors Q') :=
+  {
+    zero_mul := zero_mul,
+    mul_zero := mul_zero,
+    exists_pair_ne := sorry,  -- trivial, but we need to work out appropriate assumptions
+    inv_zero := begin
+      rw has_inv_inv,
+      ext,
+      change _ • reverse 0 = 0,
+      rw reverse.map_zero,
+      rw smul_zero,
+    end,
+    mul_inv_cancel := λ a ha, begin
+      let r := (magnitude a),
+      rw has_inv_inv,
+      ext,
+      change ↑a * _ • reverse ↑a = 1,
+      rw algebra.mul_smul_comm,
+      rw inv_smul_eq_iff',
+      { rw [algebra.smul_def, mul_one],
+        obtain ⟨r', hr'⟩ := mul_self_reverse a,
+        convert hr',
+        sorry -- have to prove that `r' = classical.some ...`, which seems hard / false
+        },
+      { sorry -- have to prove that the divisor is not zero, which will come later.
+        }
+    end,
+    ..(infer_instance : has_zero (versors Q')),
+    ..(infer_instance : monoid (versors Q')),
+    ..(infer_instance : has_inv (versors Q'))}
+
+  end field
 
 end versors
 
