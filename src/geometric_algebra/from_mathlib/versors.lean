@@ -55,12 +55,20 @@ namespace versors
   instance : has_neg (versors Q) :=
   { neg := λ v, ⟨-v, neg_mem v.prop⟩ }
 
-  instance : has_zero (versors Q) :=
-  { zero := ⟨0, algebra_map_mem 0⟩ }
+  instance : monoid_with_zero (versors Q) :=
+  { zero := ⟨0, algebra_map_mem 0⟩,
+    zero_mul := λ v, subtype.eq $ zero_mul ↑v,
+    mul_zero := λ v, subtype.eq $ mul_zero ↑v,
+    ..(infer_instance : monoid (versors Q)) }
 
-  @[simp] lemma zero_mul (v : versors Q) : 0 * v = 0 := subtype.eq $ zero_mul ↑v
-  
-  @[simp] lemma mul_zero (v : versors Q) : v * 0 = 0 := subtype.eq $ mul_zero ↑v
+  @[simp, norm_cast] lemma coe_zero : ((0 : versors Q) : clifford_algebra Q) = 0 := rfl
+  @[simp, norm_cast] lemma coe_neg (v : versors Q) : (↑-v : clifford_algebra Q) = -v := rfl
+  @[simp, norm_cast] lemma coe_smul (k : R) (v : versors Q) : (↑(k • v) : clifford_algebra Q) = k • v := rfl
+
+
+  /-- TODO: work out what the necessary conditions are here-/
+  instance : nontrivial (versors Q) :=
+  { exists_pair_ne := sorry }
 
   lemma induction_on {C : versors Q → Prop}
     (v : versors Q)
@@ -102,17 +110,14 @@ namespace versors
   lemma mul_self_reverse (v : versors Q) :
     ∃ r : R, (v : clifford_algebra Q) * reverse (v : clifford_algebra Q) = ↑ₐr :=
   begin
-    refine submonoid.closure_induction' _ _ (λ x hx, _) _ (λ x y hx hy, _) v,
-    { cases hx,
-      { obtain ⟨r, rfl⟩ := set.mem_range.mpr hx,
-        refine ⟨r * r, _⟩,
-        simp, },
-      { obtain ⟨m, rfl⟩ := set.mem_range.mpr hx,
-        refine ⟨Q m, _⟩,
-        simp, }, },
-    { refine ⟨1, _⟩, simp },
-    { obtain ⟨qx, hx⟩ := hx,
-      obtain ⟨qy, hy⟩ := hy,
+    apply induction_on v,
+    { intro r,
+      refine ⟨r * r, _⟩,
+      simp, },
+    { intro m,
+      refine ⟨Q m, _⟩,
+      simp, },
+    { rintros x y ⟨qx, hx⟩ ⟨qy, hy⟩,
       refine ⟨qx * qy, _⟩,
       simp only [reverse_mul, submonoid.coe_mul, ring_hom.map_mul],
       rw [mul_assoc ↑x, ←mul_assoc ↑y, hy, algebra.commutes, ←mul_assoc, hx],
@@ -130,40 +135,118 @@ namespace versors
     simpa [reverse_involutive ↑v] using hr,
   end
 
-  /-- The magnitude of a versor.
+  /-- The magnitude of a versor. -/
+  @[simps apply]
+  def magnitude_aux : versors Q →* clifford_algebra Q :=
+  { to_fun := λ v, (v : clifford_algebra Q) * reverse (v : clifford_algebra Q),
+    map_mul' := λ x y, by {
+      simp only [reverse_mul, submonoid.coe_mul],
+      obtain ⟨_, hx⟩ := mul_self_reverse x,
+      obtain ⟨_, hy⟩ := mul_self_reverse y,
+      rw [mul_assoc ↑x, ←mul_assoc ↑y, hy, algebra.commutes, ←mul_assoc, hx],
+    },
+    map_one' := by { simp } }
+
+  def magnitude_aux_exists_scalar (v : versors Q) : ∃ r, magnitude_aux v = ↑ₐr :=
+  mul_self_reverse v
+  
+  /--
+  Only zero versors have zero magnitude, assuming:
+
+   - The metric is not degenerate (`hqnz`)
+   - `0` remains `0` when mapped from `R` into `clifford_algebra Q`
+   - `R` has no zero divisors
+
+  It's possible these last two requirements can be relaxed somehow.
+  -/
+  lemma magnitude_aux_zero (v : versors Q)
+    [no_zero_divisors R]
+    (hqnz : ∀ m, Q m = 0 → m = 0)
+    (h0 : ∀ r, algebra_map R (clifford_algebra Q) r = 0 → r = 0) :
+    magnitude_aux v = 0 ↔ v = 0 :=
+  ⟨begin
+    apply induction_on v,
+    { intros r hr,
+      simp only [subtype.coe_mk, magnitude_aux_apply, reverse_algebra_map] at hr,
+      ext, simp only [coe_zero, subtype.coe_mk],
+      rw [←ring_hom.map_mul] at hr,
+      replace hr := h0 _ hr,
+      rw mul_self_eq_zero at hr,
+      rw [hr, ring_hom.map_zero], },
+    { intros m hm,
+      simp at hm,
+      ext, simp,
+      replace hm := hqnz _ (h0 _ hm),
+      rw [hm, (ι Q).map_zero],
+    },
+    { intros a b ha hb hab,
+      rw magnitude_aux.map_mul at hab,
+      obtain ⟨ra, ha'⟩ := magnitude_aux_exists_scalar a,
+      obtain ⟨rb, hb'⟩ := magnitude_aux_exists_scalar b,
+      rw ha' at ha,
+      rw hb' at hb,
+      rw [ha', hb'] at hab,
+      rw ←ring_hom.map_mul at hab,
+      replace hab := h0 _ hab,
+      obtain (ha'' | hb'') := mul_eq_zero.mp hab,
+      { rw [ha'', ring_hom.map_zero] at ha, rw [ha rfl, zero_mul] },
+      { rw [hb'', ring_hom.map_zero] at hb, rw [hb rfl, mul_zero] }
+    },
+  end, λ h, begin
+    rw h,
+    exact zero_mul (reverse 0),
+  end⟩
+
+  /-- The magnitude of a versor, as a member of the subalgebra of scalars
   
   Note we can't put this in `R` unless we know `algebra_map` is injective.
   This is kind of annoying, because it means that even if we have `field R`, we can't invert the
   magnitude
   -/
-  def magnitude : versors Q →* (algebra_map R $ clifford_algebra Q).range :=
-  { to_fun := λ v, ⟨(v : clifford_algebra Q) * reverse (v : clifford_algebra Q),
-      let ⟨r, hr⟩ := mul_self_reverse v in ring_hom.mem_range.mpr ⟨r, hr.symm⟩⟩,
-    map_mul' := λ x y, by {
-      ext,
-      simp only [subring.coe_mul, reverse_mul, submonoid.coe_mul, subtype.coe_mk],
-      obtain ⟨_, hx⟩ := mul_self_reverse x,
-      obtain ⟨_, hy⟩ := mul_self_reverse y,
-      rw [mul_assoc ↑x, ←mul_assoc ↑y, hy, algebra.commutes, ←mul_assoc, hx],
-    },
-    map_one' := by { ext, simp} }
+  @[simps apply]
+  def magnitude : versors Q →* (⊥ : subalgebra R $ clifford_algebra Q) :=
+  { to_fun := λ v, ⟨magnitude_aux v,
+      let ⟨r, hr⟩ := mul_self_reverse v in algebra.mem_bot.mpr ⟨r, hr.symm⟩⟩,
+    map_mul' := λ x y, subtype.ext $ magnitude_aux.map_mul x y,
+    map_one' := subtype.ext $ magnitude_aux.map_one }
+
+  noncomputable def magnitude_R (hi : function.injective $ algebra_map R (clifford_algebra Q)) : versors Q →* R :=
+  { to_fun := λ v, classical.some (magnitude_aux_exists_scalar v),
+    map_mul' := λ x y, hi begin
+      rw ring_hom.map_mul,
+      rw ←classical.some_spec (magnitude_aux_exists_scalar x),
+      rw ←classical.some_spec (magnitude_aux_exists_scalar y),
+      rw ←classical.some_spec (magnitude_aux_exists_scalar (x * y)),
+      exact magnitude_aux.map_mul x y,
+    end,
+    map_one' := hi begin
+      rw ring_hom.map_one,
+      rw ←classical.some_spec (magnitude_aux_exists_scalar 1),
+      exact magnitude_aux.map_one,
+    end }
+
+  @[simp]
+  lemma magnitude_R_eq (hi) (v : versors Q) : (↑ₐ(magnitude_R hi v) : clifford_algebra Q) = magnitude v := begin
+    unfold magnitude_R,
+    simp only [submodule.coe_mk, monoid_hom.coe_mk],
+    have := classical.some_spec (magnitude_aux_exists_scalar v),
+    rw ← this,
+    simp,
+  end
 
   section field
 
-  variables {R' : Type*} [field R'] {M' : Type*} [add_comm_group M'] [module R' M'] {Q' : quadratic_form R' M'}
+  variables {R' : Type*} [field R'] {M' : Type*} [add_comm_group M'] [module R' M'] {Q' : quadratic_form R' M'} [nontrivial (clifford_algebra Q')]
 
   /-- When `R'` is a field, we can define the inverse as `~V / (V * ~V)`.
   
   Until we resolve the problems above about getting `r` constructively, we are forced to use the axiom of choice here -/
   @[simps inv]
   noncomputable instance : has_inv (versors Q') :=
-  { inv := λ v, (classical.some (magnitude v).prop)⁻¹ • ⟨reverse (v : clifford_algebra Q'), reverse_mem v⟩ }
+  { inv := λ v, (magnitude_R (algebra_map R' _).injective v)⁻¹ • ⟨reverse (v : clifford_algebra Q'), reverse_mem v⟩ }
 
-  noncomputable instance [fact (∀ m ≠ 0, Q' m ≠ 0)] : group_with_zero (versors Q') :=
+  noncomputable instance [f : fact (∀ m, Q' m = 0 → m = 0)] : group_with_zero (versors Q') :=
   {
-    zero_mul := zero_mul,
-    mul_zero := mul_zero,
-    exists_pair_ne := sorry,  -- trivial, but we need to work out appropriate assumptions
     inv_zero := begin
       rw has_inv_inv,
       ext,
@@ -179,15 +262,21 @@ namespace versors
       rw algebra.mul_smul_comm,
       rw inv_smul_eq_iff',
       { rw [algebra.smul_def, mul_one],
-        obtain ⟨r', hr'⟩ := mul_self_reverse a,
-        convert hr',
-        sorry -- have to prove that `r' = classical.some ...`, which seems hard / false
-        },
-      { sorry -- have to prove that the divisor is not zero, which will come later.
+        simp only [magnitude_R_eq, ←magnitude_aux_apply, magnitude_apply, subtype.coe_mk], },
+      { intro h, apply ha,
+        -- TODO: the fact that we use `congr_arg` only to then use `injective` suggests that we can relax the constraints in
+        -- magnitude_aux_zero.
+        have := (algebra_map R' (clifford_algebra Q')).congr_arg h,
+        rw [magnitude_R_eq, ring_hom.map_zero, magnitude_apply, submodule.coe_mk] at this,
+        rw ← magnitude_aux_zero,
+        exact this,
+        exact f.elim,
+        intros r h,
+        exact (algebra_map R' (clifford_algebra Q')).injective h,
         }
     end,
-    ..(infer_instance : has_zero (versors Q')),
-    ..(infer_instance : monoid (versors Q')),
+    ..(infer_instance : nontrivial (versors Q')),
+    ..(infer_instance : monoid_with_zero (versors Q')),
     ..(infer_instance : has_inv (versors Q'))}
 
   end field
