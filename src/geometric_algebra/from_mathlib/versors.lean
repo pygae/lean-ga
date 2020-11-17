@@ -76,7 +76,7 @@ namespace versors
     (h_grade1 : ∀ m, C ⟨ι Q m, ι_mem m⟩)
     (h_mul : ∀ (a b : versors Q), C a → C b → C (a * b)) :
     C v :=
-  submonoid.closure_induction' _ _
+  submonoid.closure_induction' _
     (λ x hx, by {
       cases hx,
         { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
@@ -137,7 +137,7 @@ namespace versors
 
   /-- The magnitude of a versor. -/
   @[simps apply]
-  def magnitude_aux : versors Q →* clifford_algebra Q :=
+  def magnitude_aux : monoid_with_zero_hom (versors Q) (clifford_algebra Q) :=
   { to_fun := λ v, (v : clifford_algebra Q) * reverse (v : clifford_algebra Q),
     map_mul' := λ x y, by {
       simp only [reverse_mul, submonoid.coe_mul],
@@ -145,7 +145,8 @@ namespace versors
       obtain ⟨_, hy⟩ := mul_self_reverse y,
       rw [mul_assoc ↑x, ←mul_assoc ↑y, hy, algebra.commutes, ←mul_assoc, hx],
     },
-    map_one' := by { simp } }
+    map_one' := by simp,
+    map_zero' := by simp }
 
   def magnitude_aux_exists_scalar (v : versors Q) : ∃ r, magnitude_aux v = ↑ₐr :=
   mul_self_reverse v
@@ -204,13 +205,15 @@ namespace versors
   magnitude
   -/
   @[simps apply]
-  def magnitude : versors Q →* (⊥ : subalgebra R $ clifford_algebra Q) :=
+  def magnitude : monoid_with_zero_hom (versors Q) (⊥ : subalgebra R $ clifford_algebra Q) :=
   { to_fun := λ v, ⟨magnitude_aux v,
       let ⟨r, hr⟩ := mul_self_reverse v in algebra.mem_bot.mpr ⟨r, hr.symm⟩⟩,
     map_mul' := λ x y, subtype.ext $ magnitude_aux.map_mul x y,
-    map_one' := subtype.ext $ magnitude_aux.map_one }
+    map_one' := subtype.ext $ magnitude_aux.map_one,
+    map_zero' := subtype.ext $ magnitude_aux.map_zero }
 
-  noncomputable def magnitude_R (hi : function.injective $ algebra_map R (clifford_algebra Q)) : versors Q →* R :=
+  noncomputable def magnitude_R (hi : function.injective $ algebra_map R (clifford_algebra Q)) :
+    monoid_with_zero_hom (versors Q) R :=
   { to_fun := λ v, classical.some (magnitude_aux_exists_scalar v),
     map_mul' := λ x y, hi begin
       rw ring_hom.map_mul,
@@ -223,12 +226,17 @@ namespace versors
       rw ring_hom.map_one,
       rw ←classical.some_spec (magnitude_aux_exists_scalar 1),
       exact magnitude_aux.map_one,
+    end,
+    map_zero' := hi begin
+      rw ring_hom.map_zero,
+      rw ←classical.some_spec (magnitude_aux_exists_scalar 0),
+      exact magnitude_aux.map_zero,
     end }
 
   @[simp]
   lemma magnitude_R_eq (hi) (v : versors Q) : (↑ₐ(magnitude_R hi v) : clifford_algebra Q) = magnitude v := begin
     unfold magnitude_R,
-    simp only [submodule.coe_mk, monoid_hom.coe_mk],
+    simp only [submodule.coe_mk, monoid_with_zero_hom.coe_mk],
     have := classical.some_spec (magnitude_aux_exists_scalar v),
     rw ← this,
     simp,
@@ -275,7 +283,7 @@ namespace versors
         exact (algebra_map R' (clifford_algebra Q')).injective h,
         }
     end,
-    ..(infer_instance : nontrivial (versors Q')),
+    ..versors.nontrivial,
     ..(infer_instance : monoid_with_zero (versors Q')),
     ..(infer_instance : has_inv (versors Q'))}
 
@@ -298,7 +306,7 @@ namespace spinors
     rw submonoid.closure_union,
     apply sup_le_sup_left _ _,
     rw submonoid.closure_le,
-    exact submonoid.mul_subset_closure _,
+    exact submonoid.mul_subset_closure (set.subset.refl _) (set.subset.refl _),
   end
 
   @[simp] lemma ι_mul_mem (m n : M) : ι Q m * ι Q n ∈ spinors Q :=
@@ -334,7 +342,7 @@ namespace spinors
     (h_grade2 : ∀ m n, C ⟨ι Q m * ι Q n, ι_mul_mem m n⟩)
     (h_mul : ∀ (a b : spinors Q), C a → C b → C (a * b)) :
     C v :=
-  submonoid.closure_induction' _ _
+  submonoid.closure_induction' _
     (λ x hx, by {
       cases hx,
         { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
