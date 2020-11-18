@@ -66,5 +66,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: my-artifact
-        path: export.json
+        path: doc-gen/export.json
         
