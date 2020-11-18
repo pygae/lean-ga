@@ -60,7 +60,7 @@ jobs:
       run: |
         cd doc-gen
         lean -v
-        lean src/entrypoint.lean
+        lean src/entrypoint.lean > export.json
         
     - name: doc-gen - upload
       uses: actions/upload-artifact@v2
