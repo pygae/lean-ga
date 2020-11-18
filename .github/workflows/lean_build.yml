@@ -49,12 +49,12 @@ jobs:
         cat leanpkg.toml
         cat leanpkg.path
         leanproject get-mathlib-cache
-        
-        find ".." -name \*.lean -not -name all.lean \
+        (cd ../src;
+        find "." -name \*.lean -not -name all.lean \
           | sed 's,^\./,,;s,\.lean$,,;s,/,.,g;s,^,import ,' \
-          | sort >../all.lean
+          | sort >./all.lean)
           
-        cat ../all.lean
+        cat ../src/all.lean
   
     - name: doc-gen - run
       run: |
