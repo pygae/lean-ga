@@ -43,7 +43,7 @@ jobs:
         
     - name: doc-gen - run
       run: |
-        doc-gen/gen-docs -w 'https://pygae.github.io/lean-ga/' -r 'src' -t 'build-docs'
+        doc-gen/gen_docs -w 'https://pygae.github.io/lean-ga/' -r 'src' -t 'build-docs'
         
     - name: doc-gen - upload
       uses: actions/upload-artifact@v2
