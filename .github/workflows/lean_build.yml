@@ -64,9 +64,14 @@ jobs:
         lean src/entrypoint.lean || true
         head -c1000 export.json
         
+    - name: doc-gen - build html
+      run: |
+        cd doc-gen
+        python3 print_docs.py -r .. -w 'https://pygae.github.io/lean-ga/' -t built-docs
+
     - name: doc-gen - upload
       uses: actions/upload-artifact@v2
       with:
         name: my-artifact
-        path: doc-gen/export.json
+        path: doc-gen/built-docs
         
