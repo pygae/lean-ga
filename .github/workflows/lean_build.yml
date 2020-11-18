@@ -40,8 +40,6 @@ jobs:
         pip install -r doc-gen/requirements.txt
         ls doc-gen
         
-    - name: doc-ge
-        
     - name: doc-gen - run
       run: |
         cd doc-gen
