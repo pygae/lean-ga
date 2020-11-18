@@ -55,6 +55,7 @@ jobs:
           | sort >./all.lean)
           
         cat ../src/all.lean
+        lean --path
   
     - name: doc-gen - run
       run: |
