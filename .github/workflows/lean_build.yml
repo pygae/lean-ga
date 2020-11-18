@@ -31,7 +31,8 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        repository: leanprover-community/doc-gen
+        repository: eric-wieser/doc-gen
+        branch: patch-3 
         path: doc-gen
         
     - name: doc-gen - install Python dependencies
@@ -61,6 +62,7 @@ jobs:
         cd doc-gen
         lean -v
         lean src/entrypoint.lean > export.json || true
+        head -c1000 export.json
         
     - name: doc-gen - upload
       uses: actions/upload-artifact@v2
