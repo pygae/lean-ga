@@ -61,7 +61,7 @@ jobs:
       run: |
         cd doc-gen
         lean -v
-        lean src/entrypoint.lean > export.json || true
+        lean src/entrypoint.lean || true
         head -c1000 export.json
         
     - name: doc-gen - upload
