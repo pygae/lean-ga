@@ -59,11 +59,7 @@ jobs:
     - name: doc-gen - run
       run: |
         cd doc-gen
-        ls .
         lean -v
-        echo Trying our file
-        lean src/all.lean
-        echo Trying the real thing
         lean src/entrypoint.lean
         
     - name: doc-gen - upload
