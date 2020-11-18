@@ -40,10 +40,16 @@ jobs:
         pip install -r doc-gen/requirements.txt
         ls doc-gen
         
+    - name: doc-gen - mangle paths
+      run: |
+        mathlib_git_hash="$(sed '/^rev/!d;s/.*rev = "\(.*\)".*/\1/' leanpkg.toml)"
+        cd doc-gen
+        sed -i "s/rev = \"\S*\"/rev = \"$mathlib_git_hash\"/" leanpkg.toml
+        cat leanpkg.toml
+        echo -e "builtin_path\npath ./src\npath ../src" > leanpkg.path
+        cat leanpkg.path
     - name: doc-gen - run
       run: |
-        cd doc-gen
-        echo -e "builtin_path\npath ./src\npath ../src" > leanpkg.path
         ls .
         lean -v
         lean src/entrypoint.lean >export.json
