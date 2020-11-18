@@ -44,8 +44,9 @@ jobs:
     - name: doc-gen - run
       run: |
         cd doc-gen
+        ls .
         lean src/entrypoint.lean >export.json
-        echo export.json is
+        ls .
         cat export.json
         
     - name: doc-gen - upload
