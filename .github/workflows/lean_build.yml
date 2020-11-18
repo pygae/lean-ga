@@ -32,7 +32,7 @@ jobs:
       with:
         fetch-depth: 0
         repository: eric-wieser/doc-gen
-        branch: patch-3 
+        ref: patch-3 
         path: doc-gen
         
     - name: doc-gen - install Python dependencies
