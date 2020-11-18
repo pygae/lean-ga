@@ -13,14 +13,13 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: build project
-      uses: leanprover-contrib/lean-build-action@master
+#     - name: build project
+#       uses: leanprover-contrib/lean-build-action@master
       
     - name: doc-gen - install elan
       run: |
         set -o pipefail
         curl https://raw.githubusercontent.com/Kha/elan/master/elan-init.sh -sSf | sh -s -- --default-toolchain none -y
-        cd mathlib
         ~/.elan/bin/lean --version
         echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
@@ -40,3 +39,14 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r doc-gen/requirements.txt
+        
+    - name: doc-gen - run
+      run: |
+        doc-gen/gen-docs -w 'https://pygae.github.io/lean-ga/' -r 'src' -t 'build-docs'
+        
+    - name: doc-gen - upload
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        path: build-docs
+        
