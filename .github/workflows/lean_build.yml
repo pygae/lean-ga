@@ -45,6 +45,10 @@ jobs:
       run: |
         cd doc-gen
         ./gen_docs -w 'https://pygae.github.io/lean-ga/' -r '../src' -t '../built-docs'
+        echo "> ls ."
+        ls .
+        echo "> ls .."
+        ls ..
         
     - name: doc-gen - upload
       uses: actions/upload-artifact@v2
