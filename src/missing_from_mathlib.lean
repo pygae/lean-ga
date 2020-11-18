@@ -49,24 +49,6 @@ by simp [sum_id, lift_nc_alg_hom, lift_nc_ring_hom, lift_nc, alg_hom.id, ring_ho
 
 end add_monoid_algebra
 
-namespace opposite
-
-variables (R : Type*) {M : Type*} [comm_semiring R] [semiring M] [algebra R M]
-
-@[simps apply]
-def op_linear_equiv : M ≃ₗ[R] Mᵒᵖ :=
-{ map_smul' := opposite.op_smul, .. op_add_equiv }
-
-@[simp] lemma coe_op_linear_equiv : (op_linear_equiv R : M → Mᵒᵖ) = op := rfl
-@[simp] lemma coe_op_linear_equiv_symm :
-  ((op_linear_equiv R).symm : Mᵒᵖ → M) = unop := rfl
-
-@[simp] lemma coe_op_linear_equiv_to_linear_map : ((op_linear_equiv R).to_linear_map : M → Mᵒᵖ) = op := rfl
-@[simp] lemma coe_op_linear_equiv_symm_to_linear_map :
-  ((op_linear_equiv R).symm.to_linear_map : Mᵒᵖ → M) = unop := rfl
-
-end opposite
-
 namespace submodule
 
 variables {R : Type*} {A : Type*} [comm_semiring R] [semiring A] [algebra R A]

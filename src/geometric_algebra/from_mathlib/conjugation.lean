@@ -4,6 +4,7 @@ Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import geometric_algebra.from_mathlib.basic
+import algebra.module.opposites
 
 variables {R : Type*} [comm_ring R]
 variables {M : Type*} [add_comm_group M] [module R M]
