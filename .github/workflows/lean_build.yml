@@ -40,9 +40,12 @@ jobs:
         pip install -r doc-gen/requirements.txt
         ls doc-gen
         
+    - name: doc-ge
+        
     - name: doc-gen - run
       run: |
         cd doc-gen
+        echo -e "builtin_path\npath ./src\npath ../src" > leanpkg.path
         ls .
         lean -v
         lean src/entrypoint.lean >export.json
