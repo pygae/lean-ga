@@ -45,6 +45,7 @@ jobs:
       run: |
         cd doc-gen
         ls .
+        lean -v
         lean src/entrypoint.lean >export.json
         ls .
         cat export.json
