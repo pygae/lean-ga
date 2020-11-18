@@ -45,10 +45,11 @@ jobs:
         mathlib_git_hash="$(sed '/rev/!d;s/.*"\([a-z0-9]*\)".*/\1/' leanpkg.toml)"
         cd doc-gen
         sed -i "s/rev = \"\S*\"/rev = \"$mathlib_git_hash\"/" leanpkg.toml
-        echo -e "builtin_path\npath ./src\npath ../src" > leanpkg.path
+        echo -e "builtin_path\npath ../doc-gen/src\npath ../src" > leanpkg.path
         cat leanpkg.toml
         cat leanpkg.path
         leanproject get-mathlib-cache
+        cat leanpkg.path
         (cd ../src;
         find "." -name \*.lean -not -name all.lean \
           | sed 's,^\./,,;s,\.lean$,,;s,/,.,g;s,^,import ,' \
