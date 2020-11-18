@@ -50,11 +50,11 @@ jobs:
         cat leanpkg.path
         leanproject get-mathlib-cache
         
-        find "$dir" -name \*.lean -not -name all.lean \
+        find ".." -name \*.lean -not -name all.lean \
           | sed 's,^\./,,;s,\.lean$,,;s,/,.,g;s,^,import ,' \
-          | sort >./all.lean
+          | sort >../all.lean
           
-        cat all.lean
+        cat ../all.lean
   
     - name: doc-gen - run
       run: |
