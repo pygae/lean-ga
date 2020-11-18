@@ -44,15 +44,13 @@ jobs:
     - name: doc-gen - run
       run: |
         cd doc-gen
-        ./gen_docs -w 'https://pygae.github.io/lean-ga/' -r '../src' -t '../built-docs'
-        echo "> ls ."
-        ls .
-        echo "> ls .."
-        ls ..
+        lean src/entrypoint.lean >export.json
+        echo export.json is
+        cat export.json
         
     - name: doc-gen - upload
       uses: actions/upload-artifact@v2
       with:
         name: my-artifact
-        path: built-docs
+        path: export.json
         
