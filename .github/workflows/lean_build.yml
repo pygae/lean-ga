@@ -1,5 +1,6 @@
 on:
   push:
+  pull_request:
 
 jobs:
   update_lean_xyz_branch_and_build:
@@ -14,3 +15,28 @@ jobs:
 
     - name: build project
       uses: leanprover-contrib/lean-build-action@master
+      
+    - name: doc-gen: install elan
+      run: |
+        set -o pipefail
+        curl https://raw.githubusercontent.com/Kha/elan/master/elan-init.sh -sSf | sh -s -- --default-toolchain none -y
+        cd mathlib
+        ~/.elan/bin/lean --version
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+    - name: doc-gen: install Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+        
+    - name: doc-gen: checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        repository: leanprover-community/doc-gen
+        path: doc-gen
+        
+    - name: doc-gen: install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r doc-gen/requirements.txt
