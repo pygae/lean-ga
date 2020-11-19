@@ -77,9 +77,3 @@ jobs:
         FOLDER: doc-gen/built-docs # The folder the action should deploy.
         CLEAN: true # Automatically remove deleted files from the deploy branch
 
-    - name: doc-gen - upload
-      uses: actions/upload-artifact@v2
-      with:
-        name: my-artifact
-        path: doc-gen/built-docs
-        
