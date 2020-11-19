@@ -32,7 +32,7 @@ jobs:
       with:
         fetch-depth: 0
         repository: eric-wieser/doc-gen
-        ref: patch-3 
+        ref: use-lean-path 
         path: doc-gen
         
     - name: doc-gen - install Python dependencies
@@ -61,13 +61,15 @@ jobs:
       run: |
         cd doc-gen
         lean -v
-        lean src/entrypoint.lean || true
+        lean src/entrypoint.lean > export.json || true
+        head -n -1 export.json
+        tail -n1 export.json > export.json
         head -c1000 export.json
         
     - name: doc-gen - build html
       run: |
         cd doc-gen
-        python3 -c "import print_docs; del print_docs.extra_doc_files[:]; print_docs.copy_yaml_files = lambda p: None; print_docs.main()" -r .. -w 'https://pygae.github.io/lean-ga/' -t built-docs
+        python3 -c "import print_docs; del print_docs.extra_doc_files[:]; print_docs.copy_yaml_files = lambda p: None; print_docs.library_link_roots['lean-ga'] = 'https://github.com/pygae/lean-ga/tree/master/src/'; print_docs.main()" -r .. -w 'https://pygae.github.io/lean-ga/' -t built-docs
 
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@3.7.1
