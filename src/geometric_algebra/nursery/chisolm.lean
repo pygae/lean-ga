@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Utensil Song. All rights reserved.
 Released under MIT license as described in the file LICENSE.
-Authors: Utensil Song
+Authors: Utensil Song, Eric Wieser
 
 This file is based on https://arxiv.org/abs/1205.5935
 -/
@@ -55,13 +55,7 @@ parameters
 
 def fᵥ : G₁ →+ G := f₁ G₀
 
-def fₛ : G₀ →+* G := algebra_map G₀ G
-
-lemma assoc : ∀ A B C : G, (A * B) * C = A * (B * C) := λ A B C, semigroup.mul_assoc A B C
-
-lemma left_distrib : ∀ A B C : G, A * (B + C) = (A * B) + (A * C) := λ A B C, distrib.left_distrib A B C
-
-lemma right_distrib : ∀ A B C : G, (A + B) * C = (A * C) + (B * C) := λ A B C, distrib.right_distrib A B C
+abbreviation fₛ : G₀ →+* G := algebra_map G₀ G
 
 def prod_vec (a b : G₁) : G := fᵥ a * fᵥ b
 
@@ -84,8 +78,8 @@ theorem zero_is_orthogonal (a : G₁) : is_orthogonal 0 a := begin
   simp
 end
 
-/- a list of r orthogonal vectors, which may be non-unique -/
-def pairwise_ortho_vector (r : ℕ) := {l : vector G₁ r // l.val.pairwise is_orthogonal}
+/-- a list of `r` orthogonal vectors, which may be non-unique -/
+abbreviation pairwise_ortho_vector (r : ℕ) := {l : vector G₁ r // l.to_list.pairwise is_orthogonal}
 
 /- need this for later, can't seem to get the type inference to work if I inline it-/
 -- def zero_pairwise_ortho_vector (r : ℕ) : pairwise_ortho_vector r := ⟨
@@ -96,11 +90,11 @@ def pairwise_ortho_vector (r : ℕ) := {l : vector G₁ r // l.val.pairwise is_o
 -- end⟩
 
 
--- r-blades
+/-- r-blades -/
 def is_rblade (r : ℕ) (b : G) : Prop :=
   -- a product of orthogonal vectors an a scalar
-  (∃ (k: G₀) (v : pairwise_ortho_vector r),
-   b = fₛ k * list.prod (v.val.val.map fᵥ))
+∃ (k : G₀) (v : pairwise_ortho_vector r),
+  b = k • ((v : vector G₁ r).map fᵥ).to_list.prod
 
 def Bᵣ (r : ℕ) := set_of (is_rblade r)
 
@@ -109,25 +103,20 @@ namespace Bᵣ
 
   lemma all_G₀_is_rblade0 (k : G₀) : is_rblade 0 (fₛ k) := begin
     use [k, list.pairwise.nil],
-    unfold vector.nil subtype.val list.map,
-    rw list.prod_nil,
-    simp,
+    simp [algebra.smul_def],
   end
   lemma all_G₁_is_rblade1 (a : G₁) : is_rblade 1 (fᵥ a) := begin
-    use 1,
-    use ⟨(vector.cons a vector.nil), list.pairwise_singleton _ a⟩,
-    unfold vector.cons vector.nil subtype.val list.map,
-    rw [list.prod_cons, list.prod_nil],
+    use [1, ⟨vector.cons a vector.nil, list.pairwise_singleton _ a⟩],
+    rw vector.to_list_map,
     simp,
   end
 
   instance has_coe_from_G₀ : has_coe G₀ (Bᵣ 0) := { coe := λ k, ⟨fₛ k, all_G₀_is_rblade0 k⟩}
   instance has_coe_from_G₁ : has_coe G₁ (Bᵣ 1) := { coe := λ a, ⟨fᵥ a, all_G₁_is_rblade1 a⟩}
 
-  -- these are trivial, but maybe still needed
-  instance has_coe_to_G : has_coe (Bᵣ r) G := { coe := subtype.val }
+  -- this is trivial, but maybe still needed
   @[simp]
-  lemma coe_is_rblade (b : Bᵣ r) : is_rblade r b := b.property
+  lemma coe_is_rblade (b : Bᵣ r) : is_rblade r b := b.prop
 
   /- todo: do we want this? -/
   -- instance has_zero : has_zero (Bᵣ r) := {
@@ -138,34 +127,23 @@ namespace Bᵣ
   -- }
 
   /- scalar multiple of an element of Bᵣ is also in Bᵣ -/
-  lemma smul_mem_Bᵣ {b : G} {k : G₀} (hb : is_rblade r b) : (is_rblade r ((fₛ k) * b)) := begin
-    exact exists.elim hb begin
-      intros a ha,
-      use k*a,
-      exact exists.elim ha begin
-        intros a_1 ha_1,
-        use a_1,
-        rw ha_1,
-        rw ring_hom.map_mul,
-        rw mul_assoc
-      end
-    end
+  lemma smul_mem {b : G} {k : G₀} (hb : is_rblade r b) : is_rblade r (k • b) := begin
+    obtain ⟨a, factors, ha_1⟩ := hb,
+    refine ⟨k * a, factors, _⟩,
+    rw [ha_1, mul_smul],
   end
 
   /- now show via trivial proofs that Bᵣ is a mul_action and has_neg -/
-  def smul (k : G₀) (b : Bᵣ r) : Bᵣ r := ⟨(fₛ k) * b.val, smul_mem_Bᵣ b.property⟩ 
-  instance has_scalar (r : ℕ) : has_scalar G₀ (Bᵣ r) := { smul := smul }
-  
-  def one_smul (b : Bᵣ r) : smul (1 : G₀) b = b := by simp [smul]
-  def mul_smul (k1 k2 : G₀) (b : Bᵣ r) : smul (k1 * k2) b =  smul k1 (smul k2 b) := by simp [smul, mul_assoc]
-  instance mul_action : mul_action G₀ (Bᵣ r) := {one_smul := one_smul, mul_smul := mul_smul, ..has_scalar r}
+  instance mul_action (r : ℕ) : mul_action G₀ (Bᵣ r) :=
+  { smul := λ k b, ⟨k • (b : G), smul_mem b.prop⟩,
+    one_smul := λ b, subtype.eq $ one_smul _ b,
+    mul_smul := λ k₁ k₂ b, subtype.eq $ mul_smul k₁ k₂ b }
 
-  def neg (b : Bᵣ r) : Bᵣ r := smul (-1 : G₀) b
-  instance has_neg (r : ℕ) : has_neg (Bᵣ r) := { neg := neg}
+  instance has_neg (r : ℕ) : has_neg (Bᵣ r) := { neg := λ b, (-1 : G₀) • b }
 
 end Bᵣ
 
--- r-vectors
+/-- `r`-vectors -/
 def Gᵣ (r : ℕ) := add_subgroup.closure (Bᵣ r)
 
 example (r : ℕ) : add_comm_group (Gᵣ r) := by apply_instance
@@ -176,60 +154,42 @@ namespace Gᵣ
   -- instance has_coe_from_Bᵣ : has_coe (Bᵣ r) (Gᵣ r) := { coe := λ b, ⟨b.val, add_subgroup.subset_closure b.property⟩ }
 
   -- scalar multiple of an element of Gᵣ is also in Gᵣ
-  lemma smul_mem_Gᵣ {v : G} {k : G₀} (hv : v ∈ Gᵣ r) : ((fₛ k) * v) ∈ Gᵣ r := begin
-    apply add_subgroup.closure_induction hv,
-    {
-      intros x hx,
-      apply add_subgroup.subset_closure,
-      exact Bᵣ.smul_mem_Bᵣ hx,
-    },
-    {
-      rw mul_zero,
-      exact (0 : Gᵣ r).property,
-    },
-    {
-      intros a b,
-      rw mul_add,
-      exact add_subgroup.add_mem (Gᵣ r)
-    },
-    {
-      intros a,
-      rw ← neg_mul_eq_mul_neg,
-      exact add_subgroup.neg_mem (Gᵣ r)
-    }
-  end
+  lemma smul_mem {v : G} {k : G₀} (hv : v ∈ Gᵣ r) : (k • v) ∈ Gᵣ r :=
+  add_subgroup.closure_induction hv
+    (λ x hx, add_subgroup.subset_closure $ by exact Bᵣ.smul_mem hx)
+    (by {
+      rw smul_zero, exact (Gᵣ r).zero_mem, })
+    (λ a b, by {
+      rw smul_add, exact (Gᵣ r).add_mem, })
+    (λ a, by {
+      rw smul_neg, exact (Gᵣ r).neg_mem, })
 
   -- now show via trivial proofs that Gᵣ is a semimodule (basically a vector space)
-  def smul (k : G₀) (v : Gᵣ r) : Gᵣ r := ⟨fₛ k * v, smul_mem_Gᵣ v.property⟩
-  instance has_scalar (r : ℕ) : has_scalar G₀ (Gᵣ r) := { smul := smul }
-  
-  def one_smul (v : Gᵣ r) : smul (1 : G₀) v = v := by simp [smul]
-  def mul_smul (k1 k2 : G₀) (v : Gᵣ r) : smul (k1 * k2) v =  smul k1 (smul k2 v) := by simp [smul, mul_assoc]
-  instance mul_action : mul_action G₀ (Gᵣ r) := {one_smul := one_smul, mul_smul := mul_smul, ..has_scalar r}
+  instance has_scalar (r : ℕ) : semimodule G₀ (Gᵣ r) :=
+  { smul := λ k v, ⟨k • v, smul_mem v.prop⟩,
+    one_smul := λ v, subtype.eq $ one_smul _ v,
+    mul_smul := λ k₁ k₂ v, subtype.eq $ mul_smul k₁ k₂ v,
+    smul_zero := λ v, subtype.eq $ smul_zero v,
+    zero_smul := λ v, subtype.eq $ zero_smul _ v,
+    add_smul := λ k₁ k₂ v, subtype.eq $ add_smul k₁ k₂ v,
+    smul_add := λ k v₁ v₂, subtype.eq $ smul_add k v₁ v₂,
+    zero_smul := λ v, subtype.eq $ zero_smul _ v }
 
-  def smul_add (k : G₀) (x y : Gᵣ r) : smul k (x + y) = smul k x + smul k y := by {simp [smul, mul_add], refl}
-  def smul_zero (k : G₀) : smul k (0 : Gᵣ r) = 0 := by {simp [smul], refl}
-  instance distrib_mul_action : distrib_mul_action G₀ (Gᵣ r) := { smul_add := smul_add, smul_zero := smul_zero, ..mul_action }
-    
-  def add_smul (k1 k2 : G₀) (v : Gᵣ r) : smul (k1 + k2) v = smul k1 v + smul k2 v := by {simp [smul, add_mul], refl}
-  def zero_smul (v : Gᵣ r) : smul (0 : G₀) v = 0 := by {simp [smul], refl}
-  instance semimodule (r : ℕ) : semimodule G₀ (Gᵣ r) := {add_smul := add_smul, zero_smul := zero_smul, ..distrib_mul_action }
 end Gᵣ
 
--- multi-vectors
+/-- multi-vectors of at most grade `r` -/
 def Mᵣ (r : ℕ) := add_subgroup.closure (⋃ (r' : fin r), (Gᵣ r').carrier)
-example (r : ℕ) : add_comm_group (Mᵣ r) := by apply_instance
+example (r : ℕ) : add_comm_group (Mᵣ r) := infer_instance
 
-@[simp]
-def is_scalar : G → Prop := is_rblade 0
+abbreviation is_scalar : G → Prop := is_rblade 0
 
-/-
+/--
   Symmetrised product of two vectors must be a scalar
 -/
 lemma vec_sym_prod_scalar (a b : G₁) : is_scalar (a *₊ᵥ b) :=
 have h1 : (a + b)²ᵥ = a²ᵥ + b²ᵥ + a *₊ᵥ b, from begin
   unfold square_vec sym_prod_vec prod_vec,
-  rw add_monoid_hom.map_add fᵥ a b,
+  rw fᵥ.map_add a b,
   rw left_distrib,
   repeat {rw right_distrib},
   abel,
@@ -237,13 +197,9 @@ end,
 have vec_sq_scalar : ∀ v : G₁, ∃ k : G₀, v²ᵥ = fₛ k, from
   λ v, geometric_algebra.vec_sq_scalar(v),
 begin
-  apply exists.elim (vec_sq_scalar (a + b)),
-  intro kab,
-  apply exists.elim (vec_sq_scalar a),
-  intro ka,
-  apply exists.elim (vec_sq_scalar b),
-  intro kb,
-  intros hb ha hab,
+  obtain ⟨kab, hab⟩ := vec_sq_scalar (a + b),
+  obtain ⟨ka, ha⟩ := vec_sq_scalar a,
+  obtain ⟨kb, hb⟩ := vec_sq_scalar b,
   rw [hb, ha, hab] at h1,
   have h2 : (fₛ (kab - ka - kb : G₀) : G) = sym_prod_vec a b, by {
     repeat {rw ring_hom.map_sub},
@@ -251,8 +207,7 @@ begin
     abel,
   },
   rw ← h2,
-  rw is_scalar,
-  apply Bᵣ.all_G₀_is_rblade0, -- this feels clumsy, can I make this automatic?
+  exact Bᵣ.all_G₀_is_rblade0 _, -- this feels clumsy, can I make this automatic?
 end
 
 end basic
