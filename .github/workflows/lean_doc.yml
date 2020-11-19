@@ -1,0 +1,86 @@
+on:
+  push:
+
+jobs:
+  update_lean_xyz_branch_and_build:
+    runs-on: ubuntu-latest
+    name: Build project
+    steps:
+
+    - name: 📁 Checkout project
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: 🔧 Install elan
+      run: |
+        set -o pipefail
+        curl https://raw.githubusercontent.com/Kha/elan/master/elan-init.sh -sSf | sh -s -- --default-toolchain none -y
+        ~/.elan/bin/lean --version
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+    - name: 🐍 Install Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: 📁 Checkout Lean's doc-gen
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        repository: eric-wieser/doc-gen
+        ref: use-lean-path
+        path: doc-gen
+
+    - name: 🐍 Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r doc-gen/requirements.txt
+        ls doc-gen
+
+    - name: ✏️ Mangle paths for doc-gen
+      run: |
+        mathlib_git_hash="$(sed '/rev/!d;s/.*"\([a-z0-9]*\)".*/\1/' leanpkg.toml)"
+        cd doc-gen
+        sed -i "s/rev = \"\S*\"/rev = \"$mathlib_git_hash\"/" leanpkg.toml
+        leanproject get-mathlib-cache
+        echo -e "path ../src" >> leanpkg.path
+        cat leanpkg.path
+        (cd ../src;
+        find "." -name \*.lean -not -name all.lean \
+          | sed 's,^\./,,;s,\.lean$,,;s,/,.,g;s,^,import ,' \
+          | sort >./all.lean)
+
+        cat ../src/all.lean
+        lean --path
+
+    - name: 📝 Export Lean symbol information
+      run: |
+        cd doc-gen
+        lean -v
+        lean src/entrypoint.lean > export.json || true
+        head -n -1 export.json
+        tail -n1 export.json > export2.json
+        rm export.json
+        mv export2.json export.json
+        head -c1000 export.json
+
+    - name: 📚 Build HTML docs
+      run: |
+        cd doc-gen
+        python3 -c "import print_docs; del print_docs.extra_doc_files[:]; print_docs.copy_yaml_files = lambda p: None; print_docs.library_link_roots['lean-ga'] = 'https://github.com/pygae/lean-ga/blob/$GITHUB_SHA/src/'; print_docs.main()" -r .. -w 'https://pygae.github.io/lean-ga/' -t built-docs
+
+    - name: 🔑 Install SSH Client
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+    - name: 🚀 Deploy
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+        SSH: true
+        SINGLE_COMMIT: true
+        REPOSITORY_NAME: pygae/lean-ga-docs
+        BRANCH: gh-pages # The branch the action should deploy to.
+        FOLDER: doc-gen/built-docs # The folder the action should deploy.
+
