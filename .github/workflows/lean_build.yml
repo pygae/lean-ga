@@ -69,6 +69,14 @@ jobs:
         cd doc-gen
         python3 -c "import print_docs; del print_docs.extra_doc_files[:]; print_docs.copy_yaml_files = lambda p: None; print_docs.main()" -r .. -w 'https://pygae.github.io/lean-ga/' -t built-docs
 
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages-test # The branch the action should deploy to.
+        FOLDER: doc-gen/built-docs # The folder the action should deploy.
+        CLEAN: true # Automatically remove deleted files from the deploy branch
+
     - name: doc-gen - upload
       uses: actions/upload-artifact@v2
       with:
