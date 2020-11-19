@@ -2,9 +2,9 @@ on:
   push:
 
 jobs:
-  update_lean_xyz_branch_and_build:
+  build_docs:
     runs-on: ubuntu-latest
-    name: Build project
+    name: Build docs
     steps:
 
     - name: 📁 Checkout project
