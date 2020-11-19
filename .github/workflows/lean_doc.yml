@@ -58,6 +58,7 @@ jobs:
       run: |
         cd doc-gen
         lean -v
+        # the json and diagnostics are emitted on stdout, but the json is always the last (very long) line.
         lean src/entrypoint.lean > export.json || true
         head -n -1 export.json
         tail -n1 export.json > export2.json
@@ -68,7 +69,9 @@ jobs:
     - name: 📚 Build HTML docs
       run: |
         cd doc-gen
-        python3 -c "import print_docs; del print_docs.extra_doc_files[:]; print_docs.copy_yaml_files = lambda p: None; print_docs.library_link_roots['lean-ga'] = 'https://github.com/pygae/lean-ga/blob/$GITHUB_SHA/src/'; print_docs.main()" -r .. -w 'https://pygae.github.io/lean-ga/' -t built-docs
+        python3 \
+          -c "import print_docs; del print_docs.extra_doc_files[:]; print_docs.copy_yaml_files = lambda p: None; print_docs.library_link_roots['lean-ga'] = 'https://github.com/pygae/lean-ga/blob/$GITHUB_SHA/src/'; print_docs.main()" \
+          -r .. -w 'https://pygae.github.io/lean-ga-docs/' -t built-docs
 
     - name: 🔑 Install SSH Client
       uses: webfactory/ssh-agent@v0.4.1
