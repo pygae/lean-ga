@@ -63,7 +63,9 @@ jobs:
         lean -v
         lean src/entrypoint.lean > export.json || true
         head -n -1 export.json
-        tail -n1 export.json > export.json
+        tail -n1 export.json > export2.json
+        rm export.json
+        mv export2.json export.json
         head -c1000 export.json
         
     - name: doc-gen - build html
