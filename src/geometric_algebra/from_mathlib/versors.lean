@@ -47,6 +47,8 @@ namespace versors
     exact versors.smul_mem (-1) h,
   end
 
+  /-! The versors inherit scalar multiplication (`•`) and negation from the parent algebra -/
+
   instance : mul_action R (versors Q) :=
   { smul := λ k v, ⟨k • v, smul_mem k v.prop⟩,
     one_smul := λ v, subtype.eq $ one_smul _ v,
@@ -65,13 +67,17 @@ namespace versors
   @[simp, norm_cast] lemma coe_neg (v : versors Q) : (↑-v : clifford_algebra Q) = -v := rfl
   @[simp, norm_cast] lemma coe_smul (k : R) (v : versors Q) : (↑(k • v) : clifford_algebra Q) = k • v := rfl
 
-
   /-- TODO: work out what the necessary conditions are here-/
   instance : nontrivial (versors Q) :=
   { exists_pair_ne := sorry }
 
-  lemma induction_on {C : versors Q → Prop}
-    (v : versors Q)
+  /-- An induction process for the versors, proving a statement `C` about `v` given proofs that:
+  * It holds for the scalars
+  * It holds for the vectors
+  * It holds for any product of two elements it holds for
+  -/
+  @[elab_as_eliminator]
+  lemma induction_on {C : versors Q → Prop} (v : versors Q)
     (h_grade0 : ∀ (r : R), C ⟨↑ₐr, algebra_map_mem r⟩)
     (h_grade1 : ∀ m, C ⟨ι Q m, ι_mem m⟩)
     (h_mul : ∀ (a b : versors Q), C a → C b → C (a * b)) :
@@ -120,8 +126,7 @@ namespace versors
     { rintros x y ⟨qx, hx⟩ ⟨qy, hy⟩,
       refine ⟨qx * qy, _⟩,
       simp only [reverse_mul, submonoid.coe_mul, ring_hom.map_mul],
-      rw [mul_assoc ↑x, ←mul_assoc ↑y, hy, algebra.commutes, ←mul_assoc, hx],
-    }
+      rw [mul_assoc ↑x, ←mul_assoc ↑y, hy, algebra.commutes, ←mul_assoc, hx], }
   end
 
   /-- A versor's reverse times itself is a scalar
@@ -154,7 +159,9 @@ namespace versors
   /--
   Only zero versors have zero magnitude, assuming:
 
-   - The metric is not degenerate (`hqnz`)
+   - The metric is anisotropic (`hqnz`). Note this is a stricter requirements
+     than non-degeneracy; versors in CGA 𝒢(ℝ⁴⋅¹) like `n∞` and `n∞*no` are
+     both counterexamples to this lemma. 
    - `0` remains `0` when mapped from `R` into `clifford_algebra Q`
    - `R` has no zero divisors
 
@@ -252,36 +259,45 @@ namespace versors
   @[simps inv]
   noncomputable instance : has_inv (versors Q') :=
   { inv := λ v, (magnitude_R (algebra_map R' _).injective v)⁻¹ • ⟨reverse (v : clifford_algebra Q'), reverse_mem v⟩ }
+  
+  lemma inv_zero : (0 : versors Q')⁻¹ = 0 :=
+  begin
+    rw has_inv_inv,
+    ext,
+    change _ • reverse 0 = 0,
+    rw reverse.map_zero,
+    rw smul_zero,
+  end
 
+  /-- Versors with a non-zero magnitude have an inverse -/
+  lemma mul_inv_cancel' (v : versors Q') (h : magnitude v ≠ 0) : v * v⁻¹ = 1 :=
+  begin
+    rw has_inv_inv,
+    ext,
+    change ↑v * _ • reverse ↑v = 1,
+    rw algebra.mul_smul_comm,
+    rw inv_smul_eq_iff',
+    { rw [algebra.smul_def, mul_one],
+      simp only [magnitude_R_eq, ←magnitude_aux_apply, magnitude_apply, subtype.coe_mk], },
+    { intro h', apply h,
+      -- TODO: the fact that we use `congr_arg` only to then use `injective` suggests that we can relax the constraints in
+      -- magnitude_aux_zero.
+      have := (algebra_map R' (clifford_algebra Q')).congr_arg h',
+      rw [magnitude_R_eq, ring_hom.map_zero] at this,
+      norm_cast at this, }
+  end
+
+  /-- If additionally the metric is anisotropic, then the inverse imparts a `group_with_zero` structure. -/
   noncomputable instance [f : fact (∀ m, Q' m = 0 → m = 0)] : group_with_zero (versors Q') :=
-  {
-    inv_zero := begin
-      rw has_inv_inv,
-      ext,
-      change _ • reverse 0 = 0,
-      rw reverse.map_zero,
-      rw smul_zero,
-    end,
-    mul_inv_cancel := λ a ha, begin
-      let r := (magnitude a),
-      rw has_inv_inv,
-      ext,
-      change ↑a * _ • reverse ↑a = 1,
-      rw algebra.mul_smul_comm,
-      rw inv_smul_eq_iff',
-      { rw [algebra.smul_def, mul_one],
-        simp only [magnitude_R_eq, ←magnitude_aux_apply, magnitude_apply, subtype.coe_mk], },
-      { intro h, apply ha,
-        -- TODO: the fact that we use `congr_arg` only to then use `injective` suggests that we can relax the constraints in
-        -- magnitude_aux_zero.
-        have := (algebra_map R' (clifford_algebra Q')).congr_arg h,
-        rw [magnitude_R_eq, ring_hom.map_zero, magnitude_apply, submodule.coe_mk] at this,
-        rw ← magnitude_aux_zero,
-        exact this,
-        exact f.elim,
-        intros r h,
-        exact (algebra_map R' (clifford_algebra Q')).injective h,
-        }
+  { inv_zero := inv_zero,
+    mul_inv_cancel := λ a ha, mul_inv_cancel' a $ λ ham, ha begin
+      refine (magnitude_aux_zero a f _).mp _,
+      { intros r h,
+        exact (algebra_map R' _).injective h, },
+      { rw magnitude_apply at ham,
+        replace ham := congr_arg (λ x : (⊥ : subalgebra R' $ clifford_algebra Q'), (x : clifford_algebra Q')) ham,
+        simp only [submodule.coe_mk, submodule.coe_zero] at ham,
+        exact ham }
     end,
     ..versors.nontrivial,
     ..(infer_instance : monoid_with_zero (versors Q')),
@@ -328,6 +344,8 @@ namespace spinors
     exact smul_mem (-1) h,
   end
 
+  /-! The spinors inherit scalar multiplication (`•`) and negation from the parent algebra -/
+
   instance : mul_action R (spinors Q) :=
   { smul := λ k v, ⟨k • v, smul_mem k v.prop⟩,
     one_smul := λ v, subtype.eq $ one_smul _ v,
@@ -336,6 +354,12 @@ namespace spinors
   instance : has_neg (spinors Q) :=
   { neg := λ v, ⟨-v, neg_mem v.prop⟩ }
 
+  /-- An induction process for the spinors, proving a statement `C` about `v` given proofs that:
+  * It holds for the scalars
+  * It holds for products of two vectors
+  * It holds for any product of two elements it holds for
+  -/
+  @[elab_as_eliminator]
   lemma induction_on {C : spinors Q → Prop}
     (v : spinors Q)
     (h_grade0 : ∀ (r : R), C ⟨↑ₐr, algebra_map_mem r⟩)
