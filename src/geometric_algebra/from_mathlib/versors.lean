@@ -169,7 +169,7 @@ namespace versors
   -/
   lemma magnitude_aux_zero (v : versors Q)
     [no_zero_divisors R]
-    (hqnz : ∀ m, Q m = 0 → m = 0)
+    (hQ : Q.anisotropic)
     (h0 : ∀ r, algebra_map R (clifford_algebra Q) r = 0 → r = 0) :
     magnitude_aux v = 0 ↔ v = 0 :=
   ⟨begin
@@ -184,7 +184,7 @@ namespace versors
     { intros m hm,
       simp at hm,
       ext, simp,
-      replace hm := hqnz _ (h0 _ hm),
+      replace hm := hQ _ (h0 _ hm),
       rw [hm, (ι Q).map_zero],
     },
     { intros a b ha hb hab,
