@@ -45,15 +45,12 @@ begin
     add_mem' := h_add,
     algebra_map_mem' := h_grade0, },
   let of : clifford_hom Q s :=
-  ⟨{
-    to_fun := λ x, ⟨(ι Q) x, h_grade1 x⟩,
-    map_add' := λ x y, subtype.eq $ (ι Q).map_add x y,
-    map_smul' := λ c x, subtype.eq $ (ι Q).map_smul c x, },
+  ⟨(ι Q).cod_restrict s.to_submodule h_grade1,
     λ m, subtype.eq $ ι_square_scalar Q m ⟩,
   -- the mapping through the subalgebra is the identity
   have of_id : alg_hom.id R (clifford_algebra Q) = s.val.comp (lift Q of),
   { ext,
-    simp [of, subtype.coind], },
+    simp [of], },
   -- finding a proof is finding an element of the subalgebra
   convert subtype.prop (lift Q of a),
   simp [alg_hom.ext_iff] at of_id,
