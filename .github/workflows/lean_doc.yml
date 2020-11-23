@@ -28,8 +28,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        repository: eric-wieser/doc-gen
-        ref: use-lean-path
+        repository: leanprover-community/doc-gen
         path: doc-gen
 
     - name: 🐍 Install Python dependencies
