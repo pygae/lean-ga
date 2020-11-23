@@ -25,26 +25,19 @@ section involute
   def involute : clifford_algebra Q →ₐ[R] clifford_algebra Q :=
   clifford_algebra.lift Q ⟨-(ι Q), λ m, by simp⟩
 
-  @[simp]
-  lemma involute_ι (m : M) : involute (ι Q m) = -ι Q m :=
+  @[simp] lemma involute_ι (m : M) : involute (ι Q m) = -ι Q m :=
   by simp [involute]
 
-  @[simp]
-  lemma involute_algebra_map (r : R) : involute (↑ₐr : clifford_algebra Q) = ↑ₐr :=
+  @[simp] lemma involute_algebra_map (r : R) : involute (↑ₐr : clifford_algebra Q) = ↑ₐr :=
   by simp [involute]
 
-  lemma involute_involutive : function.involutive (involute : clifford_algebra Q → clifford_algebra Q) :=
-  begin
-    intro x,
-    induction x using clifford_algebra.induction; simp [*],
-  end
+  lemma involute_involutive : function.involutive (involute : _ → clifford_algebra Q) :=
+  λ x, by induction x using clifford_algebra.induction; simp [*]
 
-  lemma involute_prod_map_ι (l : list M) : involute (l.map $ ι Q).prod = ((-1 : R)^l.length) • (l.map $ ι Q).prod :=
-  begin
-    induction l with x xs hxs,
-    { simp },
-    simp [pow_add, hxs],
-  end
+  lemma involute_prod_map_ι : ∀ l : list M,
+    involute (l.map $ ι Q).prod = ((-1 : R)^l.length) • (l.map $ ι Q).prod
+  | [] := by simp
+  | (x :: xs) := by simp [pow_add, involute_prod_map_ι xs]
 
 end involute
 
@@ -57,41 +50,27 @@ section reverse
     clifford_algebra.lift Q ⟨(opposite.op_linear_equiv R).to_linear_map.comp (ι Q),
       λ m, unop_injective $ by simp⟩).to_linear_map
 
-  @[simp]
-  lemma reverse_ι (m : M) : reverse (ι Q m) = ι Q m :=
+  @[simp] lemma reverse_ι (m : M) : reverse (ι Q m) = ι Q m :=
   by simp [reverse]
 
-  @[simp]
-  lemma reverse_algebra_map (r : R) : reverse (↑ₐr : clifford_algebra Q) = ↑ₐr :=
+  @[simp] lemma reverse_algebra_map (r : R) : reverse (↑ₐr : clifford_algebra Q) = ↑ₐr :=
   by simp [reverse]
 
-  @[simp]
-  lemma reverse_one  : reverse (1 : clifford_algebra Q) = 1 :=
+  @[simp] lemma reverse_one  : reverse (1 : clifford_algebra Q) = 1 :=
   reverse_algebra_map 1
 
-  @[simp]
-  lemma reverse_mul (a b : clifford_algebra Q) : reverse (a * b) = reverse b * reverse a :=
+  @[simp] lemma reverse_mul (a b : clifford_algebra Q) : reverse (a * b) = reverse b * reverse a :=
   by simp [reverse]
 
-  @[simp]
-  lemma reverse_involutive : function.involutive (reverse : clifford_algebra Q → clifford_algebra Q) :=
-  begin
-    intro x,
-    induction x using clifford_algebra.induction; simp [*],
-  end
+  @[simp] lemma reverse_involutive : function.involutive (reverse : _ → clifford_algebra Q) :=
+  λ x, by induction x using clifford_algebra.induction; simp [*]
 
-  lemma reverse_prod_map_ι (l : list M) : reverse (l.map $ ι Q).prod = (l.map $ ι Q).reverse.prod :=
-  begin
-    induction l with x xs hxs,
-    { simp },
-    simp [hxs],
-  end
+  lemma reverse_prod_map_ι : ∀ (l : list M), reverse (l.map $ ι Q).prod = (l.map $ ι Q).reverse.prod
+  | [] := by simp
+  | (x :: xs) := by simp [reverse_prod_map_ι xs]
 
-  lemma reverse_involute_commute : function.commute (reverse : clifford_algebra Q → clifford_algebra Q) involute :=
-  begin
-    intro x,
-    induction x using clifford_algebra.induction; simp [*],
-  end
+  lemma reverse_involute_commute : function.commute (reverse : _ → clifford_algebra Q) involute :=
+  λ x, by induction x using clifford_algebra.induction; simp [*]
 
   /-- helper lemma for expanding the sign of reverse -/
   lemma reverse_prod_sign_aux (n : ℕ) :
