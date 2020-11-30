@@ -29,7 +29,8 @@ jobs:
       with:
         fetch-depth: 0
         repository: eric-wieser/doc-gen
-        path: imported-by
+        branch: imported-by
+        path: doc-gen
 
     - name: 🐍 Install Python dependencies
       run: |
