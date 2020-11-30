@@ -29,7 +29,7 @@ jobs:
       with:
         fetch-depth: 0
         repository: eric-wieser/doc-gen
-        branch: imported-by
+        ref: imported-by
         path: doc-gen
 
     - name: 🐍 Install Python dependencies
@@ -86,4 +86,3 @@ jobs:
         REPOSITORY_NAME: pygae/lean-ga-docs
         BRANCH: gh-pages # The branch the action should deploy to.
         FOLDER: doc-gen/built-docs # The folder the action should deploy.
-
