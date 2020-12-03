@@ -22,50 +22,16 @@ variables (Q)
 /-- The versors are the elements made up of products of vectors.
 
 TODO: are scalars ≠1 considered versors? -/
-def versors := submonoid.closure (set.range (algebra_map R _) ∪ set.range (ι Q) )
+def versors := algebra.center_submonoid.closure R (set.range $ ι Q)
 
 variables {Q}
 
 namespace versors
 
+  open algebra.center_submonoid
+
   @[simp] lemma ι_mem (m : M) : ι Q m ∈ versors Q :=
-  submonoid.subset_closure $ or.inr $ set.mem_range_self m
-
-  @[simp] lemma algebra_map_mem (r : R) : ↑ₐr ∈ versors Q :=
-  submonoid.subset_closure $ or.inl $ set.mem_range_self r
-
-  @[simp] lemma smul_mem (k : R) {v : clifford_algebra Q} (h : v ∈ versors Q) : k • v ∈ versors Q :=
-  begin
-    rw algebra.smul_def,
-    exact (versors Q).mul_mem (algebra_map_mem k) h,
-  end
-
-  @[simp] lemma neg_mem {v : clifford_algebra Q} (h : v ∈ versors Q) : -v ∈ versors Q :=
-  begin
-    rw neg_eq_neg_one_mul,
-    rw [←(algebra_map R _).map_one, ←(algebra_map R _).map_neg, ←algebra.smul_def],
-    exact versors.smul_mem (-1) h,
-  end
-
-  /-! The versors inherit scalar multiplication (`•`) and negation from the parent algebra -/
-
-  instance : mul_action R (versors Q) :=
-  { smul := λ k v, ⟨k • v, smul_mem k v.prop⟩,
-    one_smul := λ v, subtype.eq $ one_smul _ v,
-    mul_smul := λ k₁ k₂ v, subtype.eq $ mul_smul k₁ k₂ v, }
-  
-  instance : has_neg (versors Q) :=
-  { neg := λ v, ⟨-v, neg_mem v.prop⟩ }
-
-  instance : monoid_with_zero (versors Q) :=
-  { zero := ⟨0, algebra_map_mem 0⟩,
-    zero_mul := λ v, subtype.eq $ zero_mul ↑v,
-    mul_zero := λ v, subtype.eq $ mul_zero ↑v,
-    ..(infer_instance : monoid (versors Q)) }
-
-  @[simp, norm_cast] lemma coe_zero : ((0 : versors Q) : clifford_algebra Q) = 0 := rfl
-  @[simp, norm_cast] lemma coe_neg (v : versors Q) : (↑-v : clifford_algebra Q) = -v := rfl
-  @[simp, norm_cast] lemma coe_smul (k : R) (v : versors Q) : (↑(k • v) : clifford_algebra Q) = k • v := rfl
+  subset_closure R $ set.mem_range_self m
 
   /-- TODO: work out what the necessary conditions are here-/
   instance : nontrivial (versors Q) :=
@@ -78,7 +44,7 @@ namespace versors
   -/
   @[elab_as_eliminator]
   lemma induction_on {C : versors Q → Prop} (v : versors Q)
-    (h_grade0 : ∀ (r : R), C ⟨↑ₐr, algebra_map_mem r⟩)
+    (h_grade0 : ∀ (r : R), C ⟨↑ₐr, (versors Q).algebra_map_mem r⟩)
     (h_grade1 : ∀ m, C ⟨ι Q m, ι_mem m⟩)
     (h_mul : ∀ (a b : versors Q), C a → C b → C (a * b)) :
     C v :=
@@ -170,7 +136,7 @@ namespace versors
   lemma magnitude_aux_zero (v : versors Q)
     [no_zero_divisors R]
     (hQ : Q.anisotropic)
-    (h0 : ∀ r, algebra_map R (clifford_algebra Q) r = 0 → r = 0) :
+    (h0 : ∀ {r}, algebra_map R (clifford_algebra Q) r = 0 → r = 0) :
     magnitude_aux v = 0 ↔ v = 0 :=
   ⟨begin
     apply induction_on v,
@@ -178,13 +144,13 @@ namespace versors
       simp only [subtype.coe_mk, magnitude_aux_apply, reverse_algebra_map] at hr,
       ext, simp only [coe_zero, subtype.coe_mk],
       rw [←ring_hom.map_mul] at hr,
-      replace hr := h0 _ hr,
+      replace hr := h0 hr,
       rw mul_self_eq_zero at hr,
       rw [hr, ring_hom.map_zero], },
     { intros m hm,
       simp at hm,
       ext, simp,
-      replace hm := hQ _ (h0 _ hm),
+      replace hm := hQ _ (h0 hm),
       rw [hm, (ι Q).map_zero],
     },
     { intros a b ha hb hab,
@@ -195,7 +161,7 @@ namespace versors
       rw hb' at hb,
       rw [ha', hb'] at hab,
       rw ←ring_hom.map_mul at hab,
-      replace hab := h0 _ hab,
+      replace hab := h0 hab,
       obtain (ha'' | hb'') := mul_eq_zero.mp hab,
       { rw [ha'', ring_hom.map_zero] at ha, rw [ha rfl, zero_mul] },
       { rw [hb'', ring_hom.map_zero] at hb, rw [hb rfl, mul_zero] }
@@ -309,15 +275,18 @@ end versors
 
 variables (Q)
 /-- The spinors are the versors with an even number of factors -/
-def spinors := submonoid.closure (set.range (algebra_map R _) ∪ set.range (ι Q) * set.range (ι Q) )
+def spinors := algebra.center_submonoid.closure R (set.range (ι Q) * set.range (ι Q))
 variables {Q}
 
 namespace spinors
 
+  open algebra.center_submonoid
+
   /-- The spinors are versors -/
-  lemma subset_versors : spinors Q ≤ versors Q :=
+  lemma subset_versors : (spinors Q).to_submonoid ≤ (versors Q).to_submonoid :=
   begin
     unfold spinors versors,
+    rw [closure_to_submonoid, closure_to_submonoid],
     rw submonoid.closure_union,
     rw submonoid.closure_union,
     apply sup_le_sup_left _ _,

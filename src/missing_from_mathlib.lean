@@ -8,6 +8,7 @@ import algebra.algebra.basic
 import algebra.monoid_algebra
 import algebra.algebra.operations
 import algebra.algebra.subalgebra
+import group_theory.group_action.sub_mul_action
 
 /-! Random theorems that belong in mathlib which are not related to GA
 
@@ -68,6 +69,81 @@ by simp [one_eq_algebra_of_id_range, algebra.of_id_apply]
 end submodule
 
 namespace algebra
+
+section
+
+set_option old_structure_cmd true
+
+/-- A `center_submonoid` is a submonoid that includes the central ring of the algebra -/
+structure center_submonoid (R : Type*) (A : Type*) [comm_semiring R] [semiring A] [algebra R A]
+  extends submonoid A, sub_mul_action R A.
+
+namespace center_submonoid
+
+variables {R : Type*} {A : Type*}
+
+section semiring
+
+variables [comm_semiring R] [semiring A] [algebra R A] (S : center_submonoid R A)
+
+instance : has_coe_t (center_submonoid R A) (set A) := ⟨λ s, s.carrier⟩
+instance : has_mem A (center_submonoid R A) := ⟨λ x p, x ∈ (p : set A)⟩
+instance : has_coe_to_sort (center_submonoid R A) := ⟨_, λ p, {x : A // x ∈ p}⟩
+
+lemma smul_mem (r : R) {a : A} : a ∈ S → r • a ∈ S := S.to_sub_mul_action.smul_mem r
+lemma mul_mem {a b : A} : a ∈ S → b ∈ S → a * b ∈ S := S.to_submonoid.mul_mem
+lemma one_mem : (1 : A) ∈ S := S.to_submonoid.one_mem
+
+@[simp] lemma algebra_map_mem (r : R) : algebra_map R A r ∈ S :=
+by { rw algebra_map_eq_smul_one r, exact S.smul_mem r S.one_mem, }
+
+variables (R)
+def closure (s : set A) : center_submonoid R A :=
+let c := submonoid.closure (set.range (algebra_map R A) ∪ s) in
+{ smul_mem' := λ r a h, begin
+    rw algebra.smul_def r a, 
+    exact c.mul_mem (submonoid.subset_closure $ or.inl $ set.mem_range_self r) h
+  end, ..c}
+
+@[simp] lemma subset_closure {s : set A} : s ⊆ closure R s :=
+λ x hx, submonoid.subset_closure $ or.inr hx
+
+@[simp] lemma closure_to_submonoid {s : set A} :
+  (closure R s).to_submonoid = submonoid.closure (set.range (algebra_map R A) ∪ s) :=
+rfl
+
+variables {R}
+
+instance : mul_action R (S) := S.to_sub_mul_action.mul_action
+  
+instance : monoid_with_zero (S) :=
+{ zero := ⟨0, (algebra_map R A).map_zero ▸ S.algebra_map_mem 0⟩,
+  zero_mul := λ v, subtype.eq $ zero_mul ↑v,
+  mul_zero := λ v, subtype.eq $ mul_zero ↑v,
+  ..S.to_submonoid.to_monoid }
+
+@[simp, norm_cast] lemma coe_zero : ((0 : S) : A) = 0 := rfl
+@[simp, norm_cast] lemma coe_smul (k : R) (v : S) : (↑(k • v) : A) = k • v := rfl
+
+end semiring
+
+section ring
+
+variables [comm_ring R] [ring A] [algebra R A] (S : center_submonoid R A)
+
+@[simp] lemma neg_mem (S : center_submonoid R A) (v : A) : v ∈ S → -v ∈ S := S.to_sub_mul_action.neg_mem
+
+instance : has_neg (S) := S.to_sub_mul_action.has_neg
+
+@[simp, norm_cast] lemma coe_neg (v : S) : (↑-v : A) = -v := rfl
+
+end ring
+
+end center_submonoid
+
+end
+
+
 
 /-- A filtration is an indexed family of submodules such that `i ≤ j → S i ≤ S j` and `S i * S j = S (i + j)` -/
 structure filtration (R : Type*) (A : Type*) (ι : Type*) [preorder ι] [has_add ι] [comm_semiring R] [semiring A] [algebra R A] :=
