@@ -68,4 +68,8 @@ calc ι Q a * ι Q b + ι Q b * ι Q a
           by rw [←ring_hom.map_sub, ←ring_hom.map_sub]
   ... = ↑ₐ(quadratic_form.polar Q a b) : rfl
 
+/-- A wedge product of n vectors. Note this does not define the wedge product of arbitrary multivectors. -/
+def ι_wedge (n : ℕ) [invertible (n.factorial : R)] : alternating_map R M (clifford_algebra Q) (fin n) :=
+⅟(n.factorial : R) • ((multilinear_map.mk_pi_algebra_fin R n _).comp_linear_map (λ i, ι Q)).alternatization
+
 end clifford_algebra
