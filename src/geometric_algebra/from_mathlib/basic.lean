@@ -22,6 +22,9 @@ abbreviation clifford_hom (A : Type*) [semiring A] [algebra R A] :=
 { f : M →ₗ[R] A // ∀ m, f m * f m = ↑ₐ(Q m) }
 variables {Q}
 
+/-- TODO: work out what the necessary conditions are here, then make this an instance -/
+example : nontrivial (clifford_algebra Q) := sorry
+
 /-- An induction principle for the `clifford_algebra` derived from `free_algebra.induction`.
 
 If `C` holds for the `algebra_map` of `r : R` into `clifford_algebra Q`, the `ι` of `x : M`, and is

@@ -74,9 +74,12 @@ instance : has_coe_t (center_submonoid R A) (set A) := ⟨λ s, s.carrier⟩
 instance : has_mem A (center_submonoid R A) := ⟨λ x p, x ∈ (p : set A)⟩
 instance : has_coe_to_sort (center_submonoid R A) := ⟨_, λ p, {x : A // x ∈ p}⟩
 
+instance : nonempty S.to_sub_mul_action := ⟨⟨1, S.to_submonoid.one_mem⟩⟩
+
 lemma smul_mem (r : R) {a : A} : a ∈ S → r • a ∈ S := S.to_sub_mul_action.smul_mem r
 lemma mul_mem {a b : A} : a ∈ S → b ∈ S → a * b ∈ S := S.to_submonoid.mul_mem
 lemma one_mem : (1 : A) ∈ S := S.to_submonoid.one_mem
+lemma zero_mem : (0 : A) ∈ S := S.to_sub_mul_action.zero_mem ⟨1, S.one_mem⟩
 
 @[simp] lemma algebra_map_mem (r : R) : algebra_map R A r ∈ S :=
 by { rw algebra_map_eq_smul_one r, exact S.smul_mem r S.one_mem, }
@@ -98,13 +101,16 @@ rfl
 
 variables {R}
 
-instance : mul_action R (S) := S.to_sub_mul_action.mul_action
+instance : mul_action R S := S.to_sub_mul_action.mul_action
   
-instance : monoid_with_zero (S) :=
-{ zero := ⟨0, (algebra_map R A).map_zero ▸ S.algebra_map_mem 0⟩,
-  zero_mul := λ v, subtype.eq $ zero_mul ↑v,
+instance : monoid_with_zero S :=
+{ zero_mul := λ v, subtype.eq $ zero_mul ↑v,
   mul_zero := λ v, subtype.eq $ mul_zero ↑v,
+  ..S.to_sub_mul_action.has_zero,
   ..S.to_submonoid.to_monoid }
+
+instance [nontrivial A] : nontrivial S :=
+nontrivial_of_ne 0 1 (subtype.ne_of_val_ne zero_ne_one)
 
 @[simp, norm_cast] lemma coe_zero : ((0 : S) : A) = 0 := rfl
 @[simp, norm_cast] lemma coe_smul (k : R) (v : S) : (↑(k • v) : A) = k • v := rfl

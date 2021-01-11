@@ -33,10 +33,6 @@ namespace versors
   @[simp] lemma ι_mem (m : M) : ι Q m ∈ versors Q :=
   subset_closure R $ set.mem_range_self m
 
-  /-- TODO: work out what the necessary conditions are here-/
-  instance : nontrivial (versors Q) :=
-  { exists_pair_ne := sorry }
-
   /-- An induction process for the versors, proving a statement `C` about `v` given proofs that:
   * It holds for the scalars
   * It holds for the vectors
@@ -58,23 +54,19 @@ namespace versors
     (h_grade0 (1 : R))
     h_mul v
 
-  /-- Involute of a versor is a versor -/
-  @[simp] lemma involute_mem (v : versors Q) : involute (v : clifford_algebra Q) ∈ versors Q :=
-  begin
-    apply induction_on v,
+  meta def inv_rev_tac : tactic unit :=
+  `[apply induction_on v,
     { intro r, simp, },
     { intro m, simp, },
-    { intros a b ha hb, simp [(versors Q).mul_mem ha hb] }
-  end
+    { intros a b ha hb, simp [(versors Q).mul_mem, ha, hb] }]
+
+  /-- Involute of a versor is a versor -/
+  @[simp] lemma involute_mem (v : versors Q) : involute (v : clifford_algebra Q) ∈ versors Q :=
+  by inv_rev_tac 
 
   /-- Reverse of a versor is a versor -/
   @[simp] lemma reverse_mem (v : versors Q) : reverse (v : clifford_algebra Q) ∈ versors Q :=
-  begin
-    apply induction_on v,
-    { intro r, simp, },
-    { intro m, simp, },
-    { intros a b ha hb, simp [(versors Q).mul_mem hb ha] }
-  end
+  by inv_rev_tac
 
   /-- A versor times its reverse is a scalar
   
@@ -125,7 +117,7 @@ namespace versors
   /--
   Only zero versors have zero magnitude, assuming:
 
-   - The metric is anisotropic (`hqnz`). Note this is a stricter requirements
+   - The metric is anisotropic (`hqnz`). Note this is a stricter requirement
      than non-degeneracy; versors in CGA 𝒢(ℝ⁴⋅¹) like `n∞` and `n∞*no` are
      both counterexamples to this lemma. 
    - `0` remains `0` when mapped from `R` into `clifford_algebra Q`
@@ -254,7 +246,8 @@ namespace versors
   end
 
   /-- If additionally the metric is anisotropic, then the inverse imparts a `group_with_zero` structure. -/
-  noncomputable instance [f : fact (∀ m, Q' m = 0 → m = 0)] : group_with_zero (versors Q') :=
+  noncomputable instance [nontrivial (clifford_algebra Q)] [f : fact Q'.anisotropic] :
+    group_with_zero (versors Q') :=
   { inv_zero := inv_zero,
     mul_inv_cancel := λ a ha, mul_inv_cancel' a $ λ ham, ha begin
       refine (magnitude_aux_zero a f _).mp _,
@@ -265,7 +258,7 @@ namespace versors
         simp only [submodule.coe_mk, submodule.coe_zero] at ham,
         exact ham }
     end,
-    ..versors.nontrivial,
+    ..(infer_instance : nontrivial (versors Q')),
     ..(infer_instance : monoid_with_zero (versors Q')),
     ..(infer_instance : has_inv (versors Q'))}
 
