@@ -18,22 +18,6 @@ Upstream PRS:
 
 -/
 
-namespace finsupp
-
-variables {α : Type*} {M : Type*} [has_zero M]
-
-lemma single_of_single_apply (a a' : α) (b : M) :
-  single a ((single a' b) a) = single a' (single a' b) a :=
-begin
-  rw [single_apply, single_apply],
-  ext,
-  split_ifs,
-  { rw h, },
-  { rw [zero_apply, single_apply, if_t_t], },
-end
-
-end finsupp
-
 namespace add_monoid_algebra
 
 variables (k : Type*) {G : Type*}
