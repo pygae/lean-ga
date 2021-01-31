@@ -56,8 +56,7 @@ begin
     simp [of], },
   -- finding a proof is finding an element of the subalgebra
   convert subtype.prop (lift Q of a),
-  simp [alg_hom.ext_iff] at of_id,
-  exact of_id a,
+  exact alg_hom.congr_fun of_id a,
 end
 
 /-- symmetric product of vectors is a scalar -/
