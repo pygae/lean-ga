@@ -1,6 +1,14 @@
 import linear_algebra.clifford_algebra
 import analysis.normed_space.inner_product
+/-!
+# Conformal Geometric algebra
 
+This files defines the conformalized vector space `conformalize V`, and its associated geometric algebra `CGA`.
+
+A typical usage would use `CGA (euclidean_space ℝ 3)`.
+-/
+
+-- the real numbers are not computable
 noncomputable theory
 
 variables (V : Type*) [inner_product_space ℝ V]
@@ -23,11 +31,7 @@ def Q : quadratic_form ℝ (conformalize V) :=
 
 /-- Show the definition is what we expect. -/
 @[simp] lemma Q_apply (x : conformalize V) : Q x = ∥x.v∥^2 - 2 * (x.n0 * x.ni) :=
-begin
-  dunfold Q,
-  obtain ⟨xc, xo, xi⟩ := x,
-  simp [Q, bilin_form_of_real_inner, sub_eq_add_neg, inner_self_eq_norm_sq_to_K],
-end
+by simp [Q, inner_self_eq_norm_sq_to_K]
 
 variables (V)
 /-- Define the Conformal Geometric Algebra over `V` . -/

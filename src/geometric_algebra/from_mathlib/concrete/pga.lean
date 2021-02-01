@@ -2,7 +2,15 @@ import linear_algebra.clifford_algebra
 import data.matrix.notation
 import data.real.basic
 import analysis.normed_space.inner_product
+/-!
+# Plane-based Geometric algebra
 
+This files defines the projectivized vector space `projectivize V`, and its associated geometric algebra `CGA`.
+
+A typical usage would use `PGA (euclidean_space ℝ 3)`.
+-/
+
+-- the real numbers are not computable
 noncomputable theory
 
 variables (V : Type*) [inner_product_space ℝ V]
@@ -24,14 +32,10 @@ def Q : quadratic_form ℝ (projectivize V) :=
 
 /-- Show the definition is what we expect. -/
 @[simp] lemma Q_apply (x : projectivize V) : Q x = ∥x.v∥^2 :=
-begin
-  dunfold Q,
-  obtain ⟨xc, xo⟩ := x,
-  simp [Q, bilin_form_of_real_inner, inner_self_eq_norm_sq_to_K],
-end
+by simp [Q, inner_self_eq_norm_sq_to_K]
 
 variables (V)
-/-- Define the Conformal Geometric Algebra over V. -/
+/-- Define the Plane-based Geometric Algebra over V. -/
 abbreviation PGA := clifford_algebra (Q : quadratic_form ℝ $ projectivize V)
 
 /-- And the embedding of the vector space into it. -/
