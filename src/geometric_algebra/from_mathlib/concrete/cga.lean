@@ -1,6 +1,4 @@
 import linear_algebra.clifford_algebra
-import data.matrix.notation
-import data.real.basic
 import analysis.normed_space.inner_product
 
 noncomputable theory
@@ -15,9 +13,9 @@ namespace conformalize
 
 variables {V}
 /-! Define linear maps to extract the new components -/
-def v : conformalize V →ₗ[ℝ] V := ⟨λ v, v.1, λ _ _, rfl, λ _ _, rfl⟩
-def n0 : conformalize V →ₗ[ℝ] ℝ := ⟨λ v, v.2.1, λ _ _, rfl, λ _ _, rfl⟩
-def ni : conformalize V →ₗ[ℝ] ℝ := ⟨λ v, v.2.2, λ _ _, rfl, λ _ _, rfl⟩
+def v : conformalize V →ₗ[ℝ] V := linear_map.fst _ _ _
+def n0 : conformalize V →ₗ[ℝ] ℝ := (linear_map.fst _ _ _).comp (linear_map.snd _ _ _)
+def ni : conformalize V →ₗ[ℝ] ℝ := (linear_map.snd _ _ _).comp (linear_map.snd _ _ _)
 
 /-! The metric is the metric of V plus an extra term about n0 and ni. -/
 def Q : quadratic_form ℝ (conformalize V) :=
@@ -32,11 +30,14 @@ begin
 end
 
 variables (V)
-/-- Define the Conformal Geometric Algebra over V. -/
+/-- Define the Conformal Geometric Algebra over `V` . -/
 abbreviation CGA := clifford_algebra (Q : quadratic_form ℝ $ conformalize V)
+variables {V}
+
+open clifford_algebra
 
 /-- And the embedding of the vector space into it. -/
 def up (x : V) : CGA V :=
-clifford_algebra.ι _ (x, 1, (1 / 2 : ℝ) * ∥x∥^2)
+ι _ (x, 1, (1 / 2 : ℝ) * ∥x∥^2)
 
 end conformalize
