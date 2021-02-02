@@ -14,6 +14,7 @@ noncomputable theory
 
 variables (V : Type*) [inner_product_space ℝ V]
 
+/-! ## The conformalized space `conformalize V` -/
 /-- A conformalized vector has additional e0 and einf components -/
 @[derive [add_comm_group, vector_space ℝ]]
 def conformalize : Type* := V × ℝ × ℝ
@@ -21,17 +22,17 @@ def conformalize : Type* := V × ℝ × ℝ
 namespace conformalize
 
 variables {V}
-/-! Define linear maps to extract the new components -/
+/-! Linear maps which extract the new components -/
 def v : conformalize V →ₗ[ℝ] V := linear_map.fst _ _ _
 def n0 : conformalize V →ₗ[ℝ] ℝ := (linear_map.fst _ _ _).comp (linear_map.snd _ _ _)
 def ni : conformalize V →ₗ[ℝ] ℝ := (linear_map.snd _ _ _).comp (linear_map.snd _ _ _)
 
-/-! Define linear maps to assemble the components. -/
+/-! Definitions for building `conformalize V` objects. -/
 def of_v : V →ₗ[ℝ] conformalize V := linear_map.inl _ _ _
 def of_n0 : conformalize V := (0, 1, 0)
 def of_ni : conformalize V := (0, 0, 1)
 
-/-! Train the simplifier about trivial compositions of the above. -/
+/-! Lemmas to train the simplifier about trivial compositions of the above. -/
 @[simp] lemma v_of_v (x : V) : v (of_v x) = x := rfl
 @[simp] lemma n0_of_v (x : V): n0 (of_v x) = 0 := rfl
 @[simp] lemma ni_of_v (x : V): ni (of_v x) = 0 := rfl
@@ -45,6 +46,8 @@ def of_ni : conformalize V := (0, 0, 1)
 /-- The mapping from `V` to `conformalize V` for embedding points. -/
 def up (x : V) : conformalize V :=
 of_n0 + of_v x + (1 / 2 * ∥x∥^2 : ℝ) • of_ni
+
+/-! ## The metric on the conformalized space -/
 
 /-- The metric is the metric of V plus an extra term about n0 and ni. -/
 def Q : quadratic_form ℝ (conformalize V) :=
@@ -93,6 +96,8 @@ begin
   ring
 end
 
+/-! ## The geometric algebra over that space -/
+
 variables (V)
 /-- Define the Conformal Geometric Algebra over `V` . -/
 abbreviation CGA := clifford_algebra (Q : quadratic_form ℝ $ conformalize V)
@@ -103,6 +108,5 @@ open clifford_algebra
 lemma ι_up_vec_symm_prod (x y : V) :
   ι Q (up x) * ι Q (up y) + ι Q (up y) * ι Q (up x) = algebra_map _ _ (-dist x y ^ 2) :=
 by rw [vec_symm_prod, Q_polar_up]
-
 
 end conformalize
