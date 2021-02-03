@@ -108,21 +108,10 @@ namespace hom_mv
   instance r0_has_one : has_one (hom_mv 0) := { one := (1 : blade 0) }
 
   def add : Π {n : ℕ}, hom_mv n → hom_mv n → hom_mv n
-  | 0 := λ a b, begin
-    cases a with a',
-    cases b with b',
-    exact hom_mv.scalar (a' + b'),
-  end
-  | 1 := λ a b, begin
-    cases a,
-    cases b,
-    exact hom_mv.vector (a_1 + b_1)
-  end
-  | (n + 2) := λ a b,begin
-    cases a,
-    cases b,
-    exact hom_mv.graded (a_a ++ b_a),
-  end
+  | 0 (scalar a) (scalar b) := hom_mv.scalar (a + b)
+  | 1 (vector a) (vector b) := hom_mv.vector (a + b)
+  | (n + 2) (graded a) (graded b) := hom_mv.graded (a ++ b)
+
   instance has_add {n : ℕ} : has_add (hom_mv n) := { add := add }
 end hom_mv
 
@@ -157,16 +146,10 @@ namespace mv
   instance has_augment_coe {n : ℕ} : has_coe (multivector n) (multivector (nat.succ n)) := { coe := augment_coe }
 
   def mv_add : Π {n : ℕ}, multivector n → multivector n → multivector n
-  | 0 := λ a b, begin
-    cases a,
-    cases b,
-    exact multivector.scalar (a_1 + b_1)
-  end
-  | (nat.succ n) := λ a b, begin
-    cases a with z z a' ar,
-    cases b with z z b' br,
-    exact multivector.augment (mv_add a' b') (ar + br)
-  end
+  | 0 (multivector.scalar a) (multivector.scalar b) := multivector.scalar (a + b)
+  | (nat.succ n) (multivector.augment a ar) (multivector.augment b br) :=
+    multivector.augment (mv_add a b) (ar + br)
+
   instance has_add {n: ℕ} : has_add (multivector n) := { add := mv_add }
 end mv
 
