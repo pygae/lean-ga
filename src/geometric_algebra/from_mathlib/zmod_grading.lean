@@ -1,4 +1,3 @@
-
 /-
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under MIT license as described in the file LICENSE.
@@ -13,12 +12,15 @@ variables {Q : quadratic_form R M}
 /-!
 # Grading by ℤ / 2ℤ
 
-This file defines the grading by `zmod 2`
+This file defines the grading by `zmod 2`, as the function `clifford_algebra.grades'`.
+
+## Main results
+
+* `clifford_algebra.grades'_left_inverse`, `grades'` has a left-inverse, `add_monoid_algebra.sum_id`.
+* `clifford_algebra.grades'.map_grades'`, `grades'` is idempotent
 -/
 
 namespace clifford_algebra
-
-abbreviation grade_type := zmod 2
 
 /--
 Separate an element of the clifford algebra into its `zmod 2`-graded components.
@@ -28,32 +30,34 @@ before and after the mapping.
 
 This is _not_ the normal ℕ-graded definition that we usually use in GA. That definition is harder...
 -/
-noncomputable
-def grades' : (clifford_algebra Q) →ₐ[R] add_monoid_algebra (clifford_algebra Q) grade_type :=
-lift Q (⟨
-  (finsupp.lsingle 1).comp (ι Q),
-  λ x, begin
-    rw [linear_map.comp_apply, finsupp.lsingle_apply, add_monoid_algebra.single_mul_single],
-    simp,
-    congr, -- this requires 1 + 1 = 0, which is why we use `zmod 2` as our grading
-  end⟩ : clifford_hom Q (add_monoid_algebra (clifford_algebra Q) grade_type))
-
+noncomputable def grades' :
+  (clifford_algebra Q) →ₐ[R] add_monoid_algebra (clifford_algebra Q) (zmod 2) :=
+(lift Q : _) ⟨
+  -- vectors are grade 1
+  (add_monoid_algebra.lsingle 1).comp (ι Q),
+  -- this requires 1 + 1 = 0, which is why we use `zmod 2` as our grading
+  λ x, by { simp [add_monoid_algebra.single_mul_single], congr }⟩
 
 /-- Recombining the grades recovers the original element-/
-lemma sum_id_grades :
+lemma sum_id_comp_grades' :
   (add_monoid_algebra.sum_id R).comp grades' = alg_hom.id R (clifford_algebra Q) :=
 begin
   ext,
   simp [grades', add_monoid_algebra.sum_id_apply, finsupp.sum_single_index],
 end
 
+/-- Stated another way, `grades'` has a left-inverse and is therefore injective (via `function.left_inverse.injective`). -/
+lemma grades'_left_inverse :
+  function.left_inverse (add_monoid_algebra.sum_id R) ⇑(grades' : clifford_algebra Q →ₐ[R] _) :=
+alg_hom.congr_fun sum_id_comp_grades'
+
 noncomputable
-instance : has_coe (add_monoid_algebra (clifford_algebra Q) grade_type) (clifford_algebra Q) := ⟨
-  (add_monoid_algebra.sum_id R : add_monoid_algebra (clifford_algebra Q) grade_type →ₐ[R] (clifford_algebra Q))
+instance : has_coe (add_monoid_algebra (clifford_algebra Q) (zmod 2)) (clifford_algebra Q) := ⟨
+  (add_monoid_algebra.sum_id R : add_monoid_algebra (clifford_algebra Q) (zmod 2) →ₐ[R] (clifford_algebra Q))
 ⟩
 
 @[simp, norm_cast]
-lemma coe_def (x : add_monoid_algebra (clifford_algebra Q) grade_type) : (x : clifford_algebra Q) = add_monoid_algebra.sum_id R x := rfl
+lemma coe_def (x : add_monoid_algebra (clifford_algebra Q) (zmod 2)) : (x : clifford_algebra Q) = add_monoid_algebra.sum_id R x := rfl
 
 
 /-- An element of `R` lifted with `algebra_map` has a single grade 0 element -/
@@ -68,13 +72,13 @@ by simp [grades']
 
 -- note this is true for any `zero_hom`, not just `grades'`. Of course, then we need to repeat this
 -- for `add_monoid_hom`, `add_equiv`, `linear_map`, `ring_hom`, `ring_equiv`, `alg_hom`, ...
-private lemma map_single_apply (x : clifford_algebra Q) (i j : grade_type) :
+private lemma map_single_apply (x : clifford_algebra Q) (i j : zmod 2) :
   grades' (finsupp.single i x j) = finsupp.single i (grades' x) j :=
 by rw [finsupp.single_apply, finsupp.single_apply, apply_ite grades', grades'.map_zero]
 
 -- The grade-`i` part consists only of itself -/
 @[simp]
-lemma grades'.map_grades' (x : clifford_algebra Q) (i : grade_type) :
+lemma grades'.map_grades' (x : clifford_algebra Q) (i : zmod 2) :
   grades' (grades' x i) = finsupp.single i (grades' x i) :=
 begin
   induction x using clifford_algebra.induction generalizing i,

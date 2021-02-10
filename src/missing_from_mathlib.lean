@@ -32,6 +32,14 @@ lemma sum_id_apply {A : Type*} [comm_semiring k] [semiring A] [algebra k A] [add
   sum_id k g = g.sum (λ _ gi, gi) :=
 by simp [sum_id, lift_nc_alg_hom, lift_nc_ring_hom, lift_nc, alg_hom.id, ring_hom.id]
 
+-- `monoid_algebra` is missing some of the `finsupp` API:
+
+noncomputable def lsingle {k A : Type*} [semiring k] [semiring A] [semimodule k A] (i : G) : A →ₗ[k] add_monoid_algebra A G :=
+finsupp.lsingle i
+
+@[simp] lemma lsingle_apply {k A : Type*} [semiring k] [semiring A] [semimodule k A] (i : G) (a : A) :
+  (lsingle i : _ →ₗ[k] _) a = finsupp.single i a := rfl
+
 end add_monoid_algebra
 
 namespace submodule
