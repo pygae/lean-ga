@@ -29,10 +29,13 @@ section involute
   by simp [involute]
 
   @[simp] lemma involute_algebra_map (r : R) : involute (↑ₐr : clifford_algebra Q) = ↑ₐr :=
-  by simp [involute]
+  involute.commutes _
+
+  @[simp] lemma involute_comp_involute : involute.comp involute = alg_hom.id R (clifford_algebra Q) :=
+  by { ext, simp }
 
   lemma involute_involutive : function.involutive (involute : _ → clifford_algebra Q) :=
-  λ x, by induction x using clifford_algebra.induction; simp [*]
+  λ x, alg_hom.congr_fun involute_comp_involute x
 
   lemma involute_prod_map_ι : ∀ l : list M,
     involute (l.map $ ι Q).prod = ((-1 : R)^l.length) • (l.map $ ι Q).prod
@@ -61,6 +64,9 @@ section reverse
 
   @[simp] lemma reverse_mul (a b : clifford_algebra Q) : reverse (a * b) = reverse b * reverse a :=
   by simp [reverse]
+
+  @[simp] lemma reverse_comp_reverse : reverse.comp reverse = (linear_map.id : _ →ₗ[R] clifford_algebra Q) :=
+  by { ext, simp }
 
   @[simp] lemma reverse_involutive : function.involutive (reverse : _ → clifford_algebra Q) :=
   λ x, by induction x using clifford_algebra.induction; simp [*]
