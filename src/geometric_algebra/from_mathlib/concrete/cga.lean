@@ -58,10 +58,7 @@ def Q : quadratic_form ℝ (conformalize V) :=
 by simp [Q, inner_self_eq_norm_sq_to_K]
 
 @[simp] lemma Q_up (x : V) : Q (up x) = 0 :=
-begin
-  unfold up,
-  simp [←mul_assoc],
-end
+by simp [up, ←mul_assoc]
 
 /-! Train the simplifier how to act on components -/
 @[simp] lemma Q_polar_of_n0_of_v (x : V) : quadratic_form.polar Q of_n0 (of_v x) = 0 :=

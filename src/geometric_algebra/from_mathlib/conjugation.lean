@@ -35,7 +35,7 @@ section involute
   by { ext, simp }
 
   lemma involute_involutive : function.involutive (involute : _ → clifford_algebra Q) :=
-  λ x, alg_hom.congr_fun involute_comp_involute x
+  alg_hom.congr_fun involute_comp_involute
 
   lemma involute_prod_map_ι : ∀ l : list M,
     involute (l.map $ ι Q).prod = ((-1 : R)^l.length) • (l.map $ ι Q).prod
