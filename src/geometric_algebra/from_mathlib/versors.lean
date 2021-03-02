@@ -247,7 +247,7 @@ namespace versors
   end
 
   /-- If additionally the metric is anisotropic, then the inverse imparts a `group_with_zero` structure. -/
-  noncomputable instance [nontrivial (clifford_algebra Q)] [f : fact Q'.anisotropic] :
+  noncomputable instance [f : fact Q'.anisotropic] :
     group_with_zero (versors Q') :=
   { inv_zero := inv_zero,
     mul_inv_cancel := λ a ha, mul_inv_cancel' a $ λ ham, ha begin
