@@ -74,14 +74,15 @@ namespace versors
   lemma mul_self_reverse (v : versors Q) :
     ∃ r : R, (v : clifford_algebra Q) * reverse (v : clifford_algebra Q) = ↑ₐr :=
   begin
-    apply induction_on v,
-    { intro r,
+    with_cases { apply induction_on v },
+    case h_grade0 : r {
       refine ⟨r * r, _⟩,
-      simp, },
-    { intro m,
+      simp },
+    case h_grade1 : m {
       refine ⟨Q m, _⟩,
-      simp, },
-    { rintros x y ⟨qx, hx⟩ ⟨qy, hy⟩,
+      simp },
+    case h_mul : x y {
+      rintros ⟨qx, hx⟩ ⟨qy, hy⟩,
       refine ⟨qx * qy, _⟩,
       simp only [reverse_mul, submonoid.coe_mul, ring_hom.map_mul],
       rw [mul_assoc ↑x, ←mul_assoc ↑y, hy, algebra.commutes, ←mul_assoc, hx], }
