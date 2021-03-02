@@ -59,20 +59,6 @@ begin
   exact alg_hom.congr_fun of_id a,
 end
 
-/-- two linear maps agree if they agree on 1, `ι v`, and agree on a product if they agree on its parts. -/
-@[ext]
-def hom_extₗ {N : Type*} [add_comm_monoid N] [semimodule R N] {f g : clifford_algebra Q →ₗ[R] N}
-  (h_one : f 1 = g 1)
-  (h_mul : ∀ x y, f x = g x → f y = g y → f (x * y) = g (x * y))
-  (h_ι : f.comp (ι Q) = g.comp (ι Q)) : f = g :=
-linear_map.ext $ λ x, begin
-  refine induction _ (linear_map.congr_fun h_ι) h_mul _ x,
-  { intros r,
-    rw [algebra.algebra_map_eq_smul_one, f.map_smul, g.map_smul, h_one], },
-  { intros a b ha hb,
-    rw [f.map_add, g.map_add, ha, hb] },
-end
-
 /-- symmetric product of vectors is a scalar -/
 lemma vec_symm_prod (a b : M) : ι Q a * ι Q b + ι Q b * ι Q a = ↑ₐ(quadratic_form.polar Q a b) :=
 calc ι Q a * ι Q b + ι Q b * ι Q a

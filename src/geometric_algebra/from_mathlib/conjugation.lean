@@ -65,9 +65,6 @@ section reverse
   @[simp] lemma reverse_mul (a b : clifford_algebra Q) : reverse (a * b) = reverse b * reverse a :=
   by simp [reverse]
 
-  @[simp] lemma reverse_comp_reverse : reverse.comp reverse = (linear_map.id : _ →ₗ[R] clifford_algebra Q) :=
-  by { ext, simp }
-
   @[simp] lemma reverse_involutive : function.involutive (reverse : _ → clifford_algebra Q) :=
   λ x, by induction x using clifford_algebra.induction; simp [*]
 
