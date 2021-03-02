@@ -25,40 +25,6 @@ variables {Q}
 /-- TODO: work out what the necessary conditions are here, then make this an instance -/
 example : nontrivial (clifford_algebra Q) := sorry
 
-/-- An induction principle for the `clifford_algebra` derived from `free_algebra.induction`.
-
-If `C` holds for the `algebra_map` of `r : R` into `clifford_algebra Q`, the `ι` of `x : M`, and is
-preserved under addition and muliplication, then it holds for all of `clifford_algebra Q`.
--/
-@[elab_as_eliminator]
-lemma induction {C : clifford_algebra Q → Prop}
-  (h_grade0 : ∀ r, C (algebra_map R (clifford_algebra Q) r))
-  (h_grade1 : ∀ x, C (ι Q x))
-  (h_mul : ∀ a b, C a → C b → C (a * b))
-  (h_add : ∀ a b, C a → C b → C (a + b))
-  (a : clifford_algebra Q) :
-  C a :=
-begin
-  -- the arguments are enough to construct a subalgebra, and a mapping into it from M
-  let s : subalgebra R (clifford_algebra Q) := {
-    carrier := C,
-    one_mem' := h_grade0 1,
-    zero_mem' := h_grade0 0,
-    mul_mem' := h_mul,
-    add_mem' := h_add,
-    algebra_map_mem' := h_grade0, },
-  let of : clifford_hom Q s :=
-  ⟨(ι Q).cod_restrict s.to_submodule h_grade1,
-    λ m, subtype.eq $ ι_square_scalar Q m ⟩,
-  -- the mapping through the subalgebra is the identity
-  have of_id : alg_hom.id R (clifford_algebra Q) = s.val.comp (lift Q of),
-  { ext,
-    simp [of], },
-  -- finding a proof is finding an element of the subalgebra
-  convert subtype.prop (lift Q of a),
-  exact alg_hom.congr_fun of_id a,
-end
-
 /-- symmetric product of vectors is a scalar -/
 lemma vec_symm_prod (a b : M) : ι Q a * ι Q b + ι Q b * ι Q a = ↑ₐ(quadratic_form.polar Q a b) :=
 calc ι Q a * ι Q b + ι Q b * ι Q a
