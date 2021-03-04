@@ -93,8 +93,9 @@ end
 @[simp] lemma Q_polar_up (x y : V) : quadratic_form.polar Q (up x) (up y) = -dist x y ^ 2 :=
 begin
   dunfold up,
-  simp [norm_sq_eq_inner, mul_right_comm, dist_eq_norm, norm_sq_eq_inner, inner_sub_sub_self, ←inner_conj_sym x y],
-  ring
+  simp only [dist_eq_norm, norm_sq_eq_inner, is_R_or_C.re_to_real, inner_sub_sub_self, ←real_inner_comm y x],
+  simp [mul_right_comm, two_mul],
+  abel
 end
 
 /-! ## The geometric algebra over that space -/
