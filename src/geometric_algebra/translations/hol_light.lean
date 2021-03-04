@@ -21,30 +21,26 @@ variables (n : ℕ)
 -- mapping from subsets of 1:n to coefficients
 abbreviation idx := finset (fin n)
 
-@[derive [add_comm_group]]
+@[derive [add_comm_group, semimodule ℝ]]
 def multivector : Type := idx n → ℝ
 
 variables {n}
 
+/-- generic product indexed by a sign function -/
+def prod_aux (a b : multivector n) (sgn : idx n → idx n → ℤ) :
+  multivector n :=
+λ (ci : idx n),
+  ∑ ai bi,
+    if ai ∪ bi ≠ ci then 0 else  -- not this coefficient
+    (a ai * b bi) * sgn ai bi
+
 /-- wedge product of two multivectors-/
 def wedge (a b : multivector n) : multivector n :=
-λ (ci : idx n),
-  ∑ ai bi in finset.univ,
-    if ai ∩ bi ≠ ∅  then 0 else  -- matching blades
-    if ai ∪ bi ≠ ci then 0 else  -- not this coefficient
-    (a ai + b bi) * (-1) ^ (
-      ((ai.product bi).filter $ λ (abj : fin n × fin n), abj.1 > abj.2).card
-    )
-
--- this is probably in mathlib
-instance : semimodule ℝ (multivector n) :=
-{ smul := λ c m, λ i, c * m i,
-  one_smul := by simp,
-  mul_smul := λ c₁ c₂ m, funext $ λ i, by simp [mul_assoc],
-  smul_add := λ c m₁ m₂, funext $ λ i, by simp [mul_add],
-  smul_zero := λ c, funext $ λ i, by simp,
-  add_smul := λ c₁ c₂ m, funext $ λ i, by simp [add_mul],
-  zero_smul := λ c, funext $ λ i, by simp }
+prod_aux a b $ λ ai bi,
+  if ai ∩ bi ≠ ∅  then 0 else  -- matching blades
+  (-1) ^ (
+    finset.card $ (ai.product bi).filter $ λ abj, abj.1 > abj.2
+  )
 
 /-- `wedge` is a bilinear map -/
 def wedge.bilinear : multivector n →ₗ[ℝ] multivector n →ₗ[ℝ] multivector n :=
