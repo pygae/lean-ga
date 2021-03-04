@@ -81,8 +81,12 @@ by { simp [quadratic_form.polar] }
 -- this one is harder than the rest
 @[simp] lemma Q_polar_of_v_of_v (x y : V) : quadratic_form.polar Q (of_v x) (of_v y) = 2 * inner x y :=
 begin
-  simp [quadratic_form.polar, norm_sq_eq_inner, ←inner_conj_sym y x, inner_add_add_self],
-  ring
+  rw [quadratic_form.polar, Q_apply],
+  suffices : ∥x + y∥ ^ 2 - ∥x∥ ^ 2 - ∥y∥ ^ 2 = 2 * inner x y,
+  { simpa using this, },
+  simp only [norm_sq_eq_inner, is_R_or_C.re_to_real],
+  rw [inner_add_add_self, ←real_inner_comm y x, two_mul],
+  abel,
 end
 
 /-- The n0 and ni terms cancel to give the (negated) distance -/
