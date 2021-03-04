@@ -57,7 +57,7 @@ jobs:
           | sed 's,^\./,,;s,\.lean$,,;s,/,.,g;s,^,import ,' \
           | sort >./all.lean)
 
-        cp ../_target/deps/mathlib/references.bib ../docs
+        cp ../_target/deps/mathlib/docs/references.bib ../docs
 
         cat ../src/all.lean
         lean --path
@@ -94,4 +94,3 @@ jobs:
         REPOSITORY_NAME: pygae/lean-ga-docs
         BRANCH: gh-pages # The branch the action should deploy to.
         FOLDER: doc-gen/built-docs # The folder the action should deploy.
-
