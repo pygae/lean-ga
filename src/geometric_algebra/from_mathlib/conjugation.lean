@@ -12,68 +12,16 @@ variables {Q : quadratic_form R M}
 /-!
 # Conjugations
 
-This file defines the grade reversal and grade involution functions, `reverse` and `involute`.
+This file contains additional lemmas about `clifford_algebra.reverse` and `clifford_algebra.involute`.
 
-It does not define any notation for now.
+As more and more goes into Mathlib, this file will become smaller and spaller.
+The links above will take you to the collection of mathlib theorems.
 -/
 
 namespace clifford_algebra
 
-section involute
-
-  /-- Grade involution, inverting the sign of each basis vector -/
-  def involute : clifford_algebra Q →ₐ[R] clifford_algebra Q :=
-  clifford_algebra.lift Q ⟨-(ι Q), λ m, by simp⟩
-
-  @[simp] lemma involute_ι (m : M) : involute (ι Q m) = -ι Q m :=
-  by simp [involute]
-
-  @[simp] lemma involute_algebra_map (r : R) : involute (↑ₐr : clifford_algebra Q) = ↑ₐr :=
-  involute.commutes _
-
-  @[simp] lemma involute_comp_involute : involute.comp involute = alg_hom.id R (clifford_algebra Q) :=
-  by { ext, simp }
-
-  lemma involute_involutive : function.involutive (involute : _ → clifford_algebra Q) :=
-  alg_hom.congr_fun involute_comp_involute
-
-  lemma involute_prod_map_ι : ∀ l : list M,
-    involute (l.map $ ι Q).prod = ((-1 : R)^l.length) • (l.map $ ι Q).prod
-  | [] := by simp
-  | (x :: xs) := by simp [pow_add, involute_prod_map_ι xs]
-
-end involute
-
 section reverse
   open opposite
-
-  /-- Grade reversion, inverting the multiplication order of basis vectors -/
-  def reverse : clifford_algebra Q →ₗ[R] clifford_algebra Q :=
-  (op_linear_equiv R).symm.to_linear_map.comp (
-    clifford_algebra.lift Q ⟨(opposite.op_linear_equiv R).to_linear_map.comp (ι Q),
-      λ m, unop_injective $ by simp⟩).to_linear_map
-
-  @[simp] lemma reverse_ι (m : M) : reverse (ι Q m) = ι Q m :=
-  by simp [reverse]
-
-  @[simp] lemma reverse_algebra_map (r : R) : reverse (↑ₐr : clifford_algebra Q) = ↑ₐr :=
-  by simp [reverse]
-
-  @[simp] lemma reverse_one  : reverse (1 : clifford_algebra Q) = 1 :=
-  reverse_algebra_map 1
-
-  @[simp] lemma reverse_mul (a b : clifford_algebra Q) : reverse (a * b) = reverse b * reverse a :=
-  by simp [reverse]
-
-  @[simp] lemma reverse_involutive : function.involutive (reverse : _ → clifford_algebra Q) :=
-  λ x, by induction x using clifford_algebra.induction; simp [*]
-
-  lemma reverse_prod_map_ι : ∀ (l : list M), reverse (l.map $ ι Q).prod = (l.map $ ι Q).reverse.prod
-  | [] := by simp
-  | (x :: xs) := by simp [reverse_prod_map_ι xs]
-
-  lemma reverse_involute_commute : function.commute (reverse : _ → clifford_algebra Q) involute :=
-  λ x, by induction x using clifford_algebra.induction; simp [*]
 
   /-- helper lemma for expanding the sign of reverse -/
   lemma reverse_prod_sign_aux (n : ℕ) :
