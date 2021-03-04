@@ -57,7 +57,7 @@ jobs:
           | sed 's,^\./,,;s,\.lean$,,;s,/,.,g;s,^,import ,' \
           | sort >./all.lean)
 
-        cp ../_target/deps/mathlib/docs/references.bib ../docs
+        cp _target/deps/mathlib/docs/references.bib ../docs
 
         cat ../src/all.lean
         lean --path
