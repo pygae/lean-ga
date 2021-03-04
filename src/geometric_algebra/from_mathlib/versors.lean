@@ -84,7 +84,7 @@ namespace versors
     case h_mul : x y {
       rintros ⟨qx, hx⟩ ⟨qy, hy⟩,
       refine ⟨qx * qy, _⟩,
-      simp only [reverse_mul, submonoid.coe_mul, ring_hom.map_mul],
+      simp only [reverse.map_mul, submonoid.coe_mul, ring_hom.map_mul],
       rw [mul_assoc ↑x, ←mul_assoc ↑y, hy, algebra.commutes, ←mul_assoc, hx], }
   end
 
@@ -104,7 +104,7 @@ namespace versors
   def magnitude_aux : monoid_with_zero_hom (versors Q) (clifford_algebra Q) :=
   { to_fun := λ v, (v : clifford_algebra Q) * reverse (v : clifford_algebra Q),
     map_mul' := λ x y, by {
-      simp only [reverse_mul, submonoid.coe_mul],
+      simp only [reverse.map_mul, submonoid.coe_mul],
       obtain ⟨_, hx⟩ := mul_self_reverse x,
       obtain ⟨_, hy⟩ := mul_self_reverse y,
       rw [mul_assoc ↑x, ←mul_assoc ↑y, hy, algebra.commutes, ←mul_assoc, hx],
@@ -134,7 +134,7 @@ namespace versors
   ⟨begin
     apply induction_on v,
     { intros r hr,
-      simp only [subtype.coe_mk, magnitude_aux_apply, reverse_algebra_map] at hr,
+      simp only [subtype.coe_mk, magnitude_aux_apply, reverse.commutes] at hr,
       ext, simp only [coe_zero, subtype.coe_mk],
       rw [←ring_hom.map_mul] at hr,
       replace hr := h0 hr,
