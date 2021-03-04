@@ -365,7 +365,7 @@ submonoid.closure_induction r.prop
   (λ x hx, by {
     cases hx,
       { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
-        simp only [involute_algebra_map], },
+        simp only [involute.commutes], },
       { obtain ⟨a, b, ha, hb, rfl⟩ := set.mem_mul.mpr hx,
         obtain ⟨av, rfl⟩ := ha,
         obtain ⟨bv, rfl⟩ := hb,
