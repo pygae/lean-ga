@@ -78,7 +78,7 @@ jobs:
       run: |
         cd doc-gen
         python3 \
-          -c "import print_docs; del print_docs.extra_doc_files[:]; print_docs.copy_yaml_files = lambda p: None; print_docs.library_link_roots['lean-ga'] = 'https://github.com/pygae/lean-ga/blob/$GITHUB_SHA/src/'; print_docs.main()" \
+          -c "import print_docs; del print_docs.extra_doc_files[:]; print_docs.copy_yaml_bib_files = lambda p: None; print_docs.library_link_roots['lean-ga'] = 'https://github.com/pygae/lean-ga/blob/$GITHUB_SHA/src/'; print_docs.main()" \
           -r .. -w 'https://pygae.github.io/lean-ga-docs/' -t built-docs
 
     - name: 🔑 Install SSH Client
