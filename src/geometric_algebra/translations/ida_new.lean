@@ -15,7 +15,7 @@ import linear_algebra.direct_sum_module
 by Tetsuo Ida, Jacques Fleuriot, and Fadoua Ghourabi
 -/
 
-namespace translations.ida
+namespace ida
 
 @[ext]
 structure multivector :=
@@ -92,4 +92,4 @@ instance : algebra ℝ multivector := sorry
 
 end multivector
 
-end translations.ida
+end ida

@@ -12,8 +12,12 @@ import linear_algebra.direct_sum_module
 /-!
 # Derived from "A New Formalization of Origami in Geometric Algebra"
 
-by Tetsuo Ida, Jacques Fleuriot, and Fadoua Ghourabi
+This version is an incorrect but accidentally simpler attempt at translating what is now
+`ida.multivector`. It is included for completeness, but not referenced in our paper.
 -/
+
+namespace ida'
+
 open_locale big_operators
 open_locale direct_sum
 
@@ -55,3 +59,5 @@ def rvector_mul : Π {i j}, rvector i → rvector j → multivector
 instance : has_mul multivector := ⟨λ a b, ∑ i j, rvector_mul (grade a i) (grade b j)⟩
 instance : ring multivector := sorry
 instance : algebra ℝ multivector := sorry
+
+end ida'
