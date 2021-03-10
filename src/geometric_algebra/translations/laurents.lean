@@ -15,6 +15,8 @@ import tactic
 by Laurent Fuchs and Laurent Théry
 -/
 
+namespace laurent
+
 variables (α : Type) [field α]
 
 -- vectors
@@ -76,3 +78,5 @@ infix ` ⋏ ` := wedge
 
 variables {a b : Gₙ α 2}
 #check (a + b) ⋎ (a ⋏ b)
+
+end laurent
