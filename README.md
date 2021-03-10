@@ -3,6 +3,22 @@ lean-ga
 
 A work-in-progress formalization of Geometric Algebra (GA) in the [Lean formal proof verification system](https://github.com/leanprover-community/lean) and using its [Mathematical Library](https://github.com/leanprover-community/mathlib/).
 
+We presented an early version of this at ICCA 2020 ([slides](https://pygae.github.io/lean-ga/ICCA2020)).
+
+A semi-interactive viewer for the contents of this project can be found at https://pygae.github.io/lean-ga-docs/. Of particular interest are:
+
+* Parts of mathlib contributed as part of this work:
+  * [`clifford_algebra`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra)
+  * [`exterior_algebra`](https://pygae.github.io/lean-ga-docs/find/exterior_algebra)
+  * [`alternating_map`](https://pygae.github.io/lean-ga-docs/find/alternating_map)
+* Translations of other formalizations:
+  * [`geometric_algebra/translations/hol_light.lean`](https://pygae.github.io/lean-ga-docs/geometric_algebra/translations/hol_light.html)
+  * [`geometric_algebra/translations/ida.lean`](https://pygae.github.io/lean-ga-docs/geometric_algebra/translations/ida.html)
+  * [`geometric_algebra/translations/laurents.lean`](https://pygae.github.io/lean-ga-docs/geometric_algebra/translations/laurents.html)
+* Additional API on top of the mathlib `clifford_algebra`:
+  * [`geometric_algebra/from_mathlib/versors.lean`](https://pygae.github.io/lean-ga-docs/geometric_algebra/from_mathlib/versors.html), a formalization of versors
+  * [`geometric_algebra/from_mathlib/concrete/cga.lean`](https://pygae.github.io/lean-ga-docs/geometric_algebra/from_mathlib/concrete/cga.html), a formalization of CGA
+
 Development Status
 --------------------
 
