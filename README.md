@@ -1,6 +1,8 @@
 lean-ga
 =========
 
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/pygae/lean-ga)
+
 A work-in-progress formalization of Geometric Algebra (GA) in the [Lean formal proof verification system](https://github.com/leanprover-community/lean) and using its [Mathematical Library](https://github.com/leanprover-community/mathlib/).
 
 We presented an early version of this at ICCA 2020 ([slides](https://pygae.github.io/lean-ga/ICCA2020)).
@@ -18,6 +20,10 @@ A semi-interactive viewer for the contents of this project can be found at https
 * Additional API on top of the mathlib `clifford_algebra`:
   * [`geometric_algebra/from_mathlib/versors.lean`](https://pygae.github.io/lean-ga-docs/geometric_algebra/from_mathlib/versors.html), a formalization of versors
   * [`geometric_algebra/from_mathlib/concrete/cga.lean`](https://pygae.github.io/lean-ga-docs/geometric_algebra/from_mathlib/concrete/cga.html), a formalization of CGA
+
+To get the full experience of using lean-ga without having to install lean, use the GitPod link at the top of this readme.
+Wait for the command in the console to finish, then open one of the files referenced above, and wait for compilation to finish (the orange bars to vanish).
+At this point, you can move the cursor around to view the proof state, and try adding new statements to the file using our definitions
 
 Development Status
 --------------------
