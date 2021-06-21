@@ -34,10 +34,10 @@ by simp [sum_id, lift_nc_alg_hom, lift_nc_ring_hom, lift_nc, alg_hom.id, ring_ho
 
 -- `monoid_algebra` is missing some of the `finsupp` API:
 
-noncomputable def lsingle {k A : Type*} [semiring k] [semiring A] [semimodule k A] (i : G) : A →ₗ[k] add_monoid_algebra A G :=
+noncomputable def lsingle {k A : Type*} [semiring k] [semiring A] [module k A] (i : G) : A →ₗ[k] add_monoid_algebra A G :=
 finsupp.lsingle i
 
-@[simp] lemma lsingle_apply {k A : Type*} [semiring k] [semiring A] [semimodule k A] (i : G) (a : A) :
+@[simp] lemma lsingle_apply {k A : Type*} [semiring k] [semiring A] [module k A] (i : G) (a : A) :
   (lsingle i : _ →ₗ[k] _) a = finsupp.single i a := rfl
 
 end add_monoid_algebra
@@ -46,7 +46,7 @@ namespace submodule
 
 variables {R : Type*} {A : Type*} [comm_semiring R] [semiring A] [algebra R A]
 
-def one_eq_algebra_of_id_range : (1 : submodule R A) = (algebra.of_id R A).range :=
+def one_eq_algebra_of_id_range : (1 : submodule R A) = (algebra.of_id R A).range.to_submodule :=
 begin
   dunfold has_one.one,
   ext,
@@ -78,9 +78,9 @@ section semiring
 
 variables [comm_semiring R] [semiring A] [algebra R A] (S : center_submonoid R A)
 
-instance : has_coe_t (center_submonoid R A) (set A) := ⟨λ s, s.carrier⟩
-instance : has_mem A (center_submonoid R A) := ⟨λ x p, x ∈ (p : set A)⟩
-instance : has_coe_to_sort (center_submonoid R A) := ⟨_, λ p, {x : A // x ∈ p}⟩
+instance : set_like (center_submonoid R A) A :=
+{ coe := center_submonoid.carrier,
+  coe_injective' := λ x y h, by { cases x, cases y, congr' } }
 
 instance : nonempty S.to_sub_mul_action := ⟨⟨1, S.to_submonoid.one_mem⟩⟩
 

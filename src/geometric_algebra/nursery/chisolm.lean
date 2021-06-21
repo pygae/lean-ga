@@ -270,8 +270,8 @@ namespace Gᵣ
     (λ a, by {
       rw smul_neg, exact (Gᵣ r).neg_mem, })
 
-  -- now show via trivial proofs that Gᵣ is a semimodule (basically a vector space)
-  instance has_scalar (r : ℕ) : semimodule G₀ (Gᵣ r) :=
+  -- now show via trivial proofs that Gᵣ is a module (basically a vector space)
+  instance has_scalar (r : ℕ) : module G₀ (Gᵣ r) :=
   { smul := λ k v, ⟨k • v, smul_mem v.prop⟩,
     one_smul := λ v, subtype.eq $ one_smul _ v,
     mul_smul := λ k₁ k₂ v, subtype.eq $ mul_smul k₁ k₂ v,

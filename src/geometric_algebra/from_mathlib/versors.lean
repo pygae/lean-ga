@@ -51,7 +51,11 @@ namespace versors
           exact h_grade0 a, },
         { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
           exact h_grade1 a, } })
-    (h_grade0 (1 : R))
+    (begin
+      convert h_grade0 (1 : R) using 1,
+      apply subtype.coe_injective,
+      simpa only [ring_hom.map_one],
+    end)
     h_mul v
 
   meta def inv_rev_tac : tactic unit :=
@@ -251,8 +255,9 @@ namespace versors
     group_with_zero (versors Q') :=
   { inv_zero := inv_zero,
     mul_inv_cancel := λ a ha, mul_inv_cancel' a $ λ ham, ha begin
-      refine (magnitude_aux_zero a f _).mp _,
+      refine (magnitude_aux_zero a f.out _).mp _,
       { intros r h,
+        rw ←ring_hom.map_zero at h,
         exact (algebra_map R' _).injective h, },
       { rw magnitude_apply at ham,
         replace ham := congr_arg (λ x : (⊥ : subalgebra R' $ clifford_algebra Q'), (x : clifford_algebra Q')) ham,
@@ -336,7 +341,11 @@ namespace spinors
           exact h_grade0 a, },
         { obtain ⟨_, _, ⟨a, rfl⟩, ⟨b, rfl⟩, rfl⟩ := set.mem_mul.mpr hx,
           exact h_grade2 a b, } })
-    (h_grade0 (1 : R))
+    (begin
+      convert h_grade0 (1 : R) using 1,
+      apply subtype.coe_injective,
+      simpa only [ring_hom.map_one],
+    end)
     h_mul v
 
   /-- Involute of a spinor is a spinor -/
@@ -418,8 +427,8 @@ def r_multivectors : algebra.filtration R (clifford_algebra Q) ℕ :=
       obtain ⟨na, hna⟩ := ha,
       obtain ⟨nb, hnb⟩ := hb,
       use (na ⊔ nb),
-      replace hna := submodule.le_def'.mpr (r_multivectors.mono Q le_sup_left) hna,
-      replace hnb := submodule.le_def'.mpr (r_multivectors.mono Q le_sup_right) hnb,
+      replace hna := set_like.le_def.mpr (r_multivectors.mono Q le_sup_left) hna,
+      replace hnb := set_like.le_def.mpr (r_multivectors.mono Q le_sup_right) hnb,
       exact submodule.add_mem _ hna hnb,
     }
   end,
@@ -433,7 +442,7 @@ namespace r_multivectors
 
   /-- Since the sets are monotonic, we can coerce up to a larger submodule -/
   instance (n r) : has_coe_t (r_multivectors Q n) (r_multivectors Q $ n + r) :=
-  { coe := λ x, ⟨x, submodule.le_def'.mpr ((r_multivectors Q).mono (nat.le_add_right n r)) x.prop⟩ }
+  { coe := λ x, ⟨x, set_like.le_def.mpr ((r_multivectors Q).mono (nat.le_add_right n r)) x.prop⟩ }
 
 end r_multivectors
 

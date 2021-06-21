@@ -26,7 +26,7 @@ class graded_module_components
   -- all the types form commutative vector spaces
   -- TODO change to meaningful names
   [b: ∀ r, add_comm_monoid (A r)]
-  [c: ∀ r, semimodule (A 0) (A r)]
+  [c: ∀ r, module (A 0) (A r)]
 
 attribute [instance] graded_module_components.zc
 attribute [instance] graded_module_components.b
