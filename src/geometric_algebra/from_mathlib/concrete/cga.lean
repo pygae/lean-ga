@@ -16,7 +16,7 @@ variables (V : Type*) [inner_product_space ℝ V]
 
 /-! ## The conformalized space `conformalize V` -/
 /-- A conformalized vector has additional e0 and einf components -/
-@[derive [add_comm_group, vector_space ℝ]]
+@[derive [add_comm_group, module ℝ]]
 def conformalize : Type* := V × ℝ × ℝ
 
 namespace conformalize
@@ -62,21 +62,21 @@ by simp [up, ←mul_assoc]
 
 /-! Train the simplifier how to act on components -/
 @[simp] lemma Q_polar_of_n0_of_v (x : V) : quadratic_form.polar Q of_n0 (of_v x) = 0 :=
-by { simp [quadratic_form.polar], ring }
+by simp [quadratic_form.polar]
 @[simp] lemma Q_polar_of_n0_of_n0 : quadratic_form.polar Q of_n0 (of_n0 : conformalize V) = 0 :=
 by simp [quadratic_form.polar]
 @[simp] lemma Q_polar_of_n0_of_ni : quadratic_form.polar Q of_n0 (of_ni : conformalize V) = -2 :=
-by { simp [quadratic_form.polar], ring }
+by simp [quadratic_form.polar]
 @[simp] lemma Q_polar_of_ni_of_v (x : V) : quadratic_form.polar Q of_ni (of_v x) = 0 :=
-by { simp [quadratic_form.polar], ring }
+by simp [quadratic_form.polar]
 @[simp] lemma Q_polar_of_ni_of_ni : quadratic_form.polar Q of_ni (of_n0 : conformalize V) = -2 :=
-by { simp [quadratic_form.polar], ring }
+by simp [quadratic_form.polar]
 @[simp] lemma Q_polar_of_ni_of_n0 : quadratic_form.polar Q of_ni (of_ni : conformalize V) = 0 :=
 by simp [quadratic_form.polar]
 @[simp] lemma Q_polar_of_v_of_ni (x : V) : quadratic_form.polar Q (of_v x) of_n0 = 0 :=
-by { simp [quadratic_form.polar] }
+by simp [quadratic_form.polar]
 @[simp] lemma Q_polar_of_v_of_n0 (x : V) : quadratic_form.polar Q (of_v x) of_ni = 0 :=
-by { simp [quadratic_form.polar] }
+by simp [quadratic_form.polar]
 
 -- this one is harder than the rest
 @[simp] lemma Q_polar_of_v_of_v (x y : V) : quadratic_form.polar Q (of_v x) (of_v y) = 2 * inner x y :=

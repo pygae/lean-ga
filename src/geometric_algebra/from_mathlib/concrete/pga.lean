@@ -16,7 +16,7 @@ noncomputable theory
 variables (V : Type*) [inner_product_space ℝ V]
 
 /-- A projectivized vector has additional e0 component -/
-@[derive [add_comm_group, vector_space ℝ]]
+@[derive [add_comm_group, module ℝ]]
 def projectivize : Type* := V × ℝ
 
 namespace projectivize

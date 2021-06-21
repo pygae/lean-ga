@@ -31,7 +31,7 @@ calc ι Q a * ι Q b + ι Q b * ι Q a
       = ι Q (a + b) * ι Q (a + b) - ι Q a * ι Q a - ι Q b * ι Q b :
           by { rw [(ι Q).map_add, mul_add, add_mul, add_mul], abel, }
   ... = ↑ₐ(Q $ a + b) - ↑ₐ(Q a) - ↑ₐ(Q b) :
-          by rw [ι_square_scalar, ι_square_scalar, ι_square_scalar]
+          by rw [ι_sq_scalar, ι_sq_scalar, ι_sq_scalar]
   ... = ↑ₐ(Q (a + b) - Q a - Q b) :
           by rw [←ring_hom.map_sub, ←ring_hom.map_sub]
   ... = ↑ₐ(quadratic_form.polar Q a b) : rfl

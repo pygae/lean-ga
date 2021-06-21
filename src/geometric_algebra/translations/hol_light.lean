@@ -4,6 +4,7 @@ import data.fintype.basic
 import algebra.big_operators
 import linear_algebra.basic
 import linear_algebra.tensor_product
+import order.symm_diff
 
 /-!
 # Derived from "Formalization of Geometric Algebra in HOL Light"
@@ -23,17 +24,15 @@ variables (n : ℕ)
 -- mapping from subsets of 1:n to coefficients
 abbreviation idx := finset (fin n)
 
-@[derive [add_comm_group, semimodule ℝ]]
+@[derive [add_comm_group, module ℝ]]
 def multivector : Type := idx n → ℝ
 
 variables {n}
 
-def sym_diff {α : Type*} [has_sup α] [has_sdiff α] (A B : α) : α := (A \ B) ⊔ (B \ A)
-
 /-- generic product indexed by a sign function -/
 def generic_prod (sgn : idx n → idx n → ℝ) (a b : multivector n)  : multivector n :=
 ∑ ai bi in finset.univ,
-  pi.single (sym_diff ai bi) ((a ai * b bi) * sgn ai bi)
+  pi.single (ai Δ bi) ((a ai * b bi) * sgn ai bi)
 
 /-- `generic_prod sgn` is a bilinear map -/
 def generic_prod.bilinear (sgn : idx n → idx n → ℝ) :

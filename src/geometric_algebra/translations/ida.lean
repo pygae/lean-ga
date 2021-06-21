@@ -61,7 +61,7 @@ instance : has_scalar ℝ multivector := ⟨λ r x,
   bivec := r • x.bivec,
   trivec := r • x.trivec}⟩
 
-instance : semimodule ℝ multivector :=
+instance : module ℝ multivector :=
 { smul := (•),
   smul_zero := λ _, ext _ _ (smul_zero _) (smul_zero _) (smul_zero _) (smul_zero _),
   zero_smul := λ _, ext _ _ (zero_smul _ _) (zero_smul _ _) (zero_smul _ _) (zero_smul _ _),
