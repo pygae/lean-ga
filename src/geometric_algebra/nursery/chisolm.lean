@@ -33,7 +33,7 @@ class geometric_algebra
 (G₀ : Type*) [field G₀]
 -- Axiom 3: G contains a subset G1 closed under addition, 
 -- and λ ∈ G0, v ∈ G1 implies λv = vλ ∈ G1.
-(G₁ : Type*) [add_comm_group G₁] [vector_space G₀ G₁]
+(G₁ : Type*) [add_comm_group G₁] [module G₀ G₁]
 -- Axiom 1: G is a ring with unit. 
 -- The additive identity is called 0 and the multiplicative identity is called 1.
 (G : Type*) [ring G]
@@ -51,7 +51,7 @@ section basic
 
 parameters
 {G₀ : Type u} [field G₀]
-{G₁ : Type u} [add_comm_group G₁] [vector_space G₀ G₁]
+{G₁ : Type u} [add_comm_group G₁] [module G₀ G₁]
 {G : Type u} [ring G] [algebra G₀ G] [geometric_algebra G₀ G₁ G]
 
 
@@ -62,8 +62,8 @@ inductive blade : nat → Type u
 | vector : G₁ → blade 1
 | graded {n : ℕ} : G₁ → blade (n + 1) → blade (n + 2)
 namespace blade
-  instance g0_coe : has_coe G₀ (blade 0) := { coe := blade.scalar }
-  instance g1_coe : has_coe G₁ (blade 1) := { coe := blade.vector }
+  instance g0_coe : has_coe_t G₀ (blade 0) := { coe := blade.scalar }
+  instance g1_coe : has_coe_t G₁ (blade 1) := { coe := blade.vector }
 
   -- define zero and one on the blades
   def zero : Π (n : ℕ), blade n
@@ -100,8 +100,8 @@ namespace hom_mv
   | 1 := hom_mv.vector
   | (r + 2) := λ b, hom_mv.graded [b]
   instance has_blade_coe {r : ℕ} : has_coe (blade r) (hom_mv r) := { coe := coe }
-  instance has_g0_coe : has_coe G₀ (hom_mv 0) := { coe := λ s, coe s }
-  instance has_g1_coe : has_coe G₁ (hom_mv 1) := { coe := λ s, coe s }
+  instance has_g0_coe : has_coe_t G₀ (hom_mv 0) := { coe := λ s, coe s }
+  instance has_g1_coe : has_coe_t G₁ (hom_mv 1) := { coe := λ s, coe s }
 
   -- define zero and one on the hom_mvs
   instance has_zero {n : ℕ} : has_zero (hom_mv n) := { zero := (0 : blade n) }
@@ -137,13 +137,17 @@ namespace mv
   def hom_mv_coe : Π {n : ℕ}, (hom_mv n) -> (multivector n)
   | nat.zero := λ b, multivector.scalar b
   | (nat.succ n) := λ b, multivector.augment (mv_zero n) b
-  instance has_hom_mv_coe  {n : ℕ} : has_coe (hom_mv n) (multivector n) := { coe := hom_mv_coe }
-  instance has_g0_coe : has_coe G₀ (multivector 0) := { coe := λ s, hom_mv_coe $ hom_mv.scalar $ blade.scalar s }
-  instance has_g1_coe : has_coe G₁ (multivector 1) := { coe := λ v, hom_mv_coe $ hom_mv.vector $ blade.vector v }
+  instance has_hom_mv_coe {n : ℕ} : has_coe (hom_mv n) (multivector n) := { coe := hom_mv_coe }
+  instance has_g0_coe_t : has_coe_t G₀ (multivector 0) := { coe := λ s, hom_mv_coe $ hom_mv.scalar $ blade.scalar s }
+  instance has_g1_coe_t : has_coe_t G₁ (multivector 1) := { coe := λ v, hom_mv_coe $ hom_mv.vector $ blade.vector v }
 
   -- multivectors are up-coercible
   def augment_coe {n : ℕ} (mv : multivector n) : multivector (nat.succ n) := multivector.augment mv 0
   instance has_augment_coe {n : ℕ} : has_coe (multivector n) (multivector (nat.succ n)) := { coe := augment_coe }
+  instance has_g0_coe_n {n : ℕ} : has_coe_t G₀ (multivector n) := {
+    coe := nat.rec_on n coe $ λ n s k, s k }
+  instance has_g1_coe_n {n : ℕ} : has_coe_t G₁ (multivector n.succ) := {
+    coe := nat.rec_on n coe $ λ n s k, s k }
 
   def mv_add : Π {n : ℕ}, multivector n → multivector n → multivector n
   | 0 (multivector.scalar a) (multivector.scalar b) := multivector.scalar (a + b)
