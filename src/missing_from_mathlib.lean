@@ -171,7 +171,7 @@ begin
   suffices : (⋃ (i : ι), (f i : set A)) = ⊤,
   { simp [this] },
   refine set.eq_univ_of_forall (λ x, _),
-  simp only [set.mem_Union, submodule.mem_coe],
+  simp only [set.mem_Union, set_like.mem_coe],
   exact f.complete' x,
 end
 
