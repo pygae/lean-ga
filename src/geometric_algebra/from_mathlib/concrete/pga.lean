@@ -8,6 +8,8 @@ import analysis.normed_space.inner_product
 This files defines the projectivized vector space `projectivize V`, and its associated geometric algebra `CGA`.
 
 A typical usage would use `PGA (euclidean_space ℝ 3)`.
+
+This file is underdeveloped compared to one for `conformalize`, but is included as a skeleton of how to proceed.
 -/
 
 -- the real numbers are not computable
@@ -23,8 +25,8 @@ namespace projectivize
 
 variables {V}
 /-! Define linear maps to extract the new components -/
-def v : projectivize V →ₗ[ℝ] V := ⟨λ v, v.1, λ _ _, rfl, λ _ _, rfl⟩
-def n0 : projectivize V →ₗ[ℝ] ℝ := ⟨λ v, v.2, λ _ _, rfl, λ _ _, rfl⟩
+def v : projectivize V →ₗ[ℝ] V := linear_map.fst _ _ _
+def c_n0 : projectivize V →ₗ[ℝ] ℝ := linear_map.snd _ _ _
 
 /-! The metric is the metric of V with the n0 term ignored. -/
 def Q : quadratic_form ℝ (projectivize V) :=
@@ -38,7 +40,9 @@ variables (V)
 /-- Define the Plane-based Geometric Algebra over V. -/
 abbreviation PGA := clifford_algebra (Q : quadratic_form ℝ $ projectivize V)
 
-/-- And the embedding of the vector space into it. -/
+/-- And the embedding of the vector space into it.
+Note that often the dual of this result is used instead, but we do not have that in our
+formalization yet! -/
 def up (x : V) : PGA V :=
 clifford_algebra.ι _ (x, 1)
 
