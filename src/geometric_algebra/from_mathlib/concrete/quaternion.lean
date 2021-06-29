@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import linear_algebra.clifford_algebra.basic
 import algebra.quaternion
 import for_mathlib.data.quaternion
+import geometric_algebra.from_mathlib.basic
 
 /-!
 # The quaternions are isomorphic to a clifford algebra
@@ -46,6 +47,7 @@ lemma to_quaternion_ι (v : R × R) :
   to_quaternion (clifford_algebra.ι (Q c₁ c₂) v) = (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,c₂]) :=
 clifford_algebra.lift_ι_apply _ _ v
 
+/-- Map a quaternion into the clifford algebra. -/
 def of_quaternion : ℍ[R,c₁,c₂] →ₐ[R] clifford_algebra (Q c₁ c₂) :=
 quaternion_structure.lift_hom {
   i := clifford_algebra.ι (Q c₁ c₂) (1, 0),
@@ -59,8 +61,11 @@ quaternion_structure.lift_hom {
     rw [clifford_algebra.ι_sq_scalar, Q_apply, ←algebra.algebra_map_eq_smul_one],
     simp,
   end,
-  i_mul_j := sorry,
-  j_mul_i := sorry }
+  i_mul_j := rfl,
+  j_mul_i := begin
+    rw [eq_neg_iff_add_eq_zero, clifford_algebra.vec_symm_prod, quadratic_form.polar],
+    simp,
+  end }
 
 /-- The clifford algebra over `clifford_algebra_quaternion.Q` is isomorphic as an `R`-algebra
 to `ℍ[R,c₁,c₂]`. -/
@@ -68,13 +73,12 @@ to `ℍ[R,c₁,c₂]`. -/
 def equiv_quaternion : clifford_algebra (Q c₁ c₂) ≃ₐ[R] ℍ[R,c₁,c₂] :=
 alg_equiv.of_alg_hom to_quaternion of_quaternion
   (begin
-    ext1,
-    dsimp,
+    -- ext1,
+    -- dsimp,
     sorry,
   end)
   (begin
-    ext1,
-    dsimp,
+    ext1, dsimp, ext; dsimp [of_quaternion]; rw to_quaternion_ι,
     sorry,
   end)
 
