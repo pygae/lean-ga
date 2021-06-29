@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import for_mathlib.algebra.center_submonoid
 import for_mathlib.algebra.filtration
+import for_mathlib.algebra.algebra_operations
 import geometric_algebra.from_mathlib.basic
 import geometric_algebra.from_mathlib.conjugation
 
