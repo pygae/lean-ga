@@ -5,6 +5,11 @@ Authors: Eric Wieser
 -/
 import algebra.monoid_algebra
 
+/-! # Lemmas for `algebra/monoid_algebra.lean`
+
+These are part of upstream PR 
+https://github.com/leanprover-community/mathlib/pull/4321 -/
+
 namespace add_monoid_algebra
 
 variables (k : Type*) {G : Type*}
