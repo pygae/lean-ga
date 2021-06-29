@@ -6,7 +6,9 @@ Authors: Eric Wieser
 import algebra.quaternion
 import tactic.ring
 
-/-! For `algebra/quaternion.lean`. -/
+/-! # For `algebra/quaternion.lean`
+
+This tries to generalize `complex.lift`. -/
 
 open_locale quaternion
 namespace quaternion_algebra
@@ -22,7 +24,7 @@ lemma algebra_map_eq (r : R) : algebra_map R ℍ[R,c₁,c₂] r = ⟨r, 0, 0, 0�
 
 variables (A)
 
-/-- A quaternions structure contains the information sufficient to show that a subalgebra of `A`
+/-- A quaternion structure contains the information sufficient to show that a subalgebra of `A`
 is compatible with `ℍ[R,c₁,c₂]`. -/
 structure quaternion_structure :=
 (i : A)
@@ -72,10 +74,9 @@ by rw [←i_mul_j, mul_assoc, ←mul_assoc q.j _ _, j_mul_i, ←i_mul_j,
   ←mul_assoc, mul_neg_eq_neg_mul_symm, ←mul_assoc, i_mul_i, smul_mul_assoc, one_mul, neg_mul_eq_neg_mul_symm,
   smul_mul_assoc, j_mul_j, smul_smul]
 
+/-- Intermediate result used to define `quaternion_algebra.quaternion_structure.lift_hom`. -/
 def lift (x : ℍ[R,c₁,c₂]) : A :=
 algebra_map R _ x.re + x.im_i • q.i + x.im_j • q.j + x.im_k • q.k
-
-#check tactic.interactive.abel
 
 lemma lift_zero : q.lift (0 : ℍ[R,c₁,c₂]) = 0 := by simp [lift]
 lemma lift_one : q.lift (1 : ℍ[R,c₁,c₂]) = 1 := by simp [lift]
@@ -100,7 +101,7 @@ end
 lemma lift_smul (r : R) (x : ℍ[R,c₁,c₂]) : q.lift (r • x) = r • q.lift x :=
 by simp [lift, mul_smul, ←algebra.smul_def]
 
-/-- A `quaternion_structure` implies an `alg_hom` from the quaternions. -/
+/-- A `quaternion_algebra.quaternion_structure` implies an `alg_hom` from the quaternions. -/
 @[simps]
 def lift_hom : ℍ[R,c₁,c₂] →ₐ[R] A :=
 alg_hom.mk'
@@ -113,6 +114,7 @@ alg_hom.mk'
 
 omit q
 
+/-- Produce a `quaternion_algebra.quaternion_structure` given an `alg_hom`. -/
 @[simps]
 def of_hom (F : ℍ[R,c₁,c₂] →ₐ[R] A) : quaternion_structure A c₁ c₂ :=
 { i := F ⟨0, 1, 0, 0⟩,
