@@ -7,7 +7,8 @@ import linear_algebra.clifford_algebra.basic
 import for_mathlib.data.complex_module
 
 /-!
-# The complex numbers are isomorphic to a clifford algebra -/
+# The complex numbers are isomorphic to a clifford algebra
+-/
 
 namespace clifford_algebra_complex
 
@@ -32,7 +33,7 @@ lemma to_complex_ι (r : ℝ) : to_complex (clifford_algebra.ι Q r) = r • com
 clifford_algebra.lift_ι_apply _ _ r
 
 /-- The clifford algebras over `clifford_algebra_complex.Q` is isomorphic as an `ℝ`-algebra to `ℂ`. -/
-@[simps?]
+@[simps]
 noncomputable def equiv_complex : clifford_algebra Q ≃ₐ[ℝ] ℂ :=
 alg_equiv.of_alg_hom to_complex
   (complex.lift ⟨clifford_algebra.ι Q 1, begin
