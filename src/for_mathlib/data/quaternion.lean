@@ -141,6 +141,7 @@ def of_hom (F : ℍ[R,c₁,c₂] →ₐ[R] A) : quaternion_structure A c₁ c₂
 
 end quaternion_structure
 
+@[simps]
 def lift :
   quaternion_structure A c₁ c₂ ≃ (ℍ[R,c₁,c₂] →ₐ[R] A) :=
 { to_fun := quaternion_structure.lift_hom,

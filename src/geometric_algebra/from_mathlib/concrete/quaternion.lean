@@ -71,15 +71,23 @@ quaternion_structure.lift_hom {
 lemma of_quaternion_comp_to_quaternion :
   of_quaternion.comp to_quaternion = alg_hom.id R (clifford_algebra (Q c₁ c₂)) :=
 begin
-  ext1, dsimp, ext; dsimp [of_quaternion]; rw to_quaternion_ι,
-  sorry,
+  ext1,
+  dsimp,
+  ext,
+  all_goals {
+    dsimp [of_quaternion, quaternion_algebra.quaternion_structure.lift],
+    rw to_quaternion_ι,
+    dsimp,
+    simp only [zero_smul, one_smul, zero_add, add_zero, ring_hom.map_zero],
+  },
 end
 
 @[simp]
 lemma to_quaternion_comp_of_quaternion :
   to_quaternion.comp of_quaternion = alg_hom.id R ℍ[R,c₁,c₂] :=
 begin
-  sorry
+  apply (quaternion_algebra.lift c₁ c₂).symm.injective,
+  ext1; dsimp [of_quaternion, quaternion_algebra.quaternion_structure.lift]; simp,
 end
 
 /-- The clifford algebra over `clifford_algebra_quaternion.Q` is isomorphic as an `R`-algebra
