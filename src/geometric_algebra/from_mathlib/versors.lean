@@ -3,20 +3,23 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import for_mathlib.algebra.center_submonoid
+import for_mathlib.algebra.filtration
+import for_mathlib.algebra.algebra_operations
 import geometric_algebra.from_mathlib.basic
 import geometric_algebra.from_mathlib.conjugation
 
-variables {R : Type*} [comm_ring R]
-variables {M : Type*} [add_comm_group M] [module R M]
-variables {Q : quadratic_form R M}
 /-!
 # Versors, spinors, Multivectors, and other subspaces
 
 This file defines the `versors`, `spinors`, and `r_multivectors`.
 -/
 
-namespace clifford_algebra
+variables {R : Type*} [comm_ring R]
+variables {M : Type*} [add_comm_group M] [module R M]
+variables {Q : quadratic_form R M}
 
+namespace clifford_algebra
 
 variables (Q)
 /-- The versors are the elements made up of products of vectors.
