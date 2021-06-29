@@ -3,6 +3,7 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import for_mathlib.algebra.center_submonoid
 import geometric_algebra.from_mathlib.basic
 import geometric_algebra.from_mathlib.conjugation
 
