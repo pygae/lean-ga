@@ -20,6 +20,7 @@ A semi-interactive viewer for the contents of this project can be found at https
 * Additional API on top of the mathlib `clifford_algebra`:
   * [`geometric_algebra/from_mathlib/versors.lean`](https://pygae.github.io/lean-ga-docs/geometric_algebra/from_mathlib/versors.html), a formalization of versors
   * [`geometric_algebra/from_mathlib/concrete/cga.lean`](https://pygae.github.io/lean-ga-docs/geometric_algebra/from_mathlib/concrete/cga.html), a formalization of CGA
+  * [`geometric_algebra/from_mathlib/concrete/quaternion.lean`](https://pygae.github.io/lean-ga-docs/geometric_algebra/from_mathlib/concrete/quaternion.html), a proof that the quaternions are isomorphic to a clifford algebra
 
 To get the full experience of using lean-ga without having to install lean, use the GitPod link at the top of this readme.
 Wait for the command in the console to finish, then open one of the files referenced above, and wait for compilation to finish (the orange bars to vanish).
