@@ -6,14 +6,26 @@ Authors: Eric Wieser
 import algebra.quaternion
 import tactic.ring
 
-/-! # For `algebra/quaternion.lean`
+/-! # Basis on a quaternion-like algebra
 
-This tries to generalize `complex.lift`. -/
+For `algebra/quaternion_basis.lean`
+
+## Main definitions
+
+* `quaternion_algebra.basis A c₁ c₂`: a basis for a subspace of an `R`-algebra `A` that satisfies
+  the same multiplication rules as `ℍ[R,c₁,c₂]`.
+* `quaternion_algebra.basis.self R`: the canonical basis for `ℍ[R,c₁,c₂]`.
+* `quaternion_algebra.basis.comp_hom b f`: transform a basis `b` by an alg_hom `f`.
+* `quaternion_algebra.lift`: Define an `alg_hom` out of `ℍ[R,c₁,c₂]` by its action on the basis
+  elements `i`, `j`, and `k`. In essence, this is a universal property. Analogous to `complex.lift`,
+  but takes a bundled `quaternion_algebra.basis` instead of just a `subtype`.
+-/
 
 open_locale quaternion
 namespace quaternion_algebra
 
-variables {R : Type*} {A : Type*} [comm_ring R] [ring A] [algebra R A] (c₁ c₂ : R)
+variables {R : Type*} {A B : Type*} [comm_ring R] [ring A] [ring B] [algebra R A] [algebra R B]
+variables (c₁ c₂ : R)
 
 @[simp]
 lemma smul_mk (r : R) (re im_i im_j im_k : R) :
@@ -24,9 +36,12 @@ lemma algebra_map_eq (r : R) : algebra_map R ℍ[R,c₁,c₂] r = ⟨r, 0, 0, 0�
 
 variables (A)
 
-/-- A quaternion structure contains the information sufficient to show that a subalgebra of `A`
-is compatible with `ℍ[R,c₁,c₂]`. -/
-structure quaternion_structure :=
+/-- A quaternion basis contains the information sufficient to show that a subalgebra of `A`
+is compatible with `ℍ[R,c₁,c₂]`.
+
+Note that for definitional convenience, `j` is provided as a field even though `i_mul_j` fully
+determines it. -/
+structure basis :=
 (i : A)
 (i_mul_i : i * i = c₁ • 1)
 (j : A)
@@ -37,12 +52,12 @@ structure quaternion_structure :=
 
 variables {A}
 
-namespace quaternion_structure
+namespace basis
 
 variables {c₁ c₂}
 
 @[ext]
-protected def ext {q₁ q₂ : quaternion_structure A c₁ c₂} (hi : q₁.i = q₂.i) (hj : q₁.j = q₂.j) :
+protected lemma ext {q₁ q₂ : basis A c₁ c₂} (hi : q₁.i = q₂.i) (hj : q₁.j = q₂.j) :
   q₁ = q₂ :=
 begin
   cases q₁,
@@ -52,7 +67,24 @@ begin
   congr'
 end
 
-variables (q : quaternion_structure A c₁ c₂)
+variables (R)
+
+/-- There is a natural quaternionic basis for the `quaternion_algebra`. -/
+@[simps i j k]
+protected def self : basis ℍ[R,c₁,c₂] c₁ c₂ :=
+{ i := ⟨0, 1, 0, 0⟩,
+  i_mul_i := by { ext; simp },
+  j := ⟨0, 0, 1, 0⟩,
+  j_mul_j := by { ext; simp },
+  k := ⟨0, 0, 0, 1⟩,
+  i_mul_j := by { ext; simp },
+  j_mul_i := by { ext; simp } }
+
+variables {R}
+
+instance : inhabited (basis ℍ[R,c₁,c₂] c₁ c₂) := ⟨basis.self R⟩
+
+variables (q : basis A c₁ c₂)
 include q
 
 attribute [simp] i_mul_i j_mul_j i_mul_j j_mul_i
@@ -74,7 +106,7 @@ by rw [←i_mul_j, mul_assoc, ←mul_assoc q.j _ _, j_mul_i, ←i_mul_j,
   ←mul_assoc, mul_neg_eq_neg_mul_symm, ←mul_assoc, i_mul_i, smul_mul_assoc, one_mul, neg_mul_eq_neg_mul_symm,
   smul_mul_assoc, j_mul_j, smul_smul]
 
-/-- Intermediate result used to define `quaternion_algebra.quaternion_structure.lift_hom`. -/
+/-- Intermediate result used to define `quaternion_algebra.basis.lift_hom`. -/
 def lift (x : ℍ[R,c₁,c₂]) : A :=
 algebra_map R _ x.re + x.im_i • q.i + x.im_j • q.j + x.im_k • q.k
 
@@ -101,7 +133,7 @@ end
 lemma lift_smul (r : R) (x : ℍ[R,c₁,c₂]) : q.lift (r • x) = r • q.lift x :=
 by simp [lift, mul_smul, ←algebra.smul_def]
 
-/-- A `quaternion_algebra.quaternion_structure` implies an `alg_hom` from the quaternions. -/
+/-- A `quaternion_algebra.basis` implies an `alg_hom` from the quaternions. -/
 @[simps]
 def lift_hom : ℍ[R,c₁,c₂] →ₐ[R] A :=
 alg_hom.mk'
@@ -112,47 +144,31 @@ alg_hom.mk'
     map_mul' := q.lift_mul }
   q.lift_smul
 
-omit q
+/-- Transform a `quaternion_algebra.basis` through an `alg_hom`. -/
+@[simps i j k]
+def comp_hom (F : A →ₐ[R] B) : basis B c₁ c₂ :=
+{ i := F q.i,
+  i_mul_i := by rw [←F.map_mul, q.i_mul_i, F.map_smul, F.map_one],
+  j := F q.j,
+  j_mul_j := by rw [←F.map_mul, q.j_mul_j, F.map_smul, F.map_one],
+  k := F q.k,
+  i_mul_j := by rw [←F.map_mul, q.i_mul_j],
+  j_mul_i := by rw [←F.map_mul, q.j_mul_i, F.map_neg], }
 
-/-- Produce a `quaternion_algebra.quaternion_structure` given an `alg_hom`. -/
+end basis
+
+/-- A quaternionic basis on `A` is equivalent to a map from the quaternion algebra to `A`. -/
 @[simps]
-def of_hom (F : ℍ[R,c₁,c₂] →ₐ[R] A) : quaternion_structure A c₁ c₂ :=
-{ i := F ⟨0, 1, 0, 0⟩,
-  i_mul_i := begin
-    rw [←F.map_mul, mk_mul_mk, ←algebra.algebra_map_eq_smul_one, ←F.commutes],
-    simp,
-    refl,
-  end,
-  j := F ⟨0, 0, 1, 0⟩,
-  j_mul_j := begin
-    rw [←F.map_mul, mk_mul_mk, ←algebra.algebra_map_eq_smul_one, ←F.commutes],
-    simp,
-    refl,
-  end,
-  k := F ⟨0, 0, 0, 1⟩,
-  i_mul_j := begin
-    rw [←F.map_mul, mk_mul_mk],
-    simp,
-  end,
-  j_mul_i := begin
-    rw [←F.map_mul, mk_mul_mk, eq_neg_iff_eq_neg, ←F.map_neg],
-    simp,
-  end }
-
-end quaternion_structure
-
-@[simps]
-def lift :
-  quaternion_structure A c₁ c₂ ≃ (ℍ[R,c₁,c₂] →ₐ[R] A) :=
-{ to_fun := quaternion_structure.lift_hom,
-  inv_fun := quaternion_structure.of_hom,
+def lift : basis A c₁ c₂ ≃ (ℍ[R,c₁,c₂] →ₐ[R] A) :=
+{ to_fun := basis.lift_hom,
+  inv_fun := (basis.self R).comp_hom,
   left_inv := λ q, begin
     ext;
-    simp [quaternion_structure.lift],
+    simp [basis.lift],
   end,
   right_inv := λ F, begin
     ext,
-    dsimp [quaternion_structure.lift],
+    dsimp [basis.lift],
     rw ←F.commutes,
     simp only [←F.commutes, ←F.map_smul, ←F.map_add, mk_add_mk, smul_mk, smul_zero, algebra_map_eq],
     congr,
