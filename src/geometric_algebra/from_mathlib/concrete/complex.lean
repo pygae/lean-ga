@@ -4,7 +4,6 @@ Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import linear_algebra.clifford_algebra.basic
-import for_mathlib.data.complex_module
 
 /-!
 # The complex numbers are isomorphic to a clifford algebra
