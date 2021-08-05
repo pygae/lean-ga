@@ -1,5 +1,5 @@
 lean-ga
-=========
+=======
 
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/pygae/lean-ga)
 
@@ -11,6 +11,9 @@ A semi-interactive viewer for the contents of this project can be found at https
 
 * Parts of mathlib contributed as part of this work:
   * [`clifford_algebra`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra)
+    * [`clifford_algebra_ring.equiv`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra_ring.equiv): the real numbers have an isomorphic clifford algebra.
+    * [`clifford_algebra_complex.equiv`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra_complex.equiv): the complex numbers have an isomorphic clifford algebra.
+    * [`clifford_algebra.as_exterior`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra.as_exterior): the exterior algebra has an isomorphic clifford algebra
   * [`exterior_algebra`](https://pygae.github.io/lean-ga-docs/find/exterior_algebra)
   * [`alternating_map`](https://pygae.github.io/lean-ga-docs/find/alternating_map)
 * Translations of other formalizations:
@@ -42,7 +45,7 @@ The full version:
 
 1. Formalize Geometric Algebra in a generic way that
     - doesn't depend on data structures, not even canonical structures
-    - contains only how the algebra works and its natural relations to other abstract mathematical structures by leveraging the power of Type Class in Lean 
+    - contains only how the algebra works and its natural relations to other abstract mathematical structures by leveraging the power of Type Class in Lean
     - is deeply rooted in its mathematical foundation while keeping its accessibility to common GA users
 2. Formalize geometric objects (in PGA, CGA, for example) based on the generic formalization
 3. Verify the equivalence or explore the relations of various formalisms of Geometric Algebra
@@ -67,7 +70,7 @@ Project Structure
 ```bash
 # Github actions like https://github.com/leanprover-community/mathlib/blob/master/.github/workflows/build.yml
 ├── .github
-# VSCode settings like https://github.com/leanprover-community/mathlib/blob/master/.vscode/settings.json              
+# VSCode settings like https://github.com/leanprover-community/mathlib/blob/master/.vscode/settings.json
 ├── .vscode
 # Docs like https://github.com/leanprover-community/mathlib/tree/master/docs using https://github.com/leanprover-community/doc-gen and possibly https://github.com/leanprover-community/format_lean and https://github.com/leanprover-community/lean-client-python
 # also docs like https://github.com/avigad/mathematics_in_lean_source

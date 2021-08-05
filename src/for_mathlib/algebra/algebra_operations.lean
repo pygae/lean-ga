@@ -16,11 +16,7 @@ def one_eq_algebra_of_id_range : (1 : submodule R A) = (algebra.of_id R A).range
 begin
   dunfold has_one.one,
   ext,
-  simp,
+  simp [algebra.of_id_apply],
 end
-
-@[simp]
-def algebra_map_mem (r : R) : algebra_map R A r ∈ (1 : submodule R A) :=
-by simp [one_eq_algebra_of_id_range, algebra.of_id_apply]
 
 end submodule

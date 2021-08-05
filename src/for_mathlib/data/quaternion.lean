@@ -27,11 +27,6 @@ namespace quaternion_algebra
 variables {R : Type*} {A B : Type*} [comm_ring R] [ring A] [ring B] [algebra R A] [algebra R B]
 variables (c₁ c₂ : R)
 
-@[simp]
-lemma smul_mk (r : R) (re im_i im_j im_k : R) :
-  r • (⟨re, im_i, im_j, im_k⟩ : ℍ[R,c₁,c₂]) = ⟨r • re, r • im_i, r • im_j, r • im_k⟩ := rfl
-
-
 lemma algebra_map_eq (r : R) : algebra_map R ℍ[R,c₁,c₂] r = ⟨r, 0, 0, 0⟩ := rfl
 
 variables (A)

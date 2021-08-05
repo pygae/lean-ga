@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 
 import data.real.basic
+import data.matrix.basic
 import algebra.algebra.basic
 import algebra.direct_sum
 import linear_algebra.direct_sum_module
