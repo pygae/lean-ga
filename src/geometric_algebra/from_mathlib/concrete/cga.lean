@@ -109,8 +109,8 @@ variables {V}
 
 open clifford_algebra
 
-lemma ι_up_vec_symm_prod (x y : V) :
+lemma ι_up_mul_ι_up_add_swap (x y : V) :
   ι Q (up x) * ι Q (up y) + ι Q (up y) * ι Q (up x) = algebra_map _ _ (-dist x y ^ 2) :=
-by rw [vec_symm_prod, Q_polar_up]
+by rw [ι_mul_ι_add_swap, Q_polar_up]
 
 end conformalize

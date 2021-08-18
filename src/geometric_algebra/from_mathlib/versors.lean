@@ -20,6 +20,7 @@ variables {M : Type*} [add_comm_group M] [module R M]
 variables {Q : quadratic_form R M}
 
 namespace clifford_algebra
+open_locale pointwise
 
 variables (Q)
 /-- The versors are the elements made up of products of vectors.
@@ -69,14 +70,14 @@ namespace versors
 
   /-- Involute of a versor is a versor -/
   @[simp] lemma involute_mem (v : versors Q) : involute (v : clifford_algebra Q) ∈ versors Q :=
-  by inv_rev_tac 
+  by inv_rev_tac
 
   /-- Reverse of a versor is a versor -/
   @[simp] lemma reverse_mem (v : versors Q) : reverse (v : clifford_algebra Q) ∈ versors Q :=
   by inv_rev_tac
 
   /-- A versor times its reverse is a scalar
-  
+
   TODO: Can we compute `r` constructively? -/
   lemma mul_self_reverse (v : versors Q) :
     ∃ r : R, (v : clifford_algebra Q) * reverse (v : clifford_algebra Q) = ↑ₐr :=
@@ -96,7 +97,7 @@ namespace versors
   end
 
   /-- A versor's reverse times itself is a scalar
-  
+
   TODO: Can we compute `r` constructively? -/
   lemma reverse_mul_self (v : versors Q) :
     ∃ r : R, reverse (v : clifford_algebra Q) * (v : clifford_algebra Q) = ↑ₐr :=
@@ -121,13 +122,13 @@ namespace versors
 
   def magnitude_aux_exists_scalar (v : versors Q) : ∃ r, magnitude_aux v = ↑ₐr :=
   mul_self_reverse v
-  
+
   /--
   Only zero versors have zero magnitude, assuming:
 
    - The metric is anisotropic (`hqnz`). Note this is a stricter requirement
      than non-degeneracy; versors in CGA 𝒢(ℝ⁴⋅¹) like `n∞` and `n∞*no` are
-     both counterexamples to this lemma. 
+     both counterexamples to this lemma.
    - `0` remains `0` when mapped from `R` into `clifford_algebra Q`
    - `R` has no zero divisors
 
@@ -172,7 +173,7 @@ namespace versors
   end⟩
 
   /-- The magnitude of a versor, as a member of the subalgebra of scalars
-  
+
   Note we can't put this in `R` unless we know `algebra_map` is injective.
   This is kind of annoying, because it means that even if we have `field R`, we can't invert the
   magnitude
@@ -220,12 +221,12 @@ namespace versors
   variables {R' : Type*} [field R'] {M' : Type*} [add_comm_group M'] [module R' M'] {Q' : quadratic_form R' M'} [nontrivial (clifford_algebra Q')]
 
   /-- When `R'` is a field, we can define the inverse as `~V / (V * ~V)`.
-  
+
   Until we resolve the problems above about getting `r` constructively, we are forced to use the axiom of choice here -/
   @[simps inv]
   noncomputable instance : has_inv (versors Q') :=
   { inv := λ v, (magnitude_R (algebra_map R' _).injective v)⁻¹ • ⟨reverse (v : clifford_algebra Q'), reverse_mem v⟩ }
-  
+
   lemma inv_zero : (0 : versors Q')⁻¹ = 0 :=
   begin
     rw has_inv_inv,
@@ -439,7 +440,7 @@ def r_multivectors : algebra.filtration R (clifford_algebra Q) ℕ :=
 variables {Q}
 
 namespace r_multivectors
-  
+
   @[simp] lemma map_zero : r_multivectors Q 0 = 1 := rfl
   @[simp] lemma map_succ (n) : r_multivectors Q (n + 1) = (r_multivectors Q n * (ι Q).range) ⊔ r_multivectors Q n := rfl
 

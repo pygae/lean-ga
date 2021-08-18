@@ -15,4 +15,5 @@ the algebras in this folder have graduated to mathlib, such as:
 
 * `clifford_algebra_ring.equiv`: any ring is a clifford algebra
 * `clifford_algebra_complex.equiv`: the complex numbers are a clifford algebra
+* `clifford_algebra_quaternion.equiv`: the complex numbers are a clifford algebra
 -/
