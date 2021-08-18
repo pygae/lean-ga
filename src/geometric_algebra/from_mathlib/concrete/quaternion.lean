@@ -4,8 +4,7 @@ Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import linear_algebra.clifford_algebra.basic
-import algebra.quaternion
-import for_mathlib.data.quaternion
+import algebra.quaternion_basis
 import geometric_algebra.from_mathlib.basic
 
 /-!
@@ -91,7 +90,7 @@ end
 lemma to_quaternion_comp_of_quaternion :
   to_quaternion.comp of_quaternion = alg_hom.id R ℍ[R,c₁,c₂] :=
 begin
-  apply (quaternion_algebra.lift c₁ c₂).symm.injective,
+  apply quaternion_algebra.lift.symm.injective,
   ext1; dsimp [quaternion_algebra.basis.lift]; simp,
 end
 
