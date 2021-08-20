@@ -146,6 +146,32 @@ begin
   exact ι_sq_scalar Q _,
 end
 
+@[simp]
+lemma to_even_odd_ι (m : M) :
+  to_even_odd Q (ι Q m) = direct_sum.of (λ i, even_odd Q i) 1 (to_odd Q m) :=
+lift_ι_apply _ _ _
+
+
+/-- TODO: this is `sorry`d! -/
+lemma to_even_odd_of_mem (c : clifford_algebra Q) {i} (h : c ∈ even_odd Q i) :
+  to_even_odd Q c = direct_sum.of (λ i, even_odd Q i) i ⟨c, h⟩ :=
+begin
+  induction c using clifford_algebra.induction,
+  { rw alg_hom.commutes,
+    apply dfinsupp.single_eq_of_sigma_eq,
+    sorry },
+  { rw to_even_odd_ι,
+    apply dfinsupp.single_eq_of_sigma_eq,
+    -- refine congr_arg _ _,
+    sorry,},
+  case h_mul : x y hx hy {
+    rw [alg_hom.map_mul],
+    sorry },
+  case h_add : x y hx hy {
+    rw [alg_hom.map_add],
+    sorry },
+end
+
 /-- The canonical map back from the even and odd parts into the clifford algebra. -/
 def of_even_odd : (⨁ i, even_odd Q i) →ₐ[R] clifford_algebra Q :=
 { commutes' := λ r, begin
@@ -156,19 +182,30 @@ def of_even_odd : (⨁ i, even_odd Q i) →ₐ[R] clifford_algebra Q :=
   ..(direct_sum.to_semiring (λ i, (submodule.subtype _).to_add_monoid_hom) rfl (λ _ _ _ _, rfl) :
       (⨁ i, even_odd Q i) →+* clifford_algebra Q) }
 
-/--
+@[simp]
+lemma of_even_odd_of (i) (xi : even_odd Q i) :
+  of_even_odd Q (direct_sum.of _ i xi) = xi :=
+direct_sum.to_semiring_of _ rfl (λ _ _ _ _, rfl) _ _
+
 def equiv_even_odd : clifford_algebra Q ≃ₐ[R] (⨁ i, even_odd Q i) :=
 alg_equiv.of_alg_hom
   (to_even_odd Q)
   (of_even_odd Q)
   begin
     apply alg_hom.to_linear_map_injective,
-    ext i xi : 2,
+    ext i ⟨xi, hxi⟩ : 2,
     dsimp,
+    erw of_even_odd_of,
+    rw subtype.coe_mk,
+    rw to_even_odd_of_mem Q xi hxi,
+    refl,
   end
   begin
-    sorry,
+    ext m,
+    dsimp,
+    rw to_even_odd_ι,
+    rw of_even_odd_of,
+    refl,
   end
--/
 
 end clifford_algebra
