@@ -187,6 +187,7 @@ lemma of_even_odd_of (i) (xi : even_odd Q i) :
   of_even_odd Q (direct_sum.of _ i xi) = xi :=
 direct_sum.to_semiring_of _ rfl (λ _ _ _ _, rfl) _ _
 
+/- An alternative to `clifford_algebra.grades` -/
 def equiv_even_odd : clifford_algebra Q ≃ₐ[R] (⨁ i, even_odd Q i) :=
 alg_equiv.of_alg_hom
   (to_even_odd Q)
