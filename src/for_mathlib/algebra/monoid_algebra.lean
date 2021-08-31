@@ -3,11 +3,11 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import algebra.monoid_algebra
+import algebra.monoid_algebra.basic
 
 /-! # Lemmas for `algebra/monoid_algebra.lean`
 
-These are part of upstream PR 
+These are part of upstream PR
 https://github.com/leanprover-community/mathlib/pull/4321 -/
 
 namespace add_monoid_algebra

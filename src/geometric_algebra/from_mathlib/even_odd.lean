@@ -6,10 +6,7 @@ Authors: Eric Wieser
 import linear_algebra.clifford_algebra.basic
 import linear_algebra.dfinsupp
 import algebra.algebra.subalgebra
-import algebra.direct_sum
-import algebra.direct_sum_graded
-import linear_algebra.direct_sum_module
-
+import algebra.direct_sum.algebra
 
 /-!
 # Grading by ℤ / 2ℤ, using `direct_sum`

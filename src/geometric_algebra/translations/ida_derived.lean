@@ -6,8 +6,7 @@ Authors: Eric Wieser, Utensil Song
 
 import data.real.basic
 import algebra.algebra.basic
-import algebra.direct_sum
-import linear_algebra.direct_sum_module
+import algebra.direct_sum.module
 
 /-!
 # Derived from "A New Formalization of Origami in Geometric Algebra"
