@@ -90,41 +90,6 @@ direct_sum.gmonoid.of_submodules _
   (submodule.one_le.mp (one_le_even_odd_zero Q))
   (λ i j p q, submodule.mul_le.mp (even_odd_mul_le Q _ _) _ p.prop _ q.prop)
 
-/-- The direct sum of even and odd components form an algebra. -/
-instance : algebra R (⨁ i, even_odd Q i) :=
-{ to_ring_hom := (direct_sum.of_zero_ring_hom (λ i, even_odd Q i)).comp
-  (algebra_map R (even Q) : _),
-  smul_def' := λ r x, begin
-    dsimp only [ring_hom.to_fun_eq_coe, ring_hom.comp_apply, direct_sum.of_zero_ring_hom,
-      ring_hom.coe_mk, add_monoid_hom.to_fun_eq_coe],
-    change const_smul_hom _ r x = add_monoid_hom.mul (direct_sum.of _ _ _) x,
-    apply add_monoid_hom.congr_fun _ x,
-    ext i xi : 2,
-    dsimp only [add_monoid_hom.comp_apply, const_smul_hom_apply, add_monoid_hom.mul_apply],
-    rw direct_sum.of_mul_of,
-    dsimp only [direct_sum.of, dfinsupp.single_add_hom_apply, ←direct_sum.single_eq_lof R],
-    rw ←dfinsupp.single_smul,
-    apply dfinsupp.single_eq_of_sigma_eq,
-    apply sigma.subtype_ext,
-    exact (zero_add i).symm,
-    apply algebra.smul_def r,
-  end,
-  commutes' := λ r x, begin
-    dsimp only [ring_hom.to_fun_eq_coe, ring_hom.comp_apply, direct_sum.of_zero_ring_hom,
-      ring_hom.coe_mk, add_monoid_hom.to_fun_eq_coe],
-    change add_monoid_hom.mul (direct_sum.of _ _ _) x =
-      add_monoid_hom.mul.flip (direct_sum.of _ _ _) x,
-    apply add_monoid_hom.congr_fun _ x,
-    ext i xi : 2,
-    dsimp only [add_monoid_hom.comp_apply, add_monoid_hom.mul_apply, add_monoid_hom.flip_apply],
-    rw direct_sum.of_mul_of,
-    rw direct_sum.of_mul_of,
-    apply dfinsupp.single_eq_of_sigma_eq,
-    apply sigma.subtype_ext,
-    exact (add_comm i 0).symm,
-    apply algebra.commutes r,
-  end }
-
 /-- `clifford_algebra.ι` restricted to the odd submodule -/
 @[simps]
 def to_odd : M →ₗ[R] even_odd Q 1 :=
@@ -171,13 +136,7 @@ end
 
 /-- The canonical map back from the even and odd parts into the clifford algebra. -/
 def of_even_odd : (⨁ i, even_odd Q i) →ₐ[R] clifford_algebra Q :=
-{ commutes' := λ r, begin
-    refine (direct_sum.to_semiring_of _ _ _ _ _),
-    refl,
-    intros, refl,
-  end,
-  ..(direct_sum.to_semiring (λ i, (submodule.subtype _).to_add_monoid_hom) rfl (λ _ _ _ _, rfl) :
-      (⨁ i, even_odd Q i) →+* clifford_algebra Q) }
+direct_sum.to_algebra R _ (λ i, (submodule.subtype _)) rfl (λ _ _ _ _, rfl) (λ _, rfl)
 
 @[simp]
 lemma of_even_odd_of (i) (xi : even_odd Q i) :
@@ -190,7 +149,6 @@ alg_equiv.of_alg_hom
   (to_even_odd Q)
   (of_even_odd Q)
   begin
-    apply alg_hom.to_linear_map_injective,
     ext i ⟨xi, hxi⟩ : 2,
     dsimp,
     erw of_even_odd_of,
