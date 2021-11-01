@@ -243,7 +243,7 @@ namespace versors
     ext,
     change ↑v * _ • reverse ↑v = 1,
     rw algebra.mul_smul_comm,
-    rw inv_smul_eq_iff',
+    rw inv_smul_eq_iff₀,
     { rw [algebra.smul_def, mul_one],
       simp only [magnitude_R_eq, ←magnitude_aux_apply, magnitude_apply, subtype.coe_mk], },
     { intro h', apply h,

@@ -21,11 +21,11 @@ variables {Q : quadratic_form R M}
 
 open_locale direct_sum
 
-instance nat_power_direct_sum_gmonoid
+instance nat_power_direct_sum_gsemiring
   {R A ι} [add_monoid ι][decidable_eq ι] [comm_semiring R] [semiring A] [algebra R A]
   (S : submodule R A) (f : ι →+ ℕ) :
-  direct_sum.gmonoid (λ i : ι, ↥(S ^ f i)) :=
-direct_sum.gmonoid.of_submodules _
+  direct_sum.gsemiring (λ i : ι, ↥(S ^ f i)) :=
+direct_sum.gsemiring.of_submodules _
   (by { rw [f.map_zero, ←submodule.one_le, pow_zero], exact le_rfl })
   (λ i j p q, by { rw [f.map_add, pow_add], exact submodule.mul_mem_mul p.prop q.prop })
 
@@ -85,8 +85,8 @@ begin
   rw [mul_zero, zero_add, pow_one],
 end
 
-instance even_odd.gmonoid : direct_sum.gmonoid (λ i, even_odd Q i) :=
-direct_sum.gmonoid.of_submodules _
+instance even_odd.gsemiring : direct_sum.gsemiring (λ i, even_odd Q i) :=
+direct_sum.gsemiring.of_submodules _
   (submodule.one_le.mp (one_le_even_odd_zero Q))
   (λ i j p q, submodule.mul_le.mp (even_odd_mul_le Q _ _) _ p.prop _ q.prop)
 
