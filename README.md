@@ -5,9 +5,12 @@ lean-ga
 
 A partial formalization of Geometric Algebra (GA) in the [Lean formal proof verification system](https://github.com/leanprover-community/lean) and using its [Mathematical Library](https://github.com/leanprover-community/mathlib/).
 
-We presented an early version of this at ICCA 2020 ([slides](https://pygae.github.io/lean-ga/ICCA2020)). A paper representative of a more recent version is expected to be published with open access in the near future.
+We presented an early version of this at ICCA 2020 ([slides](https://pygae.github.io/lean-ga/ICCA2020)).
+A paper representative of a more recent version is expected to be published with open access in the imminnent future.
+The [submitted manuscript is available on arXiv](https://arxiv.org/abs/2110.03551).
 
-A semi-interactive viewer for the contents of this project can be found at https://pygae.github.io/lean-ga-docs/. Of particular interest are:
+A semi-interactive viewer for the contents of this project can be found at https://pygae.github.io/lean-ga-docs/.
+Of particular interest are:
 
 * Parts of mathlib contributed as part of this work. These used to live in this repository, but have graduated to mathlib itself. The links below go to the precise version of mathlib `lean-ga` uses, rather than to the latest mathlib docs.
   * [`clifford_algebra`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra)
@@ -27,7 +30,9 @@ A semi-interactive viewer for the contents of this project can be found at https
 
 To get the full experience of using lean-ga without having to install lean, use the GitPod link at the top of this readme.
 Wait for the command in the console to finish, then open one of the files referenced above, and wait for compilation to finish (the orange bars to vanish).
-At this point, you can move the cursor around to view the proof state, and try adding new statements to the file using our definitions
+At this point, you can move the cursor around to view the proof state, and try adding new statements to the file using our definitions.
+
+See [this visualization](https://eric-wieser.github.io/mathlib-import-graph/?docs_url=https%3A%2F%2Fpygae.github.io%2Flean-ga-docs%2F) to see which parts of Mathlib are used in this formalization (directly or indirectly).
 
 Contributing
 ------------
