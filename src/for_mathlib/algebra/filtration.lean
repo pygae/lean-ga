@@ -20,7 +20,7 @@ namespace filtration
 
 variables {R : Type*} {A : Type*} {ι : Type*} [preorder ι] [has_add ι] [comm_semiring R] [semiring A] [algebra R A]
 
-instance : has_coe_to_fun (filtration R A ι) := ⟨_, λ f, f.to_fun⟩
+instance : has_coe_to_fun (filtration R A ι) (λ _, ι → submodule R A) := ⟨to_fun⟩
 
 variables (f : filtration R A ι)
 
