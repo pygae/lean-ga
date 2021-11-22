@@ -63,16 +63,18 @@ namespace q60596
 
 open mv_polynomial
 
+def k_ideal := ideal.span { x : mv_polynomial (fin 3) (zmod 2) | ∃ i, x = X i * X i }
+
 -- 𝔽₂[α, β, γ] / (α², β², γ²)
 @[derive [comm_ring, comm_semiring, ring, semiring, add_comm_group, add_comm_monoid]]
-def k := (ideal.span { x : mv_polynomial (fin 3) (zmod 2) | ∃ i, x = X i * X i }).quotient
+def k := k_ideal.quotient
 
 instance : fact (nat.prime 2) := ⟨nat.prime_two⟩
 
 instance : fact (0 < 2) := ⟨zero_lt_two⟩
 
-lemma comap_C_span_le_bot {R} [comm_semiring R] :
-  (ideal.span {x : mv_polynomial (fin 3) R | ∃ (i : fin 3), x = X i * X i}).comap C ≤ ⊥ :=
+lemma comap_C_span_le_bot :
+  k_ideal.comap C ≤ ⊥ :=
 begin
   refine (ideal.comap_span_le _ _ constant_coeff_C _).trans _,
   refine (ideal.span_le_bot _).2 _,
@@ -111,9 +113,13 @@ begin
   refine ⟨i, rfl⟩,
 end
 
+@[simps]
+def L_func : (fin 3 → k) →ₗ[k] k :=
+α • linear_map.proj 0 - β • linear_map.proj 1 - γ • linear_map.proj 2
+
 /-- The quotient of k^3 by the specified relation-/
 @[derive [add_comm_group, module k]]
-def L := (submodule.span k { v : fin 3 → k | α * v 0 - β * v 1 - γ * v 2 = 0}).quotient
+def L := (L_func.ker).quotient
 
 -- local attribute [irreducible] k
 
@@ -162,7 +168,8 @@ lemma Q'_apply (a : fin 3 → k) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
 calc Q' a = a 0 * a 0 + (a 1 * a 1 + (a 2 * a 2 + 0)) : rfl
       ... = _ : by ring
 
-lemma Q'_zero_under_ideal (v : fin 3 → k) (hv : α * v 0 - β * v 1 - γ * v 2 = 0) : Q' v = 0 := begin
+lemma Q'_zero_under_ideal (v : fin 3 → k) (hv : v ∈ L_func.ker) : Q' v = 0 := begin
+  rw [linear_map.mem_ker, L_func_apply] at hv,
   rw Q'_apply,
   revert hv,
   generalize : v 0 = v0,
@@ -172,9 +179,12 @@ lemma Q'_zero_under_ideal (v : fin 3 → k) (hv : α * v 0 - β * v 1 - γ * v 2
   induction v1 using quotient.induction_on,
   induction v2 using quotient.induction_on,
   dunfold α β γ,
+  change quotient.mk' _ = quotient.mk' _ → quotient.mk' _ = quotient.mk' _,
+  rw [quotient.eq', quotient.eq'],
+  dunfold  submodule.quotient_rel setoid.r,
+  dsimp,
+  simp only [sub_zero],
   intro h,
-  change quotient.mk _ = quotient.mk _ at h,
-  change quotient.mk _ = quotient.mk _,
   sorry,
 end
 
@@ -185,14 +195,7 @@ def Q : quadratic_form k L :=
     dunfold submodule.quotient_rel setoid.r at h,
     suffices : Q' (a - b) = 0,
     { rwa [Q'_sub, sub_eq_zero] at this, },
-    refine submodule.span_induction h _ _ _ _,
-    { rintros x (hx : _ = _),
-      apply Q'_zero_under_ideal x hx, },
-    { exact quadratic_form.map_zero },
-    { intros x y hx hy,
-      rw [Q'_add, hx, hy, zero_add], },
-    { intros a x h,
-      rw [quadratic_form.map_smul, h, mul_zero], }
+    apply Q'_zero_under_ideal (a - b) h,
   end,
   to_fun_smul := λ a x, begin
     induction x using quotient.induction_on,
@@ -226,9 +229,6 @@ begin
   apply quotient.sound',
   dunfold submodule.quotient_rel setoid.r,
   simp [sub_zero, ideal.span],
-  apply submodule.subset_span,
-  dsimp,
-  simp,
 end
 
 /-- The core of the proof - scaling `1` by `α * β * γ` gives zero -/
@@ -250,7 +250,7 @@ begin
   intro h,
   replace h := quotient.exact' h,
   dunfold submodule.quotient_rel setoid.r at h,
-  simp [sub_zero, ideal.span] at h,
+  simp [sub_zero, ideal.span, k_ideal] at h,
   sorry,
 end
 
