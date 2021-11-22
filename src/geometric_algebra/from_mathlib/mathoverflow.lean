@@ -168,24 +168,37 @@ lemma Q'_apply (a : fin 3 → k) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
 calc Q' a = a 0 * a 0 + (a 1 * a 1 + (a 2 * a 2 + 0)) : rfl
       ... = _ : by ring
 
-lemma Q'_zero_under_ideal (v : fin 3 → k) (hv : v ∈ L_func.ker) : Q' v = 0 := begin
-  rw [linear_map.mem_ker, L_func_apply] at hv,
-  rw Q'_apply,
-  revert hv,
-  generalize : v 0 = v0,
-  generalize : v 1 = v1,
-  generalize : v 2 = v2,
-  induction v0 using quotient.induction_on,
-  induction v1 using quotient.induction_on,
-  induction v2 using quotient.induction_on,
-  dunfold α β γ,
+lemma sq_zero_of_αβγ_mul {x : k}  : α * β * γ * x = 0 → x*x = 0 :=
+begin
+  induction x using quotient.induction_on',
   change quotient.mk' _ = quotient.mk' _ → quotient.mk' _ = quotient.mk' _,
   rw [quotient.eq', quotient.eq'],
-  dunfold  submodule.quotient_rel setoid.r,
+  dunfold submodule.quotient_rel setoid.r,
   dsimp,
-  simp only [sub_zero],
+  rw [sub_zero, sub_zero, k_ideal],
   intro h,
   sorry,
+end
+
+lemma Q'_zero_under_ideal (v : fin 3 → k) (hv : v ∈ L_func.ker) : Q' v = 0 := begin
+  rw [linear_map.mem_ker, L_func_apply, char_two_sub, char_two_sub] at hv,
+  have h0 : α * β * γ * v 0 = 0,
+  { have := congr_arg ((*) (β * γ)) hv,
+    simp only [mul_zero, mul_add, ←mul_assoc] at this,
+    rw [mul_comm (β * γ) α, ←mul_assoc, mul_right_comm β γ β, mul_assoc β γ γ, X_sq, X_sq] at this,
+    simpa only [mul_zero, zero_mul, add_zero, zero_add] using this },
+  have h1 : α * β * γ * v 1 = 0,
+  { have := congr_arg ((*) (α * γ)) hv,
+    simp only [mul_zero, mul_add, ←mul_assoc] at this,
+    rw [mul_right_comm α γ α, mul_assoc α γ γ, mul_right_comm α γ β, X_sq, X_sq] at this,
+    simpa only [mul_zero, zero_mul, add_zero, zero_add] using this },
+  have h2 : α * β * γ * v 2 = 0,
+  { have := congr_arg ((*) (α * β)) hv,
+    simp only [mul_zero, mul_add, ←mul_assoc] at this,
+    rw [mul_right_comm α β α, mul_assoc α β β, X_sq, X_sq] at this,
+    simpa only [mul_zero, zero_mul, add_zero, zero_add] using this },
+  rw [Q'_apply, sq_zero_of_αβγ_mul h0, sq_zero_of_αβγ_mul h1, sq_zero_of_αβγ_mul h2,
+    add_zero, add_zero],
 end
 
 /-- The quadratic form (metric) is just euclidean -/
