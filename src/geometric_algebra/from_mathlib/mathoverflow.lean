@@ -65,6 +65,40 @@ open mv_polynomial
 
 def k_ideal := ideal.span { x : mv_polynomial (fin 3) (zmod 2) | ∃ i, x = X i * X i }
 
+instance fact.zero_lt_two : fact (0 < 2) := ⟨zero_lt_two⟩
+instance fact.one_lt_two : fact (1 < 2) := ⟨one_lt_two⟩
+
+
+lemma _root_.mv_polynomial.support_smul {S R σ} [comm_semiring R] [monoid S] [distrib_mul_action S R]
+  {r : S} {p : mv_polynomial σ R} :
+  (r • p).support ⊆ p.support := finsupp.support_smul
+
+open_locale big_operators
+
+lemma mem_k_ideal_iff (x : mv_polynomial (fin 3) (zmod 2)) :
+  x ∈ k_ideal ↔ ∃ f : fin 3 → mv_polynomial (fin 3) (zmod 2), x = ∑ i, f i * X i * X i   :=
+begin
+  split,
+  { intro hx,
+    apply submodule.span_induction hx,
+    { rintros x ⟨i, rfl⟩,
+      refine ⟨pi.single i 1, _⟩,
+      rw [finset.sum_eq_single_of_mem i (finset.mem_univ _), pi.single_eq_same, one_mul],
+      intros b _ hb,
+      rw [pi.single_eq_of_ne hb, zero_mul, zero_mul], },
+    { refine ⟨0, _⟩, simp only [pi.zero_apply, zero_mul, finset.sum_const_zero] },
+    { rintros x y ⟨fx, rfl⟩ ⟨fy, rfl⟩,
+      refine ⟨fx + fy, _⟩,
+      simp only [finset.sum_add_distrib, add_mul, pi.add_apply], },
+    { rintros c x ⟨fx, rfl⟩,
+      refine ⟨c • fx, _⟩,
+      simp only [finset.mul_sum, pi.smul_apply, smul_eq_mul, ←mul_assoc] } },
+  { rintro ⟨f, rfl⟩,
+    refine submodule.sum_mem _ (λ i _, _),
+    rw mul_assoc,
+    exact ideal.mul_mem_left _ _ (ideal.subset_span ⟨_, rfl⟩) }
+end
+
 -- 𝔽₂[α, β, γ] / (α², β², γ²)
 @[derive [comm_ring, comm_semiring, ring, semiring, add_comm_group, add_comm_monoid]]
 def k := k_ideal.quotient
@@ -168,15 +202,15 @@ lemma Q'_apply (a : fin 3 → k) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
 calc Q' a = a 0 * a 0 + (a 1 * a 1 + (a 2 * a 2 + 0)) : rfl
       ... = _ : by ring
 
-lemma sq_zero_of_αβγ_mul {x : k}  : α * β * γ * x = 0 → x*x = 0 :=
+lemma sq_zero_of_αβγ_mul {x : k} : α * β * γ * x = 0 → x * x = 0 :=
 begin
   induction x using quotient.induction_on',
   change quotient.mk' _ = quotient.mk' _ → quotient.mk' _ = quotient.mk' _,
   rw [quotient.eq', quotient.eq'],
   dunfold submodule.quotient_rel setoid.r,
   dsimp,
-  rw [sub_zero, sub_zero, k_ideal],
-  intro h,
+  rw [sub_zero, sub_zero, mem_k_ideal_iff, mem_k_ideal_iff],
+  rintro ⟨f, hf⟩,
   sorry,
 end
 
@@ -263,8 +297,39 @@ begin
   intro h,
   replace h := quotient.exact' h,
   dunfold submodule.quotient_rel setoid.r at h,
-  simp [sub_zero, ideal.span, k_ideal] at h,
-  sorry,
+  simp only [sub_zero, mem_k_ideal_iff] at h,
+  cases h with f hf,
+  have := congr_arg (coeff (∑ i, finsupp.single i 1)) hf,
+  rw coeff_sum at this,
+  conv_lhs at this { simp only [X, monomial_mul, one_mul, coeff_monomial] },
+  rw if_pos at this,
+  refine one_ne_zero (_ : (1 : zmod 2) = 0),
+  convert this,
+  symmetry,
+  apply finset.sum_eq_zero,
+  swap, {
+    simp only [fin.sum_univ_succ, fin.succ_one_eq_two, fin.succ_zero_eq_one, univ_is_empty,
+      finset.sum_empty, add_zero, add_assoc] },
+  intros i _,
+  rw [coeff_mul_X', coeff_mul_X', if_pos],
+  swap, {
+    rw finsupp.support_sum_eq_bUnion,
+    { simp_rw [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0),
+        finset.bUnion_singleton_eq_self],
+      exact finset.mem_univ _, },
+    { intros i j hij,
+      simp only [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0), finset.disjoint_singleton],
+      exact hij },
+  },
+  rw if_neg,
+  rw [←finset.add_sum_erase _ _ (finset.mem_univ i), add_tsub_cancel_left,
+    finsupp.support_sum_eq_bUnion],
+  { simp_rw [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0),
+      finset.bUnion_singleton_eq_self],
+    exact finset.not_mem_erase _ _, },
+  { intros i j hij,
+    simp only [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0), finset.disjoint_singleton],
+    exact hij },
 end
 
 /-- Our final result -/
