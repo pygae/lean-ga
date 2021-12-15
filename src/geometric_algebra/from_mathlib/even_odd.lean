@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import linear_algebra.clifford_algebra.basic
 import linear_algebra.dfinsupp
 import algebra.algebra.subalgebra
-import algebra.direct_sum.algebra
+import algebra.direct_sum.internal
 
 /-!
 # Grading by ℤ / 2ℤ, using `direct_sum`
@@ -21,13 +21,12 @@ variables {Q : quadratic_form R M}
 
 open_locale direct_sum
 
-instance nat_power_direct_sum_gsemiring
-  {R A ι} [add_monoid ι][decidable_eq ι] [comm_semiring R] [semiring A] [algebra R A]
+instance nat_power_graded_monoid
+  {R A ι} [add_monoid ι] [decidable_eq ι] [comm_semiring R] [semiring A] [algebra R A]
   (S : submodule R A) (f : ι →+ ℕ) :
-  direct_sum.gsemiring (λ i : ι, ↥(S ^ f i)) :=
-direct_sum.gsemiring.of_submodules _
-  (by { rw [f.map_zero, ←submodule.one_le, pow_zero], exact le_rfl })
-  (λ i j p q, by { rw [f.map_add, pow_add], exact submodule.mul_mem_mul p.prop q.prop })
+  set_like.graded_monoid (λ i : ι, S ^ f i) :=
+{ one_mem := by { rw [f.map_zero, ←submodule.one_le, pow_zero], exact le_rfl },
+  mul_mem := λ i j p q hp hq, by { rw [f.map_add, pow_add], exact submodule.mul_mem_mul hp hq } }
 
 variables (Q)
 
@@ -85,10 +84,9 @@ begin
   rw [mul_zero, zero_add, pow_one],
 end
 
-instance even_odd.gsemiring : direct_sum.gsemiring (λ i, even_odd Q i) :=
-direct_sum.gsemiring.of_submodules _
-  (submodule.one_le.mp (one_le_even_odd_zero Q))
-  (λ i j p q, submodule.mul_le.mp (even_odd_mul_le Q _ _) _ p.prop _ q.prop)
+instance even_odd.graded_monoid : set_like.graded_monoid (even_odd Q) :=
+{ one_mem := submodule.one_le.mp (one_le_even_odd_zero Q),
+  mul_mem := λ i j p q hp hq, submodule.mul_le.mp (even_odd_mul_le Q _ _) _ hp _ hq }
 
 /-- `clifford_algebra.ι` restricted to the odd submodule -/
 @[simps]
