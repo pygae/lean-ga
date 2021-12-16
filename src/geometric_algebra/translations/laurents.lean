@@ -3,7 +3,7 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import algebra.field
+import algebra.field.basic
 import algebra.module.prod
 import algebra.punit_instances
 import data.vector

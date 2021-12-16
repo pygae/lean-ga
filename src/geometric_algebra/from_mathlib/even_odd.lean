@@ -7,6 +7,7 @@ import linear_algebra.clifford_algebra.basic
 import linear_algebra.dfinsupp
 import algebra.algebra.subalgebra
 import algebra.direct_sum.internal
+import data.zmod.basic
 
 /-!
 # Grading by ℤ / 2ℤ, using `direct_sum`

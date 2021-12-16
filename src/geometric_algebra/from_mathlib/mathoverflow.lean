@@ -31,11 +31,11 @@ end
 
 /-- `char_p.quotient'` as an `iff`. -/
 lemma char_p.quotient_iff' (R : Type*) [comm_ring R] (n : ℕ) [char_p R n] (I : ideal R) :
-  char_p I.quotient n ↔ ∀ x : ℕ, ↑x ∈ I → (x : R) = 0 :=
+  char_p (R ⧸ I) n ↔ ∀ x : ℕ, ↑x ∈ I → (x : R) = 0 :=
 begin
-  refine ⟨λ (i : char_p I.quotient n) x hx, _, char_p.quotient' n I⟩,
+  refine ⟨λ (i : char_p (R ⧸ I) n) x hx, _, char_p.quotient' n I⟩,
   resetI,
-  have := char_p.cast_eq_zero_iff I.quotient n,
+  have := char_p.cast_eq_zero_iff (R ⧸ I) n,
   rw char_p.cast_eq_zero_iff R n,
   refine (this _).mp _,
   convert (submodule.quotient.mk_eq_zero I).mpr hx,
@@ -47,15 +47,11 @@ submodule.span_le
 
 /-- `char_p.quotient'` as an `iff`. -/
 lemma char_p.quotient_iff'' (R : Type*) [comm_ring R] (n : ℕ) [char_p R n] (I : ideal R) :
-  char_p I.quotient n ↔ I.comap (nat.cast_ring_hom _) ≤ (nat.cast_ring_hom R).ker :=
+  char_p (R ⧸ I) n ↔ I.comap (nat.cast_ring_hom _) ≤ (nat.cast_ring_hom R).ker :=
 (char_p.quotient_iff' _ _ _).trans begin
   rw ring_hom.ker_eq_comap_bot,
   exact iff.rfl,
 end
-
-lemma ring_hom.comap_ker {R S T : Type*} [semiring R] [semiring S] [semiring T] (f : S →+* R)
-  (g : T →+* S) : f.ker.comap g = (f.comp g).ker :=
-by rw [ring_hom.ker_eq_comap_bot, ideal.comap_comap, ring_hom.ker_eq_comap_bot]
 
 end for_mathlib
 
@@ -101,7 +97,7 @@ end
 
 -- 𝔽₂[α, β, γ] / (α², β², γ²)
 @[derive [comm_ring, comm_semiring, ring, semiring, add_comm_group, add_comm_monoid]]
-def k := k_ideal.quotient
+def k := _ ⧸ k_ideal
 
 instance : fact (nat.prime 2) := ⟨nat.prime_two⟩
 
@@ -153,7 +149,7 @@ def L_func : (fin 3 → k) →ₗ[k] k :=
 
 /-- The quotient of k^3 by the specified relation-/
 @[derive [add_comm_group, module k]]
-def L := (L_func.ker).quotient
+def L := _ ⧸ L_func.ker
 
 -- local attribute [irreducible] k
 
@@ -308,7 +304,7 @@ begin
   symmetry,
   apply finset.sum_eq_zero,
   swap, {
-    simp only [fin.sum_univ_succ, fin.succ_one_eq_two, fin.succ_zero_eq_one, univ_is_empty,
+    simp only [fin.sum_univ_succ, fin.succ_one_eq_two, fin.succ_zero_eq_one, fintype.univ_of_is_empty,
       finset.sum_empty, add_zero, add_assoc] },
   intros i _,
   rw [coeff_mul_X', coeff_mul_X', if_pos],
