@@ -29,7 +29,7 @@ jobs:
       with:
         fetch-depth: 0
         repository: eric-wieser/doc-gen
-        branch: sorried-lemmas
+        ref: sorried-lemmas
         path: doc-gen
 
     - name: 🐍 Install Python dependencies
