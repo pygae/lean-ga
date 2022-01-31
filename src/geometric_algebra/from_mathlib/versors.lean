@@ -48,19 +48,20 @@ namespace versors
     (h_grade1 : ∀ m, C ⟨ι Q m, ι_mem m⟩)
     (h_mul : ∀ (a b : versors Q), C a → C b → C (a * b)) :
     C v :=
-  submonoid.closure_induction' _
-    (λ x hx, by {
-      cases hx,
-        { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
-          exact h_grade0 a, },
-        { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
-          exact h_grade1 a, } })
-    (begin
-      convert h_grade0 (1 : R) using 1,
-      apply subtype.coe_injective,
-      simpa only [ring_hom.map_one],
-    end)
-    h_mul v
+  subtype.cases_on v $ λ v hv, by exact
+    submonoid.closure_induction' _
+      (λ x hx, by {
+        cases hx,
+          { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
+            exact h_grade0 a, },
+          { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
+            exact h_grade1 a, } })
+      (begin
+        convert h_grade0 (1 : R) using 1,
+        apply subtype.coe_injective,
+        simpa only [ring_hom.map_one],
+      end)
+      (λ x hx y hy, h_mul ⟨x, hx⟩ ⟨y, hy⟩) hv
 
   meta def inv_rev_tac : tactic unit :=
   `[apply induction_on v,
@@ -338,19 +339,20 @@ namespace spinors
     (h_grade2 : ∀ m n, C ⟨ι Q m * ι Q n, ι_mul_mem m n⟩)
     (h_mul : ∀ (a b : spinors Q), C a → C b → C (a * b)) :
     C v :=
-  submonoid.closure_induction' _
-    (λ x hx, by {
-      cases hx,
-        { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
-          exact h_grade0 a, },
-        { obtain ⟨_, _, ⟨a, rfl⟩, ⟨b, rfl⟩, rfl⟩ := set.mem_mul.mpr hx,
-          exact h_grade2 a b, } })
-    (begin
-      convert h_grade0 (1 : R) using 1,
-      apply subtype.coe_injective,
-      simpa only [ring_hom.map_one],
-    end)
-    h_mul v
+  subtype.cases_on v $ λ v hv, by exact
+    submonoid.closure_induction' _
+      (λ x hx, by {
+        cases hx,
+          { obtain ⟨a, rfl⟩ := set.mem_range.mpr hx,
+            exact h_grade0 a, },
+          { obtain ⟨_, _, ⟨a, rfl⟩, ⟨b, rfl⟩, rfl⟩ := set.mem_mul.mpr hx,
+            exact h_grade2 a b, } })
+      (begin
+        convert h_grade0 (1 : R) using 1,
+        apply subtype.coe_injective,
+        simpa only [ring_hom.map_one],
+      end)
+      (λ x hx y hy, h_mul ⟨x, hx⟩ ⟨y, hy⟩) hv
 
   /-- Involute of a spinor is a spinor -/
   @[simp] lemma involute_mem (v : spinors Q) : involute (v : clifford_algebra Q) ∈ spinors Q :=
