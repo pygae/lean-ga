@@ -118,7 +118,7 @@ begin
   dunfold k,
   rw char_p.quotient_iff'',
   have : (nat.cast_ring_hom (mv_polynomial (fin 3) (zmod 2))) = C.comp (nat.cast_ring_hom _),
-  { ext1 r, exact (C.map_nat_cast r).symm, },
+  { ext1 r, exact (map_nat_cast (C : _ →+* mv_polynomial (fin 3) (zmod 2)) r).symm, },
   rw [this, ←ideal.comap_comap, ←ring_hom.comap_ker],
   apply ideal.comap_mono,
   refine comap_C_span_le_bot.trans bot_le,
