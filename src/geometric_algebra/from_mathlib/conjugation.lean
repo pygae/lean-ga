@@ -21,7 +21,7 @@ The links above will take you to the collection of mathlib theorems.
 namespace clifford_algebra
 
 section reverse
-  open opposite
+  open mul_opposite
 
   /-- helper lemma for expanding the sign of reverse -/
   lemma reverse_prod_sign_aux (n : ℕ) :
@@ -42,7 +42,7 @@ section reverse
     { rw [nat.add_mod (n * 2), nat.mul_mod_left, nat.mul_mod_left, add_zero, nat.zero_mod, add_zero],
       exact nat.mod_lt _ this },
   end
-  
+
   /-- TODO: this needs an assumption that the vectors are othogonal -/
   lemma reverse_prod_map_sign (l : list M):
     reverse (l.map $ ι Q).prod = ((-1 : R)^(l.length*(l.length + 1)/2)) • (l.map $ ι Q).prod :=
