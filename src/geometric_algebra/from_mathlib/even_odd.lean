@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import linear_algebra.clifford_algebra.grading
 import linear_algebra.dfinsupp
+import linear_algebra.quadratic_form.prod
 import algebra.algebra.subalgebra
 import algebra.direct_sum.internal
 import data.zmod.basic
@@ -72,8 +73,6 @@ begin
   rw neg_eq_iff_neg_eq,
   exact neg_e0_mul_ι _ m
 end
-
-#check tactic.rewrite_cfg
 
 /-- The embedding from the smaller algebra into the new larger one. -/
 def to_even : clifford_algebra Q →ₐ[R] clifford_algebra.even (Q' Q) :=
