@@ -4,6 +4,7 @@ Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import linear_algebra.clifford_algebra.grading
+import linear_algebra.quadratic_form.prod
 import linear_algebra.dfinsupp
 import algebra.algebra.subalgebra
 import algebra.direct_sum.internal
@@ -45,6 +46,11 @@ def even : subalgebra R (clifford_algebra Q) :=
 lemma even_to_submodule : (even Q).to_submodule = even_odd Q 0 :=
 rfl
 
+-- def even.lift {A} [semiring A] [algebra R A] (f : M →ₗ[R] M →ₗ[R] A)
+--   (cond : ∀ v w, f v w * f v w = sorry) : even Q →ₐ[R] A :=
+-- begin
+
+-- end
 
 namespace equiv_even
 
@@ -99,6 +105,36 @@ begin
   rw [to_even, clifford_algebra.lift_ι_apply, linear_map.cod_restrict_apply],
   refl,
 end
+
+/--
+
+x*y -> (e0 * x) * (e0 * y) = -(x * e0) * (e0 * y) = x * y
+
+e0*e0 -> -1
+e0 -> NA
+e0*x -> x
+x*y -> x * y
+(e0 + x)*y = y + x*y
+
+-/
+def of_even : clifford_algebra.even (Q' Q) →ₐ[R] clifford_algebra Q :=
+begin
+  refine alg_hom.comp _ (subalgebra.val _),
+  refine clifford_algebra.lift _ ⟨_, λ m, _⟩,
+  -- have := (ι Q).comp (linear_map.fst _ _ _),
+  exact (ι Q).comp (linear_map.fst _ _ _) + (algebra.linear_map _ _).comp (linear_map.snd _ _ _),
+  dsimp,
+  rw [add_mul, mul_add, mul_add, ι_sq_scalar, ←ring_hom.map_mul],
+end
+
+-- #check alg_hom.restrict_domain
+
+def even_equiv : clifford_algebra Q ≃ₐ[R] clifford_algebra.even (Q.prod $ -@quadratic_form.sq R _) :=
+alg_equiv.of_alg_hom
+  _
+  sorry --(clifford_algebra.lift _ ⟨_, _⟩)
+  _
+  _
 
 end equiv_even
 
