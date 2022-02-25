@@ -10,6 +10,7 @@ import linear_algebra.quadratic_form.prod
 import algebra.algebra.subalgebra
 import algebra.direct_sum.internal
 import data.zmod.basic
+import geometric_algebra.from_mathlib.fold
 
 /-!
 # Grading by ℤ / 2ℤ, using `direct_sum`
@@ -56,10 +57,10 @@ rfl
 namespace equiv_even
 
 @[reducible]
-def Q' := (Q.prod $ -@quadratic_form.sq R _)
+def Q' : quadratic_form R (M × R) := (Q.prod $ -@quadratic_form.sq R _)
 
 /-- The unit vector in the new dimension -/
-def e0 := ι (Q' Q) (0, 1)
+def e0 : clifford_algebra (Q' Q) := ι (Q' Q) (0, 1)
 
 lemma e0_mul_e0 : e0 Q * e0 Q = -1 :=
 (ι_sq_scalar _ _).trans begin
@@ -105,6 +106,8 @@ begin
   refl,
 end
 
+
+notation `↑ₐ` := algebra_map _ (clifford_algebra _)
 /--
 
 x*y -> (e0 * x) * (e0 * y) = -(x * e0) * (e0 * y) = x * y
@@ -126,7 +129,67 @@ begin
   rw [add_mul, mul_add, mul_add, ι_sq_scalar, ←ring_hom.map_mul],
 end
 
--- #check alg_hom.restrict_domain
+#check 1
+
+@[simp, to_additive] lemma prod.swap_mul {α β} [has_mul α] [has_mul β] (x y : α × β) :
+  prod.swap (x * y) = prod.swap x * prod.swap y := rfl
+#check prod.swap_prod_mk
+/--
+
+Basics:
+
+f ⟨0,1⟩ (f ⟨x,0⟩ acc) = ι x * acc
+f ⟨x,0⟩ (f ⟨0,1⟩ acc) = -ι x * acc
+f ⟨x,0⟩ (f ⟨y,0⟩ acc) = ι x * ι y * acc
+f ⟨0,1⟩ (f ⟨0,1⟩ acc) = -acc
+
+Combined
+
+f ⟨x,rx⟩ (f ⟨y,ry⟩ acc) = (ιx + rx) * (ιy - ry) * acc
+
+So
+
+f ⟨x,rx⟩ (f ⟨x,rx⟩ acc) = (ιx + rx)^2 * acc
+                      = (Qx + 2rxιx + rx^2) * acc
+                      = (Qx - rx^2) * acc
+
+f x (f e0 (f e0 (f e0 acc))) = x * x * acc
+f x (f e0 acc) = x * acc
+
+try:
+  f ⟨x,rx⟩ (a1, a2) = ((ι x + r) * a2, (ι x - r) * a1)
+
+check:
+  f ⟨x,rx⟩ (f ⟨x,rx⟩ (a1, a2)) = f ⟨x,rx⟩ ((ι x + r) * a2, (ι x - r) * a1)
+
+--/
+def of_even' : clifford_algebra.even (Q' Q) →ₗ[R] clifford_algebra Q :=
+begin
+  let f : (M × R) →ₗ[R] (clifford_algebra Q × clifford_algebra Q)
+                  →ₗ[R] (clifford_algebra Q × clifford_algebra Q) :=
+    linear_map.mk₂ R (λ x acc,
+      ((ι Q x.fst + algebra_map R _ x.snd), (ι Q x.fst - algebra_map R _ x.snd)) * acc.swap)
+      sorry sorry sorry sorry,
+  have := foldr (Q' Q) f _,
+  swap,
+  { intro m,
+    apply linear_map.ext,
+    rintro a,
+    dsimp only [f, linear_map.comp_apply, linear_map.mk₂_apply, prod.swap_mul, prod.swap_prod_mk,
+      linear_map.smul_apply, linear_map.id_apply, Q', quadratic_form.prod_to_fun,
+      quadratic_form.sq_to_fun, quadratic_form.neg_apply],
+    simp only [←mul_assoc, prod.swap_swap, algebra.smul_def],
+    congr' 1,
+    simp only [mul_add, add_mul, sub_mul, mul_sub, prod.mk_mul_mk],
+    change (_, _) = (_, _),
+    simp only [←ring_hom.map_mul, ←algebra.commutes, ι_sq_scalar],
+    have : _ = _ := _,
+    refine congr_arg2 prod.mk this this,
+    rw [add_comm (_ * ι Q _), add_sub_add_right_eq_sub,
+      ←ring_hom.map_mul, ←ring_hom.map_sub, sub_eq_add_neg] },
+  refine (linear_map.fst _ _ _).comp ((this (1, 1)).dom_restrict _),
+end
+
 
 def even_equiv : clifford_algebra Q ≃ₐ[R] clifford_algebra.even (Q.prod $ -@quadratic_form.sq R _) :=
 alg_equiv.of_alg_hom
