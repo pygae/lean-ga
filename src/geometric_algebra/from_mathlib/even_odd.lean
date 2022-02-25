@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import linear_algebra.clifford_algebra.grading
 import linear_algebra.quadratic_form.prod
 import linear_algebra.dfinsupp
+import linear_algebra.quadratic_form.prod
 import algebra.algebra.subalgebra
 import algebra.direct_sum.internal
 import data.zmod.basic
@@ -79,8 +80,6 @@ begin
   exact neg_e0_mul_ι _ m
 end
 
-#check tactic.rewrite_cfg
-
 /-- The embedding from the smaller algebra into the new larger one. -/
 def to_even : clifford_algebra Q →ₐ[R] clifford_algebra.even (Q' Q) :=
 begin
@@ -93,8 +92,8 @@ begin
     dsimp only [subalgebra.coe_mul, linear_map.cod_restrict_apply, linear_map.comp_apply,
       algebra.lmul_left_apply, linear_map.inl_apply, subalgebra.coe_algebra_map],
     rw [←neg_ι_mul_e0] {occs := occurrences.pos [1]},
-    rw [neg_mul_eq_mul_neg, mul_assoc, ←mul_assoc _ (e0 _), neg_mul_eq_neg_mul_symm, e0_mul_e0,
-      neg_neg, one_mul, ι_sq_scalar],
+    rw [←mul_neg, mul_assoc, ←mul_assoc _ (e0 _), neg_mul, e0_mul_e0, neg_neg, one_mul,
+      ι_sq_scalar],
     dsimp [Q'],
     rw [zero_mul, neg_zero, add_zero], }
 end
