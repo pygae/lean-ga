@@ -187,30 +187,27 @@ linear_map.mk₂ R (λ m acc, (acc.2 m, ⟨(algebra.lmul_right R acc.1).comp (f.
   (λ c m a, prod.ext rfl
     (subtype.ext $ linear_map.ext $ λ m₃, mul_smul_comm _ _ _))
 
-@[simp] lemma fst_f_fold_f_fold  (m₁ m₂ : M) (x : A × (S f)) :
+@[simp] lemma fst_f_fold_f_fold (m₁ m₂ : M) (x : A × (S f)) :
   (f_fold f m₁ (f_fold f m₂ x)).fst = f m₁ m₂ * x.fst := rfl
 
 @[simp] lemma snd_f_fold_f_fold (m₁ m₂ m₃ : M) (x : A × (S f)) :
   ((f_fold f m₁ (f_fold f m₂ x)).snd : M →ₗ[R] A) m₃ = f m₃ m₁ * (x.snd : M →ₗ[R] A) m₂ := rfl
 
-@[simp]
-def folded_hom
-  (hf : ∀ m, f m m = algebra_map R _ (Q m))
-  (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) :
-  (A × (S f)) →ₗ[R] clifford_algebra Q →ₗ[R] (A × (S f)) :=
-@foldr R _ M _ _ (A × (S f)) _ _ Q (f_fold f) $ λ m₂, linear_map.ext $ begin
-  rintro ⟨a, ⟨g, hg⟩⟩,
-  rw [linear_map.comp_apply],
+lemma f_fold_f_fold (hf : ∀ m, f m m = algebra_map R _ (Q m))
+  (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) (m : M) (x : A × (S f)) :
+  f_fold f m (f_fold f m x) = Q m • x :=
+begin
+  obtain ⟨a, ⟨g, hg⟩⟩ := x,
   ext : 2,
-  { change f m₂ m₂ * a = Q m₂ • a,
+  { change f m m * a = Q m • a,
     rw [algebra.smul_def, hf] },
   { ext m₁,
-    change f _ _ * g m₂ = Q m₂ • g m₁,
+    change f _ _ * g m = Q m • g m₁,
     apply submodule.span_induction' _ _ _ _ hg,
     { rintros _ ⟨b, m₃, rfl⟩,
-      change f _ _ * (f _ _ * b) = Q m₂ • (f _ _ * b),
+      change f _ _ * (f _ _ * b) = Q m • (f _ _ * b),
       rw [←smul_mul_assoc, ←mul_assoc, hf₂] },
-    { change f m₁ m₂ * 0 = Q m₂ • 0,
+    { change f m₁ m * 0 = Q m • 0,
       rw [mul_zero, smul_zero] },
     { rintros x hx y hy ihx ihy,
       rw [linear_map.add_apply, linear_map.add_apply, mul_add, smul_add, ihx, ihy] },
@@ -218,14 +215,19 @@ def folded_hom
       rw [linear_map.smul_apply, linear_map.smul_apply, mul_smul_comm, ihx, smul_comm] } },
 end
 
+lemma f_fold_comp_f_fold (hf : ∀ m, f m m = algebra_map R _ (Q m))
+  (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) (m : M) :
+  f_fold f m ∘ₗ f_fold f m = Q m • linear_map.id :=
+linear_map.ext (f_fold_f_fold Q f hf hf₂ m)
+
+/-- The final auxiliary construction for `clifford_algebra.even.lift`. -/
 @[simps]
-def aux
-  (hf : ∀ m, f m m = algebra_map R _ (Q m))
+def aux (hf : ∀ m, f m m = algebra_map R _ (Q m))
   (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) :
   clifford_algebra.even Q →ₗ[R] A :=
 begin
-  let F := (linear_map.fst _ _ _).comp (folded_hom Q f hf hf₂ (1, 0)),
-  refine F.comp (even Q).val.to_linear_map
+  refine _ ∘ₗ (even Q).val.to_linear_map,
+  exact linear_map.fst _ _ _ ∘ₗ foldr Q (f_fold f) (f_fold_comp_f_fold Q f hf hf₂) (1, 0),
 end
 
 @[simp] lemma aux_one
@@ -233,7 +235,6 @@ end
   (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) :
   aux Q f hf hf₂ 1 = 1 :=
 (congr_arg prod.fst (foldr_one _ _ _ _))
-
 
 @[simp] lemma aux_ι
   (hf : ∀ m, f m m = algebra_map R _ (Q m))
@@ -249,8 +250,7 @@ end
   (hf : ∀ m, f m m = algebra_map R _ (Q m))
   (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) (r) :
   aux Q f hf hf₂ ⟨algebra_map R _ r, subalgebra.algebra_map_mem _ _⟩ = algebra_map R _ r :=
-(congr_arg prod.fst (foldr_algebra_map _ _ _ _ _)).trans
-  (algebra.algebra_map_eq_smul_one r).symm
+(congr_arg prod.fst (foldr_algebra_map _ _ _ _ _)).trans (algebra.algebra_map_eq_smul_one r).symm
 
 @[simp] lemma aux_mul
   (hf : ∀ m, f m m = algebra_map R _ (Q m))
