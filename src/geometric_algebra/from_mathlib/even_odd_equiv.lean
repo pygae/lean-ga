@@ -97,7 +97,7 @@ begin
     rw [ι_sq_scalar, ←ring_hom.map_mul, ←ring_hom.map_sub,
       sub_eq_add_neg, Q', quadratic_form.prod_to_fun, quadratic_form.neg_apply,
       quadratic_form.sq_to_fun] },
-  refine even.lift (Q' Q) f _ _; simp_rw [f_apply],
+  refine even.lift (Q' Q) ⟨f, _, _⟩; simp_rw [f_apply],
   { intro m,
     rw [←(hc _ _).symm.mul_self_sub_mul_self_eq, hm] },
   { intros m₁ m₂ m₃,
@@ -107,7 +107,7 @@ end
 
 lemma of_even_ι (x y : M × R) :
   of_even Q (even.ι _ x y) = (ι Q x.1 + algebra_map R _ x.2) * (ι Q y.1 - algebra_map R _ y.2) :=
-even.lift_ι _ _ _ _ _ _
+even.lift_ι _ _ _ _
 
 lemma to_even_comp_of_even :
   (to_even Q).comp (of_even Q) = alg_hom.id R _ :=
