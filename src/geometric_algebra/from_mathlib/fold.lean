@@ -9,11 +9,11 @@ import linear_algebra.tensor_product
 import linear_algebra.prod
 
 /-!
-# Contraction in Exterior Algebras
+# Recursive computation rules
 
 ## Main definitions
 
-* `clifford_algebra.fold`: a computation rule for building linear maps out of the exterior
+* `clifford_algebra.foldr`: a computation rule for building linear maps out of the clifford
   algebra.
 -/
 
@@ -26,7 +26,7 @@ variables (Q : quadratic_form R M)
 
 namespace clifford_algebra
 
-/-- Fold a bilinear map along the generators of a term of the exterior algebra.
+/-- Fold a bilinear map along the generators of a term of the clifford algebra.
 
 For example, `foldr f hf n (r • ι R u + ι R v * ι R w) = r • f u n + f v (f w n)`. -/
 def foldr (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m, (f m).comp (f m) = (Q m) • linear_map.id) :
