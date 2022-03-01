@@ -3,6 +3,7 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import linear_algebra.clifford_algebra.conjugation
 import geometric_algebra.from_mathlib.even_odd
 /-!
 # The isomorphism with the even subalgebra
@@ -46,6 +47,9 @@ begin
   rw neg_eq_iff_neg_eq,
   exact neg_e0_mul_ι _ m
 end
+
+@[simp] lemma reverse_e0 : reverse (e0 Q) = e0 Q := reverse_ι _
+@[simp] lemma involute_e0 : involute (e0 Q) = -e0 Q := involute_ι _
 
 /-- The embedding from the smaller algebra into the new larger one. -/
 def to_even : clifford_algebra Q →ₐ[R] clifford_algebra.even (Q' Q) :=
@@ -144,12 +148,27 @@ end
 /-- Any clifford algebra is isomorphic to the even subalgebra of a clifford algebra with an extra
 dimension (that is, with vector space `M × R`), with a quadratic form evaluating to `-1` on that new
 basis vector. -/
+@[simps]
 def equiv_even : clifford_algebra Q ≃ₐ[R] clifford_algebra.even (Q' Q) :=
 alg_equiv.of_alg_hom
   (to_even Q)
   (of_even Q)
   (to_even_comp_of_even Q)
   (of_even_comp_to_even Q)
+
+/-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
+subalgebra is just the reverse of the representation. -/
+lemma coe_to_even_reverse_involute (x : clifford_algebra Q) :
+  ↑(to_even Q (reverse (involute x))) = reverse (to_even Q x : clifford_algebra (Q' Q)) :=
+begin
+  induction x using clifford_algebra.induction,
+  case h_grade0 : r { simp only [alg_hom.commutes, subalgebra.coe_algebra_map, reverse.commutes] },
+  case h_grade1 : m {
+    simp only [involute_ι, subalgebra.coe_neg, to_even_ι, reverse.map_mul,
+      reverse_ι, reverse_e0, neg_e0_mul_ι, map_neg] },
+  case h_mul : x y hx hy { simp only [map_mul, subalgebra.coe_mul, reverse.map_mul, hx, hy] },
+  case h_add : x y hx hy { simp only [map_add, subalgebra.coe_add, hx, hy] },
+end
 
 end equiv_even
 
