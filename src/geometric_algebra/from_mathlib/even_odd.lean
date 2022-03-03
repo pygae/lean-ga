@@ -248,7 +248,8 @@ open even.lift
 variables (A)
 
 /-- The type of bilinear maps which are accepted by `clifford_algebra.even.lift`. -/
-abbreviation even_hom : Type* :=
+@[reducible]
+def even_hom : Type* :=
 { f : M →ₗ[R] M →ₗ[R] A //
   (∀ m, f m m = algebra_map R _ (Q m)) ∧ (∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) }
 

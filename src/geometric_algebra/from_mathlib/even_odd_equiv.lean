@@ -51,6 +51,10 @@ end
 @[simp] lemma reverse_e0 : reverse (e0 Q) = e0 Q := reverse_ι _
 @[simp] lemma involute_e0 : involute (e0 Q) = -e0 Q := involute_ι _
 
+end equiv_even
+
+open equiv_even
+
 /-- The embedding from the smaller algebra into the new larger one. -/
 def to_even : clifford_algebra Q →ₐ[R] clifford_algebra.even (Q' Q) :=
 begin
@@ -169,7 +173,5 @@ begin
   case h_mul : x y hx hy { simp only [map_mul, subalgebra.coe_mul, reverse.map_mul, hx, hy] },
   case h_add : x y hx hy { simp only [map_add, subalgebra.coe_add, hx, hy] },
 end
-
-end equiv_even
 
 end clifford_algebra
