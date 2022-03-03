@@ -313,7 +313,7 @@ namespace spinors
   @[simp] lemma neg_mem {v : clifford_algebra Q} (h : v ∈ spinors Q) : -v ∈ spinors Q :=
   begin
     rw neg_eq_neg_one_mul,
-    rw [←(algebra_map R _).map_one, ←(algebra_map R _).map_neg, ←algebra.smul_def],
+    rw [←(algebra_map R _).map_one, ←(algebra_map R (clifford_algebra Q)).map_neg, ←algebra.smul_def],
     exact smul_mem (-1) h,
   end
 
