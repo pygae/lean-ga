@@ -5,6 +5,9 @@ jobs:
   build_docs:
     runs-on: ubuntu-latest
     name: Build docs
+    environment: 
+      name: documentation
+      url: https://pygae.github.io/lean-ga-docs
     steps:
 
     - name: 📁 Checkout project
