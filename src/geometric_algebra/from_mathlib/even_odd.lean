@@ -20,38 +20,6 @@ This file is an alternative to the `add_monoid_algebra` approach using `direct_s
 The main result is now in mathlib, as `clifford_algebra.graded_algebra`.
 -/
 
-section to_move
-
-lemma commute.mul_self_sub_mul_self_eq {R} [ring R] {a b : R}(h : commute a b) :
-  a * a - b * b = (a + b) * (a - b) :=
-begin
-  rw [add_mul, mul_sub, mul_sub, h.eq],
-  abel,
-end
-
-lemma commute.mul_self_sub_mul_self_eq' {R} [ring R] {a b : R} (h : commute a b) :
-  a * a - b * b = (a - b) * (a + b) :=
-begin
-  rw [mul_add, sub_mul, sub_mul, h.eq],
-  abel,
-end
-
-def _root_.submodule.to_subalgebra {R A : Type*} [comm_semiring R] [semiring A] [algebra R A]
-  (p : submodule R A)
-  (h_one : (1 : A) ∈ p)
-  (h_mul : ∀ x y, x ∈ p → y ∈ p → x * y ∈ p) : subalgebra R A :=
-{ mul_mem' := h_mul,
-  algebra_map_mem' := λ r, begin
-    rw algebra.algebra_map_eq_smul_one,
-    apply p.smul_mem _ h_one,
-  end,
-  ..p}
-
-@[simp, to_additive] lemma prod.swap_mul {α β} [has_mul α] [has_mul β] (x y : α × β) :
-  prod.swap (x * y) = prod.swap x * prod.swap y := rfl
-
-end to_move
-
 namespace clifford_algebra
 
 variables {R M : Type*} [comm_ring R] [add_comm_group M] [module R M]
@@ -68,7 +36,6 @@ submodule.mem_supr_of_mem ⟨2, rfl⟩ begin
   rw [subtype.coe_mk, pow_two],
   exact submodule.mul_mem_mul ((ι Q).mem_range_self m₁) ((ι Q).mem_range_self m₂),
 end
-
 
 attribute [elab_as_eliminator] submodule.pow_induction_on'
 
