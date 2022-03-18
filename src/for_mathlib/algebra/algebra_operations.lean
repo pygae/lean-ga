@@ -4,7 +4,7 @@ Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import algebra.algebra.operations
-import algebra.algebra.subalgebra
+import algebra.algebra.subalgebra.basic
 
 /-! # Lemmas for `algebra/algebra/operations.lean` -/
 

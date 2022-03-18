@@ -7,7 +7,7 @@ import linear_algebra.clifford_algebra.grading
 import linear_algebra.quadratic_form.prod
 import linear_algebra.dfinsupp
 import linear_algebra.quadratic_form.prod
-import algebra.algebra.subalgebra
+import algebra.algebra.subalgebra.basic
 import algebra.direct_sum.internal
 import data.zmod.basic
 import geometric_algebra.from_mathlib.fold
@@ -28,16 +28,6 @@ variables {Q : quadratic_form R M}
 open_locale direct_sum
 
 variables (Q)
-
-
-lemma ι_mul_ι_mem_even_odd_zero (m₁ m₂ : M) :
-  ι Q m₁ * ι Q m₂ ∈ even_odd Q 0 :=
-submodule.mem_supr_of_mem ⟨2, rfl⟩ begin
-  rw [subtype.coe_mk, pow_two],
-  exact submodule.mul_mem_mul ((ι Q).mem_range_self m₁) ((ι Q).mem_range_self m₂),
-end
-
-attribute [elab_as_eliminator] submodule.pow_induction_on'
 
 /-- The even submodule is also a subalgebra. -/
 def even : subalgebra R (clifford_algebra Q) :=
@@ -70,42 +60,6 @@ begin
   dsimp only [subalgebra.coe_mul, subalgebra.coe_smul, even.ι_apply_apply_coe],
   rw [←mul_assoc _ (ι Q m₂), mul_assoc (ι Q m₁), ι_sq_scalar, mul_assoc, ← algebra.smul_def,
     mul_smul_comm],
-end
-
-/-- To show a property is true on the even subalgebra, it suffices to show it is true
-on the scalars, closed under addition, and under left-multiplication by a pair of vectors. -/
-lemma even_induction {P : Π x, x ∈ even_odd Q 0 → Prop}
-  (hr : ∀ r, P (algebra_map R _ r) ((even Q).algebra_map_mem _))
-  (hadd : ∀ {x y hx hy}, P x hx → P y hy → P (x + y) (submodule.add_mem _ hx hy))
-  (hιι_mul: ∀ m₁ m₂ {x hx}, P x hx → P (ι Q m₁ * ι Q m₂ * x)
-    ((even Q).mul_mem (ι_mul_ι_mem_even_odd_zero Q m₁ m₂) hx))
-  (x : clifford_algebra Q) (hx : x ∈ even_odd Q 0) : P x hx :=
-begin
-  apply submodule.supr_induction',
-  { refine subtype.rec _,
-    simp_rw [subtype.coe_mk, zmod.nat_coe_zmod_eq_zero_iff_dvd],
-    rintros _ ⟨n, rfl⟩ x,
-    simp_rw pow_mul,
-    intro h,
-    refine submodule.pow_induction_on' ((ι Q).range ^ 2) hr _ _ h,
-    { intros x y n hx hy,
-      apply hadd, },
-    { intros x hx n y hy ihy,
-      revert hx,
-      simp_rw pow_two,
-      intro hx,
-      refine submodule.mul_induction_on' _ _ hx,
-      { simp_rw linear_map.mem_range,
-        rintros _ ⟨m₁, rfl⟩ _ ⟨m₂, rfl⟩,
-        refine hιι_mul _ _ ihy, },
-      { intros x hx y hy ihx ihy,
-        simp_rw add_mul,
-        apply hadd ihx ihy } } },
-  { have := hr 0,
-    simp_rw ring_hom.map_zero at this,
-    exact this },
-  { intros x y hx hy,
-    apply hadd, }
 end
 
 variables {A : Type*} [ring A] [algebra R A] (f : M →ₗ[R] M →ₗ[R] A)
@@ -215,8 +169,8 @@ end
 
 @[simp] lemma aux_algebra_map
   (hf : ∀ m, f m m = algebra_map R _ (Q m))
-  (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) (r) :
-  aux Q f hf hf₂ ⟨algebra_map R _ r, subalgebra.algebra_map_mem _ _⟩ = algebra_map R _ r :=
+  (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) (r) (hr) :
+  aux Q f hf hf₂ ⟨algebra_map R _ r, hr⟩ = algebra_map R _ r :=
 (congr_arg prod.fst (foldr_algebra_map _ _ _ _ _)).trans (algebra.algebra_map_eq_smul_one r).symm
 
 @[simp] lemma aux_mul
@@ -228,7 +182,7 @@ begin
   cases y,
   refine (congr_arg prod.fst (foldr_mul _ _ _ _ _ _)).trans _,
   dsimp only,
-  apply even_induction Q _ _ _ _ x_property,
+  refine even_induction Q _ _ _ _ x_property,
   { intros r,
     rw [foldr_algebra_map, aux_algebra_map],
     exact (algebra.smul_def r _), },
