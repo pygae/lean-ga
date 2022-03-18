@@ -8,7 +8,9 @@ import geometric_algebra.from_mathlib.even_odd
 /-!
 # The isomorphism with the even subalgebra
 
-The main result in this file is `clifford_algebra.equiv_even`
+## Main definitions
+* `clifford_algebra.equiv_even`
+* `clifford_algebra.even_equiv_even_neg`
 -/
 lemma mul_mul_mul_assoc {α} [semigroup α] (a b c d : α) :
   (a * b) * (c * d) = a * (b * c) * d := by rw [mul_assoc, mul_assoc, mul_assoc]
@@ -173,5 +175,40 @@ begin
   case h_mul : x y hx hy { simp only [map_mul, subalgebra.coe_mul, reverse.map_mul, hx, hy] },
   case h_add : x y hx hy { simp only [map_add, subalgebra.coe_add, hx, hy] },
 end
+
+/-- The forward direction of `clifford_algebra.even_equiv_even_neg` -/
+def even_to_neg : clifford_algebra.even Q →ₐ[R] clifford_algebra.even (-Q) :=
+even.lift Q ⟨-(even.ι (-Q) : _),
+  λ m, by simp_rw [linear_map.neg_apply, even.ι_same, quadratic_form.neg_apply, map_neg, neg_neg],
+  λ m₁ m₂ m₃, by simp_rw [linear_map.neg_apply, neg_mul_neg, even.ι_contract, quadratic_form.neg_apply, smul_neg, neg_smul]⟩
+
+@[simp] lemma even_to_neg_ι (m₁ m₂ : M) : even_to_neg Q (even.ι Q m₁ m₂) = -even.ι (-Q) m₁ m₂ :=
+even.lift_ι Q _ m₁ m₂
+
+/-- The reverse direction of `clifford_algebra.even_equiv_even_neg` -/
+def even_of_neg : clifford_algebra.even (-Q) →ₐ[R] clifford_algebra.even Q :=
+even.lift (-Q) ⟨-(even.ι Q : _),
+  λ m, by simp_rw [linear_map.neg_apply, even.ι_same, quadratic_form.neg_apply, map_neg],
+  λ m₁ m₂ m₃, by simp_rw [linear_map.neg_apply, neg_mul_neg, even.ι_contract, quadratic_form.neg_apply, neg_smul_neg]⟩
+
+@[simp] lemma even_of_neg_ι (m₁ m₂ : M) : even_of_neg Q (even.ι (-Q) m₁ m₂) = -even.ι Q m₁ m₂ :=
+even.lift_ι (-Q) _ m₁ m₂
+
+/-- The even subalgebra of the algebras with quadratic form `Q` and `-Q` are isomorphic.
+
+Stated another way, `𝒞ℓ⁺(p,q,r)` and `𝒞ℓ⁺(q,p,r)` are isomorphic. -/
+@[simps?]
+def even_equiv_even_neg : clifford_algebra.even Q ≃ₐ[R] clifford_algebra.even (-Q) :=
+alg_equiv.of_alg_hom
+  (even_to_neg Q)
+  (even_of_neg Q)
+  (by {
+    ext m₁ m₂ : 3,
+    dsimp only [linear_map.compr₂_apply, alg_hom.to_linear_map_apply, alg_hom.comp_apply, alg_hom.id_apply],
+    rw [even_of_neg_ι, map_neg, even_to_neg_ι, neg_neg] })
+  (by {
+    ext m₁ m₂ : 3,
+    dsimp only [linear_map.compr₂_apply, alg_hom.to_linear_map_apply, alg_hom.comp_apply, alg_hom.id_apply],
+    rw [even_to_neg_ι, map_neg, even_of_neg_ι, neg_neg] })
 
 end clifford_algebra
