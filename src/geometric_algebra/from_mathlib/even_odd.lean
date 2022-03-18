@@ -27,16 +27,6 @@ open_locale direct_sum
 
 variables (Q)
 
-def _root_.submodule.to_subalgebra {A : Type*} [semiring A] [algebra R A] (p : submodule R A)
-  (h_one : (1 : A) ∈ p)
-  (h_mul : ∀ x y, x ∈ p → y ∈ p → x * y ∈ p) : subalgebra R A :=
-{ mul_mem' := h_mul,
-  algebra_map_mem' := λ r, begin
-    rw algebra.algebra_map_eq_smul_one,
-    apply p.smul_mem _ h_one,
-  end,
-  ..p}
-
 /-- The even submodule is also a subalgebra. -/
 def even : subalgebra R (clifford_algebra Q) :=
 (even_odd Q 0).to_subalgebra
