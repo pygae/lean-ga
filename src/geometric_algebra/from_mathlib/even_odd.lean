@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import linear_algebra.clifford_algebra.grading
 import linear_algebra.dfinsupp
 import linear_algebra.quadratic_form.prod
-import algebra.algebra.subalgebra
+import algebra.algebra.subalgebra.basic
 import algebra.direct_sum.internal
 import data.zmod.basic
 
