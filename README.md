@@ -2,12 +2,13 @@ lean-ga
 =======
 
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/pygae/lean-ga)
+[![arXiv](https://img.shields.io/badge/arXiv-2110.03551-b31b1b.svg)](https://arxiv.org/abs/2110.03551)
+[![DOI](https://zenodo.org/badge/doi/10.1007/s00006-021-01164-1.svg)](http://dx.doi.org/10.1007/s00006-021-01164-1)
 
 A partial formalization of Geometric Algebra (GA) in the [Lean formal proof verification system](https://github.com/leanprover-community/lean) and using its [Mathematical Library](https://github.com/leanprover-community/mathlib/).
 
+A description of this work is published as [Formalizing Geometric Algebra in Lean](https://link.springer.com/article/10.1007/s00006-021-01164-1) in _Advances in Applied Clifford Algebras_ (note that the web version has been horrendously typeset by the publisher, but the PDF version is readable). The code in this repository has evolved since that publication to keep up with changes to mathlib.
 We presented an early version of this at ICCA 2020 ([slides](https://pygae.github.io/lean-ga/ICCA2020)).
-A paper representative of a more recent version is expected to be published with open access in the imminnent future.
-The [submitted manuscript is available on arXiv](https://arxiv.org/abs/2110.03551).
 
 A semi-interactive viewer for the contents of this project can be found at https://pygae.github.io/lean-ga-docs/.
 Of particular interest are:
