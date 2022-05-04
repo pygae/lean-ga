@@ -5,7 +5,7 @@ Authors: Utensil Song, Eric Wieser
 
 This file is based on https://arxiv.org/abs/1205.5935
 -/
-import algebra.group.hom
+import algebra.hom.group
 import algebra.algebra.basic
 import data.real.basic
 import data.complex.basic

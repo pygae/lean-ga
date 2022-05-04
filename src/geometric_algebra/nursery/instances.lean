@@ -16,7 +16,7 @@ instance field_ga (K : Type*) [field K] : geometric_algebra K K K := {
   end
 }
 
-noncomputable instance rrc_ga : geometric_algebra ℝ ℝ ℂ := {
+instance rrc_ga : geometric_algebra ℝ ℝ ℂ := {
   f₁ := {
     to_fun := λx, x,
     map_zero' := rfl,
