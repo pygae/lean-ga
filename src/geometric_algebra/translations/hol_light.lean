@@ -32,7 +32,7 @@ variables {n}
 /-- generic product indexed by a sign function -/
 def generic_prod (sgn : idx n → idx n → ℝ) (a b : multivector n)  : multivector n :=
 ∑ ai bi in finset.univ,
-  pi.single (ai Δ bi) ((a ai * b bi) * sgn ai bi)
+  pi.single (ai ∆ bi) ((a ai * b bi) * sgn ai bi)
 
 /-- `generic_prod sgn` is a bilinear map -/
 def generic_prod.bilinear (sgn : idx n → idx n → ℝ) :

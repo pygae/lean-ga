@@ -136,9 +136,7 @@ abbreviation γ : k := ideal.quotient.mk _ (mv_polynomial.X 2)
   ideal.quotient.mk _ (mv_polynomial.X i) * ideal.quotient.mk _ (mv_polynomial.X i) = (0 : k) :=
 begin
   change ideal.quotient.mk _ _ = ideal.quotient.mk _ _,
-  apply quotient.sound',
-  dunfold submodule.quotient_rel setoid.r,
-  simp only [sub_zero, ideal.span],
+  simp only [ideal.quotient.eq, sub_zero, ideal.span],
   apply submodule.subset_span,
   refine ⟨i, rfl⟩,
 end
@@ -201,11 +199,9 @@ calc Q' a = a 0 * a 0 + (a 1 * a 1 + (a 2 * a 2 + 0)) : rfl
 lemma sq_zero_of_αβγ_mul {x : k} : α * β * γ * x = 0 → x * x = 0 :=
 begin
   induction x using quotient.induction_on',
-  change quotient.mk' _ = quotient.mk' _ → quotient.mk' _ = quotient.mk' _,
-  rw [quotient.eq', quotient.eq'],
-  dunfold submodule.quotient_rel setoid.r,
-  dsimp,
-  rw [sub_zero, sub_zero, mem_k_ideal_iff, mem_k_ideal_iff],
+  change ideal.quotient.mk _ _ = 0 → ideal.quotient.mk _ _ = 0,
+  rw [ideal.quotient.eq_zero_iff_mem, ideal.quotient.eq_zero_iff_mem, mem_k_ideal_iff,
+    mem_k_ideal_iff],
   rintro ⟨f, hf⟩,
   sorry,
 end
@@ -235,7 +231,7 @@ end
 @[simps]
 def Q : quadratic_form k L :=
 { to_fun := λ x, quotient.lift_on' x Q' $ λ a b h, begin
-    dunfold submodule.quotient_rel setoid.r at h,
+    rw submodule.quotient_rel_r_def at h,
     suffices : Q' (a - b) = 0,
     { rwa [Q'_sub, sub_eq_zero] at this, },
     apply Q'_zero_under_ideal (a - b) h,
@@ -269,8 +265,7 @@ begin
   dunfold x' y' z',
   simp only [←linear_map.map_smul, ←linear_map.map_sub, ←submodule.quotient.mk_smul, ←submodule.quotient.mk_sub],
   convert linear_map.map_zero _ using 2,
-  apply quotient.sound',
-  dunfold submodule.quotient_rel setoid.r,
+  rw submodule.quotient.mk_eq_zero,
   simp [sub_zero, ideal.span],
 end
 
@@ -291,9 +286,8 @@ end
 lemma αβγ_ne_zero : α * β * γ ≠ 0 :=
 begin
   intro h,
-  replace h := quotient.exact' h,
-  dunfold submodule.quotient_rel setoid.r at h,
-  simp only [sub_zero, mem_k_ideal_iff] at h,
+  replace h := ideal.quotient.eq_zero_iff_mem.1 h,
+  simp only [mem_k_ideal_iff] at h,
   cases h with f hf,
   have := congr_arg (coeff (∑ i, finsupp.single i 1)) hf,
   rw coeff_sum at this,
