@@ -65,10 +65,15 @@ jobs:
         cat ../src/all.lean
         lean --path
 
-    - name: 📝 Export Lean symbol information
+    - name: 🔧 Build the lean code
       run: |
         cd doc-gen
         lean -v
+        lean --make src/entrypoint.lean
+
+    - name: 📝 Export Lean symbol information
+      run: |
+        cd doc-gen
         lean --run src/entrypoint.lean > export.json
 
     - name: 📚 Build HTML docs
