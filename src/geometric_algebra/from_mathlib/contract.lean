@@ -6,6 +6,7 @@ Authors: Eric Wieser
 
 import geometric_algebra.from_mathlib.fold
 import linear_algebra.clifford_algebra.grading
+import linear_algebra.clifford_algebra.conjugation
 
 
 /-!
@@ -20,203 +21,119 @@ variables (Q : quadratic_form R M)
 
 namespace clifford_algebra
 
-section foldr'
-variables {N : Type*} [add_comm_group N] [module R N]
+section apply_dual_left
 
-/-- Auxiliary definition for `clifford_algebra.foldr'` -/
-def foldr'_aux (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N) :
-  M →ₗ[R] module.End R (clifford_algebra Q × N) :=
-begin
-  have v_mul := (algebra.lmul R (clifford_algebra Q)).to_linear_map ∘ₗ (ι Q),
-  have l := v_mul.compl₂ (linear_map.fst _ _ N),
-  exact { to_fun := λ m, (l m).prod (f m),
-          map_add' := λ v₂ v₂, linear_map.ext $ λ x, prod.ext
-            (linear_map.congr_fun (l.map_add _ _) x) (linear_map.congr_fun (f.map_add _ _) x),
-          map_smul' := λ c v, linear_map.ext $ λ x, prod.ext
-            (linear_map.congr_fun (l.map_smul _ _) x) (linear_map.congr_fun (f.map_smul _ _) x), },
-end
+variables (d d' : module.dual R M)
 
-lemma foldr'_aux_apply_apply (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N) (m : M) (x_fx) :
-    foldr'_aux Q f m x_fx = (ι Q m * x_fx.1, f m x_fx) := rfl
-
--- lemma snd_foldr'_aux_add
---   (f g : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N) :
---     foldr'_aux Q (f + g) = foldr'_aux Q f + foldr'_aux Q g :=
--- begin
---   apply linear_map.ext (λ m, linear_map.ext (λ x, _)),
---   simp_rw [foldr'_aux_apply_apply, linear_map.add_apply, foldr'_aux_apply_apply,
---     prod.mk_add_mk],
--- end
-
-lemma foldr'_aux_foldr'_aux (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
-  (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx)
-  (v : M) (x_fx) :
-  foldr'_aux Q f v (foldr'_aux Q f v x_fx) = Q v • x_fx :=
-begin
-  cases x_fx with x fx,
-  simp only [foldr'_aux_apply_apply],
-  rw [←mul_assoc, ι_sq_scalar, ← algebra.smul_def, hf, prod.smul_mk],
-end
-
-lemma foldr'_aux_comp_foldr'_aux (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
-  (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx)
-  (v : M) :
-  foldr'_aux Q f v ∘ₗ foldr'_aux Q f v = algebra_map _ _ (Q v) :=
-linear_map.ext $ foldr'_aux_foldr'_aux Q f hf v
-
-/-- Implement the recursion scheme `F[n0](m * x) = f(m, (x, F[n0](x)))`. -/
-def foldr' (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
-  (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx)
-  (n : N) :
-  clifford_algebra Q →ₗ[R] N :=
-linear_map.snd _ _ _ ∘ₗ foldr Q (foldr'_aux Q f) (foldr'_aux_comp_foldr'_aux Q _ hf) (1, n)
-
-lemma foldr'_algebra_map (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
-  (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (n r) :
-  foldr' Q f hf n (algebra_map R _ r) = r • n :=
-congr_arg prod.snd (foldr_algebra_map _ _ _ _ _)
-
-lemma foldr'_ι (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
-  (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (n m) :
-  foldr' Q f hf n (ι Q m) = f m (1, n) :=
-congr_arg prod.snd (foldr_ι _ _ _ _ _)
-
-lemma foldr'_ι_mul (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
-  (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (n m) (x) :
-  foldr' Q f hf n (ι Q m * x) = f m (x, foldr' Q f hf n x) :=
-begin
-  dsimp [foldr'],
-  rw [foldr_mul, foldr_ι, foldr'_aux_apply_apply],
-  refine congr_arg (f m) (prod.mk.eta.symm.trans _),
-  congr' 1,
-  apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
-  { simp_rw [foldr_algebra_map, prod.smul_mk, algebra.algebra_map_eq_smul_one] },
-  { rw [map_add, prod.fst_add, hx, hy] },
-  { rw [foldr_mul, foldr_ι, foldr'_aux_apply_apply, hx], },
-end
-
--- lemma foldr'_add
---   (f g : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
---   (hfg : ∀ m x fgx, (f + g) m (ι Q m * x, (f + g) m (x, fgx)) = Q m • fgx)
---   (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx)
---   (hg : ∀ m x gx, g m (ι Q m * x, g m (x, gx)) = Q m • gx) :
---   foldr' Q (f + g) hfg 0 = foldr' Q f hf 0 + foldr' Q g hg 0 :=
--- begin
---   ext x,
---   rw linear_map.add_apply,
---   apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
---   { simp_rw [foldr'_algebra_map, smul_zero, zero_add] },
---   { rw [map_add, map_add, map_add, add_add_add_comm, hx, hy] },
---   { simp_rw [foldr'_ι_mul],
---     rw [hx],
---     rw hx,},
--- end
-
--- lemma foldr'_smul (c : R)
---   (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
---   (hfg : ∀ m x fcx, (c • f) m (ι Q m * x, (c • f) m (x, fcx)) = Q m • fcx)
---   (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) :
---   foldr' Q (c • f) hfg 0 = c • foldr' Q f hf 0 :=
--- begin
---   ext x,
---   rw linear_map.smul_apply,
---   apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
---   { simp_rw [foldr'_algebra_map, smul_zero] },
---   { rw [map_add, map_add,smul_add, hx, hy] },
---   { simp_rw [foldr'_ι_mul],
---     rw [hx],
---     rw hx,},
--- end
-
-end foldr'
-
-section apply_dual
-
-variables (B : module.dual R M)
-
-/-- Auxiliary construction for `clifford_algebra.apply_dual` -/
+/-- Auxiliary construction for `clifford_algebra.apply_dual_left` -/
 @[simps]
-def apply_dual_aux (B : module.dual R M) :
+def apply_dual_left_aux (d : module.dual R M) :
   M →ₗ[R] clifford_algebra Q × clifford_algebra Q →ₗ[R] clifford_algebra Q :=
 begin
   have v_mul := (algebra.lmul R (clifford_algebra Q)).to_linear_map ∘ₗ (ι Q),
-  exact B.smul_right (linear_map.fst _ (clifford_algebra Q) (clifford_algebra Q)) -
+  exact d.smul_right (linear_map.fst _ (clifford_algebra Q) (clifford_algebra Q)) -
         v_mul.compl₂ (linear_map.snd _ (clifford_algebra Q) _),
 end
 
-lemma apply_dual_aux_apply_dual_aux (v : M) (x : clifford_algebra Q) (fx : clifford_algebra Q) :
-  apply_dual_aux Q B v (ι Q v * x, apply_dual_aux Q B v (x, fx)) = Q v • fx :=
+lemma apply_dual_left_aux_apply_dual_left_aux (v : M) (x : clifford_algebra Q)
+  (fx : clifford_algebra Q) :
+  apply_dual_left_aux Q d v (ι Q v * x, apply_dual_left_aux Q d v (x, fx)) = Q v • fx :=
 begin
-  simp only [apply_dual_aux_apply_apply],
+  simp only [apply_dual_left_aux_apply_apply],
   rw [mul_sub, ←mul_assoc, ι_sq_scalar, ←algebra.smul_def, ←sub_add, mul_smul_comm, sub_self,
     zero_add],
 end
 
-lemma apply_dual_aux_one_zero (v : M) : apply_dual_aux Q B v (1, 0) = algebra_map R _ (B v) :=
-by simp_rw [apply_dual_aux_apply_apply, mul_zero, sub_zero, algebra.algebra_map_eq_smul_one]
+variables {Q}
 
-/-- Contract an element of the exterior algebra with an element `B : module.dual R M`. -/
-def apply_dual : module.dual R M →ₗ[R] clifford_algebra Q →ₗ[R] clifford_algebra Q :=
-{ to_fun := λ B, foldr' Q (apply_dual_aux Q B) (apply_dual_aux_apply_dual_aux Q B) 0,
-  map_add' := λ B₁ B₂, linear_map.ext $ λ x, begin
+/-- Contract an element of the exterior algebra with an element `B : module.dual R M` from the left.
+
+Note that `v ⌋ x` is spelt `apply_dual_left (Q.associated v) x`. 
+
+This includes [darij][] Theorem 10.75 -/
+def apply_dual_left : module.dual R M →ₗ[R] clifford_algebra Q →ₗ[R] clifford_algebra Q :=
+{ to_fun := λ d, foldr' Q (apply_dual_left_aux Q d) (apply_dual_left_aux_apply_dual_left_aux Q d) 0,
+  map_add' := λ d₁ d₂, linear_map.ext $ λ x, begin
     rw linear_map.add_apply,
     apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
     { simp_rw [foldr'_algebra_map, smul_zero, zero_add] },
     { rw [map_add, map_add, map_add, add_add_add_comm, hx, hy] },
     { rw [foldr'_ι_mul, foldr'_ι_mul, foldr'_ι_mul, hx],
-      dsimp only [apply_dual_aux_apply_apply],
+      dsimp only [apply_dual_left_aux_apply_apply],
       rw [sub_add_sub_comm, mul_add, linear_map.add_apply, add_smul] }
   end,
-  map_smul' := λ c B, linear_map.ext $ λ x,  begin
+  map_smul' := λ c d, linear_map.ext $ λ x,  begin
     rw [linear_map.smul_apply, ring_hom.id_apply],
     apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
     { simp_rw [foldr'_algebra_map, smul_zero] },
     { rw [map_add, map_add, smul_add, hx, hy] },
     { rw [foldr'_ι_mul, foldr'_ι_mul, hx],
-      dsimp only [apply_dual_aux_apply_apply],
+      dsimp only [apply_dual_left_aux_apply_apply],
       rw [linear_map.smul_apply, smul_assoc, mul_smul_comm, smul_sub], }
   end }
 
-@[simp] lemma apply_dual_ι (x : M) : apply_dual Q B (ι Q x) = algebra_map R _ (B x) :=
-(foldr'_ι _ _ _ _ _).trans $ apply_dual_aux_one_zero _ _ _
+local infix `⌋`:70 := apply_dual_left
 
-@[simp] lemma apply_dual_algebra_map (r : R) : apply_dual Q B (algebra_map R _ r) = 0 :=
-(foldr'_algebra_map _ _ _ _ _).trans $ smul_zero _
-
-@[simp] lemma apply_dual_one : apply_dual Q B 1 = 0 :=
-by simpa only [map_one] using apply_dual_algebra_map Q B 1
-
-lemma apply_dual_ι_mul (a : M) ( b : clifford_algebra Q) :
-  apply_dual Q B (ι Q a * b) = B a • b - ι Q a * apply_dual Q B b :=
+/-- This is [darij][] Theorem 6  -/
+lemma apply_dual_left_ι_mul (a : M) (b : clifford_algebra Q) :
+  d ⌋ (ι Q a * b) = d a • b - ι Q a * (d ⌋ b) :=
 foldr'_ι_mul _ _ _ _ _ _
 
-lemma apply_dual_apply_dual (x : clifford_algebra Q) :
-  apply_dual Q B (apply_dual Q B x) = 0 :=
+variables (Q)
+
+@[simp] lemma apply_dual_left_ι (x : M) : d ⌋ (ι Q x) = algebra_map R _ (d x) :=
+(foldr'_ι _ _ _ _ _).trans $
+  by simp_rw [apply_dual_left_aux_apply_apply, mul_zero, sub_zero, algebra.algebra_map_eq_smul_one]
+
+
+@[simp] lemma apply_dual_left_algebra_map (r : R) :
+  d ⌋ (algebra_map R (clifford_algebra Q) r) = 0 :=
+(foldr'_algebra_map _ _ _ _ _).trans $ smul_zero _
+
+@[simp] lemma apply_dual_left_one : d ⌋ (1 : clifford_algebra Q) = 0 :=
+by simpa only [map_one] using apply_dual_left_algebra_map Q d 1
+
+variables {Q}
+
+/-- This is [darij][] Theorem 7 -/
+lemma apply_dual_left_apply_dual_left (x : clifford_algebra Q) :
+  d ⌋ (d ⌋ x) = 0 :=
 begin
   apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
-  { simp_rw [apply_dual_algebra_map, map_zero] },
+  { simp_rw [apply_dual_left_algebra_map, map_zero] },
   { rw [map_add, map_add, hx, hy, add_zero] },
-  { rw [apply_dual_ι_mul, map_sub, apply_dual_ι_mul, hx, linear_map.map_smul, mul_zero, sub_zero,
-      sub_self], }
+  { rw [apply_dual_left_ι_mul, map_sub, apply_dual_left_ι_mul, hx, linear_map.map_smul, mul_zero,
+      sub_zero, sub_self], }
 end
 
-end apply_dual
+/-- This is [darij][] Theorem 8 -/
+lemma apply_dual_left_comm (x : clifford_algebra Q) : d ⌋ (d' ⌋ x) = -(d' ⌋ (d ⌋ x)) :=
+begin
+  apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
+  { simp_rw [apply_dual_left_algebra_map, map_zero, neg_zero] },
+  { rw [map_add, map_add, map_add, map_add, hx, hy, neg_add] },
+  { simp only [apply_dual_left_ι_mul, map_sub, linear_map.map_smul],
+    rw [neg_sub, sub_sub_assoc_swap, hx, mul_neg, ←sub_eq_add_neg] }
+end
 
+end apply_dual_left
+
+local infix `⌋`:70 := apply_dual_left
 
 /-- Auxiliary construction for `clifford_algebra.alpha` -/
 @[simps]
 def alpha_aux (B : bilin_form R M) : M →ₗ[R] clifford_algebra Q →ₗ[R] clifford_algebra Q :=
 begin
   have v_mul := (algebra.lmul R (clifford_algebra Q)).to_linear_map ∘ₗ ι Q,
-  exact v_mul - ((apply_dual Q) ∘ₗ B.to_lin) ,
+  exact v_mul - (apply_dual_left ∘ₗ B.to_lin) ,
 end
 
 lemma alpha_aux_alpha_aux (B : bilin_form R M) (v : M) (x : clifford_algebra Q) :
   alpha_aux Q B v (alpha_aux Q B v x) = (Q v - B v v) • x :=
 begin
   simp only [alpha_aux_apply_apply],
-  rw [mul_sub, ←mul_assoc, ι_sq_scalar, map_sub, apply_dual_ι_mul, ←sub_add, sub_sub_sub_comm,
-    ←algebra.smul_def, bilin_form.to_lin_apply, sub_self, sub_zero, apply_dual_apply_dual, add_zero,
+  rw [mul_sub, ←mul_assoc, ι_sq_scalar, map_sub, apply_dual_left_ι_mul, ←sub_add, sub_sub_sub_comm,
+    ←algebra.smul_def, bilin_form.to_lin_apply, sub_self, sub_zero, apply_dual_left_apply_dual_left, add_zero,
     sub_smul],
 end
 
@@ -239,11 +156,47 @@ lemma alpha_algebra_map (r : R) : alpha h (algebra_map R _ r) = algebra_map R _ 
 
 lemma alpha_ι (m : M) : alpha h (ι _ m) = ι _ m :=
 (foldr_ι _ _ _ _ _).trans $ eq.symm $
-  by rw [alpha_aux_apply_apply, mul_one, apply_dual_one, sub_zero]
+  by rw [alpha_aux_apply_apply, mul_one, apply_dual_left_one, sub_zero]
 
 lemma alpha_ι_mul (m : M) (x : clifford_algebra Q) :
-  alpha h (ι _ m * x) = ι _ m * alpha h x - apply_dual Q' (bilin_form.to_lin B m) (alpha h x) :=
+  alpha h (ι _ m * x) = ι _ m * alpha h x - bilin_form.to_lin B m ⌋ alpha h x :=
 (foldr_mul _ _ _ _ _ _).trans $ begin rw foldr_ι, refl, end
+
+/-- Theorem 23 -/
+lemma alpha_apply_dual_left (d : module.dual R M) (x : clifford_algebra Q) :
+  alpha h (d ⌋ x) = d ⌋ alpha h x :=
+begin
+  apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
+  { simp only [apply_dual_left_algebra_map, alpha_algebra_map, map_zero] },
+  { rw [map_add, map_add, map_add, map_add, hx, hy] },
+  { simp only [apply_dual_left_ι_mul, alpha_ι_mul, map_sub, linear_map.map_smul],
+    rw [←hx, apply_dual_left_comm, ←sub_add, sub_neg_eq_add, ←hx] }
+end
+
+/-- Theorem 24 -/
+lemma alpha_reverse (d : module.dual R M) (x : clifford_algebra Q) :
+  alpha h (reverse x) = reverse (alpha h x) :=
+begin
+  apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
+  { simp_rw [alpha_algebra_map, reverse.commutes, alpha_algebra_map] },
+  { rw [map_add, map_add, map_add, map_add, hx, hy] },
+  { simp_rw [reverse.map_mul, alpha_ι_mul, map_sub, reverse.map_mul, reverse_ι],
+    rw ←hx,
+    rw ←alpha_apply_dual_left,
+    sorry }
+end
+
+@[simp]
+lemma alpha_zero (x : clifford_algebra Q)
+  (h : (0 : bilin_form R M).to_quadratic_form = Q - Q := (sub_self _).symm) :
+  alpha h x = x :=
+begin
+  apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
+  { simp_rw [alpha_algebra_map] },
+  { rw [map_add, hx, hy] },
+  { rw [alpha_ι_mul, hx, map_zero, linear_map.zero_apply, map_zero, linear_map.zero_apply,
+        sub_zero] }
+end
 
 lemma alpha_alpha (x : clifford_algebra Q) :
   alpha h' (alpha h x) = alpha (
@@ -253,22 +206,38 @@ begin
   apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
   { simp_rw [alpha_algebra_map] },
   { rw [map_add, map_add, map_add, hx, hy] },
-  { rw [alpha_ι_mul, map_sub, alpha_ι_mul, alpha_ι_mul, hx, sub_sub],
-    rw [map_add, linear_map.add_apply, map_add, linear_map.add_apply],
-    congr' 1,
-    rw add_comm,
-    congr' 1,
-    rw ←hx,
-    clear hx,
-    generalize : alpha h x = y,
-    apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) y,
-    { simp_rw [alpha_algebra_map, apply_dual_algebra_map, map_zero] },
-    { rw [map_add, map_add, map_add, map_add, hx, hy] },
-    { simp_rw [alpha_ι_mul, apply_dual_ι_mul, map_sub, alpha_ι_mul, apply_dual_ι_mul],
-        -- missing: theorem 23
-      rw hx },
-    sorry }
+  { rw [alpha_ι_mul, map_sub, alpha_ι_mul, alpha_ι_mul, hx, sub_sub, map_add, linear_map.add_apply,
+    map_add, linear_map.add_apply, alpha_apply_dual_left, hx, add_comm (_ : clifford_algebra Q'')] }
 
 end
+
+/-- Any two algebras whose quadratic forms differ by a bilinear form are isomorphic as modules. -/
+@[simps apply]
+def alpha_equiv : clifford_algebra Q ≃ₗ[R] clifford_algebra Q' :=
+{ to_fun := alpha h,
+  inv_fun := alpha (show (-B).to_quadratic_form = Q - Q',
+    from (congr_arg has_neg.neg h).trans $ neg_sub _ _ : (-B).to_quadratic_form = Q - Q'),
+  left_inv := λ x, (alpha_alpha _ _ x).trans $ by simp_rw [add_right_neg, alpha_zero],
+  right_inv := λ x, (alpha_alpha _ _ x).trans $ by simp_rw [add_left_neg, alpha_zero],
+  ..alpha h }
+
+@[simp] lemma bilin_form.to_quadratic_form_neg (B : bilin_form R M) :
+  (-B).to_quadratic_form = -B.to_quadratic_form := rfl
+
+variables (Q)
+
+/-- The module isomorphism to the exterior algebra -/
+def equiv_exterior [invertible (2 : R)] : clifford_algebra Q ≃ₗ[R] exterior_algebra R M :=
+(alpha_equiv $
+  show (-Q).associated.to_quadratic_form = 0 - Q,
+  by simp [quadratic_form.to_quadratic_form_associated]) ≪≫ₗ as_exterior.to_linear_equiv
+
+variables {Q}
+
+/-- The wedge product of the clifford algebra. -/
+def wedge [invertible (2 : R)] (x y : clifford_algebra Q) : clifford_algebra Q :=
+(equiv_exterior Q).symm (equiv_exterior Q x * equiv_exterior Q y)
+
+infix ` ⋏ `:70 := wedge
 
 end clifford_algebra
