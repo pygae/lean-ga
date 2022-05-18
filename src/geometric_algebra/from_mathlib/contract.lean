@@ -140,22 +140,20 @@ def apply_dual_aux (B : module.dual R M) :
   M →ₗ[R] clifford_algebra Q × clifford_algebra Q →ₗ[R] clifford_algebra Q :=
 begin
   have v_mul := (algebra.lmul R (clifford_algebra Q)).to_linear_map ∘ₗ (ι Q),
-  exact -v_mul.compl₂ (linear_map.snd _ (clifford_algebra Q) _) +
-            B.smul_right (linear_map.fst _ (clifford_algebra Q) (clifford_algebra Q)),
+  exact B.smul_right (linear_map.fst _ (clifford_algebra Q) (clifford_algebra Q)) -
+        v_mul.compl₂ (linear_map.snd _ (clifford_algebra Q) _),
 end
 
 lemma apply_dual_aux_apply_dual_aux (v : M) (x : clifford_algebra Q) (fx : clifford_algebra Q) :
   apply_dual_aux Q B v (ι Q v * x, apply_dual_aux Q B v (x, fx)) = Q v • fx :=
 begin
   simp only [apply_dual_aux_apply_apply],
-  rw [neg_mul_eq_mul_neg, neg_add, neg_neg, mul_add, mul_neg, mul_smul_comm,
-    ←sub_eq_add_neg, sub_add_cancel, ←mul_assoc, ι_sq_scalar, ←algebra.smul_def],
+  rw [mul_sub, ←mul_assoc, ι_sq_scalar, ←algebra.smul_def, ←sub_add, mul_smul_comm, sub_self,
+    zero_add],
 end
 
-lemma apply_dual_aux_one_zero (v : M) :
-  apply_dual_aux Q B v (1, 0) = algebra_map R _ (B v) :=
-by simp_rw [apply_dual_aux_apply_apply, mul_zero, neg_zero, zero_add,
-    algebra.algebra_map_eq_smul_one]
+lemma apply_dual_aux_one_zero (v : M) : apply_dual_aux Q B v (1, 0) = algebra_map R _ (B v) :=
+by simp_rw [apply_dual_aux_apply_apply, mul_zero, sub_zero, algebra.algebra_map_eq_smul_one]
 
 /-- Contract an element of the exterior algebra with an element `B : module.dual R M`. -/
 def apply_dual : module.dual R M →ₗ[R] clifford_algebra Q →ₗ[R] clifford_algebra Q :=
@@ -167,7 +165,7 @@ def apply_dual : module.dual R M →ₗ[R] clifford_algebra Q →ₗ[R] clifford
     { rw [map_add, map_add, map_add, add_add_add_comm, hx, hy] },
     { rw [foldr'_ι_mul, foldr'_ι_mul, foldr'_ι_mul, hx],
       dsimp only [apply_dual_aux_apply_apply],
-      rw [add_add_add_comm, mul_add, neg_add, linear_map.add_apply, add_smul] }
+      rw [sub_add_sub_comm, mul_add, linear_map.add_apply, add_smul] }
   end,
   map_smul' := λ c B, linear_map.ext $ λ x,  begin
     rw [linear_map.smul_apply, ring_hom.id_apply],
@@ -176,7 +174,7 @@ def apply_dual : module.dual R M →ₗ[R] clifford_algebra Q →ₗ[R] clifford
     { rw [map_add, map_add, smul_add, hx, hy] },
     { rw [foldr'_ι_mul, foldr'_ι_mul, hx],
       dsimp only [apply_dual_aux_apply_apply],
-      rw [linear_map.smul_apply, smul_assoc, mul_smul_comm, smul_add, smul_neg], }
+      rw [linear_map.smul_apply, smul_assoc, mul_smul_comm, smul_sub], }
   end }
 
 @[simp] lemma apply_dual_ι (x : M) : apply_dual Q B (ι Q x) = algebra_map R _ (B x) :=
@@ -189,7 +187,7 @@ def apply_dual : module.dual R M →ₗ[R] clifford_algebra Q →ₗ[R] clifford
 by simpa only [map_one] using apply_dual_algebra_map Q B 1
 
 lemma apply_dual_ι_mul (a : M) ( b : clifford_algebra Q) :
-  apply_dual Q B (ι Q a * b) = -(ι Q a * apply_dual Q B b) + B a • b :=
+  apply_dual Q B (ι Q a * b) = B a • b - ι Q a * apply_dual Q B b :=
 foldr'_ι_mul _ _ _ _ _ _
 
 lemma apply_dual_apply_dual (x : clifford_algebra Q) :
@@ -198,9 +196,8 @@ begin
   apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
   { simp_rw [apply_dual_algebra_map, map_zero] },
   { rw [map_add, map_add, hx, hy, add_zero] },
-  { rw [apply_dual_ι_mul],
-    rw [map_add, map_neg, apply_dual_ι_mul, hx, linear_map.map_smul, mul_zero, neg_zero, zero_add,
-      add_left_neg], }
+  { rw [apply_dual_ι_mul, map_sub, apply_dual_ι_mul, hx, linear_map.map_smul, mul_zero, sub_zero,
+      sub_self], }
 end
 
 end apply_dual
@@ -218,10 +215,9 @@ lemma alpha_aux_alpha_aux (B : bilin_form R M) (v : M) (x : clifford_algebra Q) 
   alpha_aux Q B v (alpha_aux Q B v x) = (Q v - B v v) • x :=
 begin
   simp only [alpha_aux_apply_apply],
-  rw [mul_sub, ←mul_assoc, ι_sq_scalar, map_sub, apply_dual_ι_mul,
-    ←sub_eq_neg_add, ←sub_add,
-    sub_sub_sub_comm, ←algebra.smul_def, bilin_form.to_lin_apply, sub_self, sub_zero,
-    apply_dual_apply_dual, add_zero, sub_smul],
+  rw [mul_sub, ←mul_assoc, ι_sq_scalar, map_sub, apply_dual_ι_mul, ←sub_add, sub_sub_sub_comm,
+    ←algebra.smul_def, bilin_form.to_lin_apply, sub_self, sub_zero, apply_dual_apply_dual, add_zero,
+    sub_smul],
 end
 
 variables {Q}
@@ -250,9 +246,9 @@ lemma alpha_ι_mul (m : M) (x : clifford_algebra Q) :
 (foldr_mul _ _ _ _ _ _).trans $ begin rw foldr_ι, refl, end
 
 lemma alpha_alpha (x : clifford_algebra Q) :
-  alpha h' (alpha h x) = alpha (show (B + B').to_quadratic_form = _, begin
-    simpa using congr_arg2 (+) h h',
-  end) x :=
+  alpha h' (alpha h x) = alpha (
+    show (B + B').to_quadratic_form = _,
+    from (congr_arg2 (+) h h').trans $ sub_add_sub_cancel' _ _ _) x :=
 begin
   apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
   { simp_rw [alpha_algebra_map] },
@@ -268,8 +264,7 @@ begin
     apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) y,
     { simp_rw [alpha_algebra_map, apply_dual_algebra_map, map_zero] },
     { rw [map_add, map_add, map_add, map_add, hx, hy] },
-    { simp_rw [alpha_ι_mul, apply_dual_ι_mul, map_add, map_neg, map_sub,
-        alpha_ι_mul, apply_dual_ι_mul],
+    { simp_rw [alpha_ι_mul, apply_dual_ι_mul, map_sub, alpha_ι_mul, apply_dual_ι_mul],
         -- missing: theorem 23
       rw hx },
     sorry }
