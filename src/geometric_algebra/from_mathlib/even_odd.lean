@@ -52,7 +52,7 @@ end
 
 lemma neg_e0_mul_ι (m : M) : -(e0 Q * ι _ (m, 0)) = ι _ (m, 0) * e0 Q :=
 begin
-  refine neg_eq_of_add_eq_zero ((ι_mul_ι_add_swap _ _).trans _),
+  refine neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans _),
   dsimp [quadratic_form.polar],
   simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, quadratic_form.map_zero,
     add_sub_cancel, sub_self, map_zero, zero_sub],

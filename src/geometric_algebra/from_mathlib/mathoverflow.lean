@@ -241,9 +241,7 @@ def Q : quadratic_form k L :=
     exact Q'.to_fun_smul a x,
   end,
   polar_add_left' := by { rintros ⟨x⟩ ⟨x'⟩ ⟨y⟩, exact Q'.polar_add_left' x x' y },
-  polar_smul_left' := by { rintros c ⟨x⟩ ⟨y⟩, exact Q'.polar_smul_left' c x y },
-  polar_add_right' := by { rintros ⟨x⟩ ⟨y⟩ ⟨y'⟩, exact Q'.polar_add_right' x y y' },
-  polar_smul_right' := by { rintros c ⟨x⟩ ⟨y⟩, exact Q'.polar_smul_right' c x y }, }
+  polar_smul_left' := by { rintros c ⟨x⟩ ⟨y⟩, exact Q'.polar_smul_left' c x y } }
 
 open clifford_algebra
 
@@ -304,21 +302,21 @@ begin
   rw [coeff_mul_X', coeff_mul_X', if_pos],
   swap, {
     rw finsupp.support_sum_eq_bUnion,
-    { simp_rw [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0),
+    { simp_rw [finsupp.support_single_ne_zero _ (one_ne_zero : 1 ≠ 0),
         finset.bUnion_singleton_eq_self],
       exact finset.mem_univ _, },
     { intros i j hij,
-      simp only [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0), finset.disjoint_singleton],
+      simp only [finsupp.support_single_ne_zero _ (one_ne_zero : 1 ≠ 0), finset.disjoint_singleton],
       exact hij },
   },
   rw if_neg,
   rw [←finset.add_sum_erase _ _ (finset.mem_univ i), add_tsub_cancel_left,
     finsupp.support_sum_eq_bUnion],
-  { simp_rw [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0),
+  { simp_rw [finsupp.support_single_ne_zero _ (one_ne_zero : 1 ≠ 0),
       finset.bUnion_singleton_eq_self],
     exact finset.not_mem_erase _ _, },
   { intros i j hij,
-    simp only [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0), finset.disjoint_singleton],
+    simp only [finsupp.support_single_ne_zero _ (one_ne_zero : 1 ≠ 0), finset.disjoint_singleton],
     exact hij },
 end
 
