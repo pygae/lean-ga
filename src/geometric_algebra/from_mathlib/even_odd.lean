@@ -4,13 +4,14 @@ Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import linear_algebra.clifford_algebra.grading
+import linear_algebra.clifford_algebra.fold
 import linear_algebra.quadratic_form.prod
 import linear_algebra.dfinsupp
 import linear_algebra.quadratic_form.prod
 import algebra.algebra.subalgebra.basic
 import algebra.direct_sum.internal
 import data.zmod.basic
-import geometric_algebra.from_mathlib.fold
+-- import geometric_algebra.from_mathlib.fold
 
 /-!
 # Grading by ℤ / 2ℤ, using `direct_sum`
@@ -130,11 +131,6 @@ begin
       rw [linear_map.smul_apply, linear_map.smul_apply, mul_smul_comm, ihx, smul_comm] } },
 end
 
-lemma f_fold_comp_f_fold (hf : ∀ m, f m m = algebra_map R _ (Q m))
-  (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) (m : M) :
-  f_fold f m ∘ₗ f_fold f m = Q m • linear_map.id :=
-linear_map.ext (f_fold_f_fold Q f hf hf₂ m)
-
 /-- The final auxiliary construction for `clifford_algebra.even.lift`. -/
 @[simps]
 def aux (hf : ∀ m, f m m = algebra_map R _ (Q m))
@@ -142,7 +138,7 @@ def aux (hf : ∀ m, f m m = algebra_map R _ (Q m))
   clifford_algebra.even Q →ₗ[R] A :=
 begin
   refine _ ∘ₗ (even Q).val.to_linear_map,
-  exact linear_map.fst _ _ _ ∘ₗ foldr Q (f_fold f) (f_fold_comp_f_fold Q f hf hf₂) (1, 0),
+  exact linear_map.fst _ _ _ ∘ₗ foldr Q (f_fold f) (f_fold_f_fold Q f hf hf₂) (1, 0),
 end
 
 @[simp] lemma aux_one
