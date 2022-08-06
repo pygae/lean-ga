@@ -38,8 +38,7 @@ begin
   have := char_p.cast_eq_zero_iff (R ⧸ I) n,
   rw char_p.cast_eq_zero_iff R n,
   refine (this _).mp _,
-  convert (submodule.quotient.mk_eq_zero I).mpr hx,
-  simp,
+  exact (submodule.quotient.mk_eq_zero I).mpr hx,
 end
 
 lemma ideal.span_le_bot {R : Type*} [semiring R] (s : set R) : ideal.span s ≤ ⊥ ↔ s ≤ {0} :=
@@ -47,7 +46,7 @@ submodule.span_le
 
 /-- `char_p.quotient'` as an `iff`. -/
 lemma char_p.quotient_iff'' (R : Type*) [comm_ring R] (n : ℕ) [char_p R n] (I : ideal R) :
-  char_p (R ⧸ I) n ↔ I.comap (nat.cast_ring_hom _) ≤ (nat.cast_ring_hom R).ker :=
+  char_p (R ⧸ I) n ↔ I.comap (nat.cast_ring_hom R) ≤ (nat.cast_ring_hom R).ker :=
 (char_p.quotient_iff' _ _ _).trans begin
   rw ring_hom.ker_eq_comap_bot,
   exact iff.rfl,
@@ -104,7 +103,7 @@ instance : fact (nat.prime 2) := ⟨nat.prime_two⟩
 instance : fact (0 < 2) := ⟨zero_lt_two⟩
 
 lemma comap_C_span_le_bot :
-  k_ideal.comap C ≤ ⊥ :=
+  k_ideal.comap (C : zmod 2 →+* (mv_polynomial (fin 3) (zmod 2))) ≤ ⊥ :=
 begin
   refine (ideal.comap_span_le _ _ constant_coeff_C _).trans _,
   refine (ideal.span_le_bot _).2 _,
@@ -230,18 +229,19 @@ end
 /-- The quadratic form (metric) is just euclidean -/
 @[simps]
 def Q : quadratic_form k L :=
-{ to_fun := λ x, quotient.lift_on' x Q' $ λ a b h, begin
+quadratic_form.of_polar
+  (λ x, quotient.lift_on' x Q' $ λ a b h, begin
     rw submodule.quotient_rel_r_def at h,
     suffices : Q' (a - b) = 0,
     { rwa [Q'_sub, sub_eq_zero] at this, },
     apply Q'_zero_under_ideal (a - b) h,
-  end,
-  to_fun_smul := λ a x, begin
+  end)
+  (λ a x, begin
     induction x using quotient.induction_on,
     exact Q'.to_fun_smul a x,
-  end,
-  polar_add_left' := by { rintros ⟨x⟩ ⟨x'⟩ ⟨y⟩, exact Q'.polar_add_left' x x' y },
-  polar_smul_left' := by { rintros c ⟨x⟩ ⟨y⟩, exact Q'.polar_smul_left' c x y } }
+  end)
+  (by { rintros ⟨x⟩ ⟨x'⟩ ⟨y⟩, exact Q'.polar_add_left x x' y })
+  (by { rintros c ⟨x⟩ ⟨y⟩, exact Q'.polar_smul_left c x y })
 
 open clifford_algebra
 
@@ -275,7 +275,7 @@ begin
     simpa [smul_sub, smul_smul, mul_assoc β γ γ, mul_right_comm β γ β, mul_right_comm β γ α, mul_comm β α] using this,
   },
   have : (α • x' - β • y' - γ • z') * x' = α • 1 - β • (y' * x') - γ • (z' * x'),
-  { simp [-Q_to_fun, sub_mul], },
+  { simp [sub_mul], },
   rw ← this,
   rw [quot_obv, zero_mul],
 end

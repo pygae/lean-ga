@@ -405,7 +405,7 @@ begin
   },
   { simp [nat.succ_eq_add_one, ←nat.add_assoc, r_multivectors.def],
     rw submodule.mul_sup,
-    rw [←submodule.mul_assoc, bi_ih], }
+    rw [←mul_assoc, bi_ih], }
 end
 
 private lemma r_multivectors.mono : monotone (r_multivectors.def Q) :=
