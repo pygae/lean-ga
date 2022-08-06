@@ -202,7 +202,35 @@ begin
   rw [ideal.quotient.eq_zero_iff_mem, ideal.quotient.eq_zero_iff_mem, mem_k_ideal_iff,
     mem_k_ideal_iff],
   rintro ⟨f, hf⟩,
-  sorry,
+
+  -- characteristic 2 lets us eliminate the squaring
+  suffices : ∃ g : fin 3 → mv_polynomial (fin 3) (zmod 2), x = ∑ i, g i * X i,
+  { obtain ⟨g, rfl⟩ := this,
+    refine ⟨g*g, _⟩,
+    simp_rw [fin.sum_univ_three, pi.mul_apply],
+    rw [add_mul_self_eq, add_mul_self_eq, two_mul, two_mul,
+      ←two_smul (zmod 2) (_ : mv_polynomial (fin 3) (zmod 2)),
+      ←two_smul (zmod 2) (_ : mv_polynomial (fin 3) (zmod 2)),
+      show (2 : zmod 2) = 0, from rfl],
+      simp_rw [zero_smul, zero_mul, add_zero, mul_mul_mul_comm, mul_assoc] },
+
+  suffices : x.coeff 0 = 0,
+  { sorry },
+
+  have := (mv_polynomial.ext_iff _ _).mp hf (∑ i, finsupp.single i 1),
+  rw coeff_sum at this,
+  change coeff
+    (finsupp.single (0 : fin 3) _ + (finsupp.single 1 _ + (finsupp.single 2 _ + 0))) _ = _ at this,
+  simp_rw [mul_assoc, coeff_X_mul] at this,
+  rw this,
+  refine finset.sum_eq_zero (λ i hi, _),
+  rw [←mul_assoc, coeff_mul_X', coeff_mul_X'],
+  suffices : ¬(1 < (⇑∑ (i : fin 3), finsupp.single i 1) i),
+  { simp [this] },
+  rw [finsupp.finset_sum_apply],
+  refine eq.not_gt _,
+  exact (finset.sum_eq_single i (λ j _, finsupp.single_eq_of_ne) (λ h, (h hi).elim)).trans
+    finsupp.single_eq_same,
 end
 
 lemma Q'_zero_under_ideal (v : fin 3 → k) (hv : v ∈ L_func.ker) : Q' v = 0 := begin
