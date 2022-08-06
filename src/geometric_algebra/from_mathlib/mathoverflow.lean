@@ -8,6 +8,7 @@ import tactic.induction
 import algebra.char_p.quotient
 import data.nat.prime
 import algebra.char_p.pi
+import algebra.char_p.two
 
 /-!
 An attempt to formalize https://mathoverflow.net/questions/60596/clifford-pbw-theorem-for-quadratic-form/87958#87958
@@ -157,18 +158,11 @@ begin
   exact @linear_map.proj _ _ _ (λ _, R) _ _ i
 end
 
-lemma char_two_neg {R} [ring R] [char_p R 2] (x : R) : -x = x :=
-by rw [neg_eq_iff_add_eq_zero, ←two_smul ℕ x, nsmul_eq_smul_cast R 2 x, char_p.cast_eq_zero,
-  zero_smul]
-
-lemma char_two_sub {R} [ring R] [char_p R 2] (x y : R) : x - y = x + y :=
-by rw [sub_eq_add_neg, char_two_neg]
-
 lemma sq_map_add_char_two {ι R : Type*} [comm_ring R] [char_p R 2] (i : ι) (a b : ι → R) :
   sq i (a + b) = sq i a + sq i b :=
 begin
   dsimp [sq],
-  rw [add_mul, mul_add, mul_add, ←char_two_neg (b i * a i)],
+  rw [add_mul, mul_add, mul_add, ←char_two.neg_eq (b i * a i)],
   ring
 end
 
@@ -176,7 +170,7 @@ lemma sq_map_sub_char_two {ι R : Type*} [comm_ring R] [char_p R 2] (i : ι) (a 
   sq i (a - b) = sq i a - sq i b :=
 begin
   haveI : nonempty ι := ⟨i⟩,
-  rw [char_two_sub, char_two_sub, sq_map_add_char_two]
+  rw [char_two.sub_eq_add, char_two.sub_eq_add, sq_map_add_char_two]
 end
 
 open_locale big_operators
@@ -208,10 +202,7 @@ begin
   { obtain ⟨g, rfl⟩ := this,
     refine ⟨g*g, _⟩,
     simp_rw [fin.sum_univ_three, pi.mul_apply],
-    rw [add_mul_self_eq, add_mul_self_eq, two_mul, two_mul,
-      ←two_smul (zmod 2) (_ : mv_polynomial (fin 3) (zmod 2)),
-      ←two_smul (zmod 2) (_ : mv_polynomial (fin 3) (zmod 2)),
-      show (2 : zmod 2) = 0, from rfl],
+    rw [add_mul_self_eq, add_mul_self_eq, @char_two.two_eq_zero (mv_polynomial (fin 3) (zmod 2))],
       simp_rw [zero_smul, zero_mul, add_zero, mul_mul_mul_comm, mul_assoc] },
 
   suffices : x.coeff 0 = 0,
@@ -234,7 +225,7 @@ begin
 end
 
 lemma Q'_zero_under_ideal (v : fin 3 → k) (hv : v ∈ L_func.ker) : Q' v = 0 := begin
-  rw [linear_map.mem_ker, L_func_apply, char_two_sub, char_two_sub] at hv,
+  rw [linear_map.mem_ker, L_func_apply] at hv,
   have h0 : α * β * γ * v 0 = 0,
   { have := congr_arg ((*) (β * γ)) hv,
     simp only [mul_zero, mul_add, ←mul_assoc] at this,
