@@ -152,11 +152,7 @@ def L := _ ⧸ L_func.ker
 -- local attribute [irreducible] k
 
 def sq {ι R : Type*} [comm_ring R] (i : ι) : quadratic_form R (ι → R) :=
-begin
-  let a := _,
-  refine quadratic_form.lin_mul_lin a a,
-  exact @linear_map.proj _ _ _ (λ _, R) _ _ i
-end
+quadratic_form.sq.comp $ linear_map.proj i
 
 lemma sq_map_add_char_two {ι R : Type*} [comm_ring R] [char_p R 2] (i : ι) (a b : ι → R) :
   sq i (a + b) = sq i a + sq i b :=
@@ -177,7 +173,6 @@ open_locale big_operators
 
 def Q' : quadratic_form k (fin 3 → k) :=
 ∑ i, sq i
-
 
 def Q'_add (x y : fin 3 → k) : Q' (x + y) = Q' x + Q' y :=
 by simp only [Q', quadratic_form.sum_apply, sq_map_add_char_two, finset.sum_add_distrib]
