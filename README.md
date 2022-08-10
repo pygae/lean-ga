@@ -7,7 +7,7 @@ lean-ga
 
 A partial formalization of Geometric Algebra (GA) in the [Lean formal proof verification system](https://github.com/leanprover-community/lean) and using its [Mathematical Library](https://github.com/leanprover-community/mathlib/).
 
-A description of this work is published as [Formalizing Geometric Algebra in Lean](https://link.springer.com/article/10.1007/s00006-021-01164-1) in _Advances in Applied Clifford Algebras_ (note that the web version has been horrendously typeset by the publisher, but the PDF version is readable). The code in this repository has evolved since that publication to keep up with changes to mathlib.
+A description of the foundations of this work is published as [Formalizing Geometric Algebra in Lean](https://link.springer.com/article/10.1007/s00006-021-01164-1) in _Advances in Applied Clifford Algebras_ (note that the web version has been horrendously typeset by the publisher, but the PDF version is readable). The code in this repository has evolved since that publication to keep up with changes to mathlib.
 We presented an early version of this at ICCA 2020 ([slides](https://pygae.github.io/lean-ga/ICCA2020)).
 
 A semi-interactive viewer for the contents of this project can be found at https://pygae.github.io/lean-ga-docs/.
@@ -34,6 +34,12 @@ Wait for the command in the console to finish, then open one of the files refere
 At this point, you can move the cursor around to view the proof state, and try adding new statements to the file using our definitions.
 
 See [this visualization](https://eric-wieser.github.io/mathlib-import-graph/?docs_url=https%3A%2F%2Fpygae.github.io%2Flean-ga-docs%2F) to see which parts of Mathlib are used in this formalization (directly or indirectly).
+
+Update for [ICACGA](https://icacga.org/)
+----------------------------------------
+This repository has been updated to contain some of the examples in the paper _"Computing with the universal properties of the Clifford algebra and the even subalgebra"_, submitted to the ICACGA conference.
+In turn, that paper contains permalinks that lead back to this repository.
+Many of the examples in that paper are already in mathlib.
 
 Contributing
 ------------
