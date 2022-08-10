@@ -24,7 +24,7 @@ Some quick remarks about Lean syntax from those coming from the paper:
 
 variables {R : Type*} [semiring R]
 
-namespace icagca
+namespace icacga
 
 def sum : list R → R
 | []       := 0
@@ -50,4 +50,4 @@ def rev_accum : list R → list R
 
 run_cmd guard $ rev_accum [1, 2, 3] = [6, 5, 3, 0]
 
-end icagca
+end icacga
