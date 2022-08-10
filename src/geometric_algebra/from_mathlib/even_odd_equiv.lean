@@ -4,6 +4,7 @@ Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import linear_algebra.clifford_algebra.conjugation
+import linear_algebra.quadratic_form.prod
 import geometric_algebra.from_mathlib.even_odd
 /-!
 # The isomorphism with the even subalgebra
@@ -12,8 +13,6 @@ import geometric_algebra.from_mathlib.even_odd
 * `clifford_algebra.equiv_even`
 * `clifford_algebra.even_equiv_even_neg`
 -/
-lemma mul_mul_mul_assoc {α} [semigroup α] (a b c d : α) :
-  (a * b) * (c * d) = a * (b * c) * d := by rw [mul_assoc, mul_assoc, mul_assoc]
 
 namespace clifford_algebra
 
@@ -22,8 +21,11 @@ variables (Q : quadratic_form R M)
 
 namespace equiv_even
 
+/-- The quadratic form on the augmented vector space `M × R` sending `v + r•e0` to `Q v - r^2`. -/
 @[reducible]
 def Q' : quadratic_form R (M × R) := (Q.prod $ -@quadratic_form.sq R _)
+
+lemma Q'_apply (m : M × R) : Q' Q m = Q m.1 - m.2 * m.2 := (sub_eq_add_neg _ _).symm
 
 /-- The unit vector in the new dimension -/
 def e0 : clifford_algebra (Q' Q) := ι (Q' Q) (0, 1)
@@ -43,7 +45,7 @@ lemma v_sq_scalar (m : M) : v Q m * v Q m = algebra_map _ _ (Q m) :=
 
 lemma neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q :=
 begin
-  refine neg_eq_of_add_eq_zero ((ι_mul_ι_add_swap _ _).trans _),
+  refine neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans _),
   dsimp [quadratic_form.polar],
   simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, quadratic_form.map_zero,
     add_sub_cancel, sub_self, map_zero, zero_sub],
@@ -73,12 +75,12 @@ def to_even : clifford_algebra Q →ₐ[R] clifford_algebra.even (Q' Q) :=
 begin
   refine clifford_algebra.lift Q ⟨_, λ m, _⟩,
   { refine linear_map.cod_restrict _ _ (λ m, submodule.mem_supr_of_mem ⟨2, rfl⟩ _),
-    exact (algebra.lmul_left R $ e0 Q).comp (v Q),
+    exact (linear_map.mul_left R $ e0 Q).comp (v Q),
     rw [subtype.coe_mk, pow_two],
     exact submodule.mul_mem_mul (linear_map.mem_range_self _ _) (linear_map.mem_range_self _ _), },
   { ext1,
     dsimp only [subalgebra.coe_mul, linear_map.cod_restrict_apply, linear_map.comp_apply,
-      algebra.lmul_left_apply, linear_map.inl_apply, subalgebra.coe_algebra_map],
+      linear_map.mul_left_apply, linear_map.inl_apply, subalgebra.coe_algebra_map],
     rw [←mul_assoc, e0_mul_v_mul_e0, v_sq_scalar] }
 end
 
@@ -112,8 +114,7 @@ begin
     ι Q m.1 * ι Q m.1 - algebra_map R _ m.2 * algebra_map R _ m.2 = algebra_map R _ (Q' Q m),
   { intro m,
     rw [ι_sq_scalar, ←ring_hom.map_mul, ←ring_hom.map_sub,
-      sub_eq_add_neg, Q', quadratic_form.prod_to_fun, quadratic_form.neg_apply,
-      quadratic_form.sq_to_fun] },
+      sub_eq_add_neg, Q'_apply, sub_eq_add_neg] },
   refine even.lift (Q' Q) ⟨f, _, _⟩; simp_rw [f_apply],
   { intro m,
     rw [←(hc _ _).symm.mul_self_sub_mul_self_eq, hm] },

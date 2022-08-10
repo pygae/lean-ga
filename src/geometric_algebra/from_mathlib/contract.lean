@@ -7,10 +7,13 @@ Authors: Eric Wieser
 import geometric_algebra.from_mathlib.fold
 import linear_algebra.clifford_algebra.grading
 import linear_algebra.clifford_algebra.conjugation
-
+import linear_algebra.exterior_algebra.basic
 
 /-!
 # Contraction in Clifford Algebras
+
+This is in the process of being upstreamed into mathlib at
+https://github.com/leanprover-community/mathlib/pull/11468.
 -/
 
 universes u1 u2 u3
@@ -113,7 +116,7 @@ begin
   { simp_rw [apply_dual_left_algebra_map, map_zero, neg_zero] },
   { rw [map_add, map_add, map_add, map_add, hx, hy, neg_add] },
   { simp only [apply_dual_left_ι_mul, map_sub, linear_map.map_smul],
-    rw [neg_sub, sub_sub_assoc_swap, hx, mul_neg, ←sub_eq_add_neg] }
+    rw [neg_sub, sub_sub_eq_add_sub, hx, mul_neg, ←sub_eq_add_neg] }
 end
 
 end apply_dual_left
@@ -228,9 +231,9 @@ variables (Q)
 
 /-- The module isomorphism to the exterior algebra -/
 def equiv_exterior [invertible (2 : R)] : clifford_algebra Q ≃ₗ[R] exterior_algebra R M :=
-(alpha_equiv $
+alpha_equiv $
   show (-Q).associated.to_quadratic_form = 0 - Q,
-  by simp [quadratic_form.to_quadratic_form_associated]) ≪≫ₗ as_exterior.to_linear_equiv
+  by simp [quadratic_form.to_quadratic_form_associated]
 
 variables {Q}
 

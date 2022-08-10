@@ -75,7 +75,7 @@ begin
   have : x ∈ ⊤ := submodule.mem_top, 
   rw ←supr_ι_range_eq_top at this,
   apply submodule.supr_induction _ this (λ i x hx, _) _ h_add,
-  { refine submodule.pow_induction_on _ hr h_add (λ x, _) hx,
+  { refine submodule.pow_induction_on_left _ hr h_add (λ x, _) hx,
     rintro ⟨m, rfl⟩,
     exact h_ι_mul _ },
   { simpa only [map_zero] using hr 0}
@@ -181,20 +181,20 @@ end
 --     rw hx,},
 -- end
 
-lemma foldr'_smul (c : R)
-  (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
-  (hfg : ∀ m x fcx, (c • f) m (ι Q m * x, (c • f) m (x, fcx)) = Q m • fcx)
-  (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) :
-  foldr' Q (c • f) hfg 0 = c • foldr' Q f hf 0 :=
-begin
-  ext x,
-  rw linear_map.smul_apply,
-  apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
-  { simp_rw [foldr'_algebra_map, smul_zero] },
-  { rw [map_add, map_add,smul_add, hx, hy] },
-  { simp_rw [foldr'_ι_mul, line],
-    rw [hx],
-    rw hx,},
-end
+-- lemma foldr'_smul (c : R)
+--   (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
+--   (hfg : ∀ m x fcx, (c • f) m (ι Q m * x, (c • f) m (x, fcx)) = Q m • fcx)
+--   (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) :
+--   foldr' Q (c • f) hfg 0 = c • foldr' Q f hf 0 :=
+-- begin
+--   ext x,
+--   rw linear_map.smul_apply,
+--   apply clifford_algebra.foldr_induction _ (λ r, _) (λ x y hx hy, _) (λ m x hx, _) x,
+--   { simp_rw [foldr'_algebra_map, smul_zero] },
+--   { rw [map_add, map_add,smul_add, hx, hy] },
+--   { simp_rw [foldr'_ι_mul, line],
+--     rw [hx],
+--     rw hx,},
+-- end
 
 end clifford_algebra

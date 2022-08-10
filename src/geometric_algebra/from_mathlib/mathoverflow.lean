@@ -8,6 +8,7 @@ import tactic.induction
 import algebra.char_p.quotient
 import data.nat.prime
 import algebra.char_p.pi
+import algebra.char_p.two
 
 /-!
 An attempt to formalize https://mathoverflow.net/questions/60596/clifford-pbw-theorem-for-quadratic-form/87958#87958
@@ -38,8 +39,7 @@ begin
   have := char_p.cast_eq_zero_iff (R ⧸ I) n,
   rw char_p.cast_eq_zero_iff R n,
   refine (this _).mp _,
-  convert (submodule.quotient.mk_eq_zero I).mpr hx,
-  simp,
+  exact (submodule.quotient.mk_eq_zero I).mpr hx,
 end
 
 lemma ideal.span_le_bot {R : Type*} [semiring R] (s : set R) : ideal.span s ≤ ⊥ ↔ s ≤ {0} :=
@@ -47,7 +47,7 @@ submodule.span_le
 
 /-- `char_p.quotient'` as an `iff`. -/
 lemma char_p.quotient_iff'' (R : Type*) [comm_ring R] (n : ℕ) [char_p R n] (I : ideal R) :
-  char_p (R ⧸ I) n ↔ I.comap (nat.cast_ring_hom _) ≤ (nat.cast_ring_hom R).ker :=
+  char_p (R ⧸ I) n ↔ I.comap (nat.cast_ring_hom R) ≤ (nat.cast_ring_hom R).ker :=
 (char_p.quotient_iff' _ _ _).trans begin
   rw ring_hom.ker_eq_comap_bot,
   exact iff.rfl,
@@ -104,7 +104,7 @@ instance : fact (nat.prime 2) := ⟨nat.prime_two⟩
 instance : fact (0 < 2) := ⟨zero_lt_two⟩
 
 lemma comap_C_span_le_bot :
-  k_ideal.comap C ≤ ⊥ :=
+  k_ideal.comap (C : zmod 2 →+* (mv_polynomial (fin 3) (zmod 2))) ≤ ⊥ :=
 begin
   refine (ideal.comap_span_le _ _ constant_coeff_C _).trans _,
   refine (ideal.span_le_bot _).2 _,
@@ -152,24 +152,13 @@ def L := _ ⧸ L_func.ker
 -- local attribute [irreducible] k
 
 def sq {ι R : Type*} [comm_ring R] (i : ι) : quadratic_form R (ι → R) :=
-begin
-  let a := _,
-  refine quadratic_form.lin_mul_lin a a,
-  exact @linear_map.proj _ _ _ (λ _, R) _ _ i
-end
-
-lemma char_two_neg {R} [ring R] [char_p R 2] (x : R) : -x = x :=
-by rw [neg_eq_iff_add_eq_zero, ←two_smul ℕ x, nsmul_eq_smul_cast R 2 x, char_p.cast_eq_zero,
-  zero_smul]
-
-lemma char_two_sub {R} [ring R] [char_p R 2] (x y : R) : x - y = x + y :=
-by rw [sub_eq_add_neg, char_two_neg]
+quadratic_form.sq.comp $ linear_map.proj i
 
 lemma sq_map_add_char_two {ι R : Type*} [comm_ring R] [char_p R 2] (i : ι) (a b : ι → R) :
   sq i (a + b) = sq i a + sq i b :=
 begin
   dsimp [sq],
-  rw [add_mul, mul_add, mul_add, ←char_two_neg (b i * a i)],
+  rw [add_mul, mul_add, mul_add, ←char_two.neg_eq (b i * a i)],
   ring
 end
 
@@ -177,14 +166,13 @@ lemma sq_map_sub_char_two {ι R : Type*} [comm_ring R] [char_p R 2] (i : ι) (a 
   sq i (a - b) = sq i a - sq i b :=
 begin
   haveI : nonempty ι := ⟨i⟩,
-  rw [char_two_sub, char_two_sub, sq_map_add_char_two]
+  rw [char_two.sub_eq_add, char_two.sub_eq_add, sq_map_add_char_two]
 end
 
 open_locale big_operators
 
 def Q' : quadratic_form k (fin 3 → k) :=
 ∑ i, sq i
-
 
 def Q'_add (x y : fin 3 → k) : Q' (x + y) = Q' x + Q' y :=
 by simp only [Q', quadratic_form.sum_apply, sq_map_add_char_two, finset.sum_add_distrib]
@@ -203,11 +191,36 @@ begin
   rw [ideal.quotient.eq_zero_iff_mem, ideal.quotient.eq_zero_iff_mem, mem_k_ideal_iff,
     mem_k_ideal_iff],
   rintro ⟨f, hf⟩,
-  sorry,
+
+  -- characteristic 2 lets us eliminate the squaring
+  suffices : ∃ g : fin 3 → mv_polynomial (fin 3) (zmod 2), x = ∑ i, g i * X i,
+  { obtain ⟨g, rfl⟩ := this,
+    refine ⟨g*g, _⟩,
+    simp_rw [fin.sum_univ_three, pi.mul_apply],
+    rw [add_mul_self_eq, add_mul_self_eq, @char_two.two_eq_zero (mv_polynomial (fin 3) (zmod 2))],
+      simp_rw [zero_smul, zero_mul, add_zero, mul_mul_mul_comm, mul_assoc] },
+
+  suffices : x.coeff 0 = 0,
+  { sorry },
+
+  have := (mv_polynomial.ext_iff _ _).mp hf (∑ i, finsupp.single i 1),
+  rw coeff_sum at this,
+  change coeff
+    (finsupp.single (0 : fin 3) _ + (finsupp.single 1 _ + (finsupp.single 2 _ + 0))) _ = _ at this,
+  simp_rw [mul_assoc, coeff_X_mul] at this,
+  rw this,
+  refine finset.sum_eq_zero (λ i hi, _),
+  rw [←mul_assoc, coeff_mul_X', coeff_mul_X'],
+  suffices : ¬(1 < (⇑∑ (i : fin 3), finsupp.single i 1) i),
+  { simp [this] },
+  rw [finsupp.finset_sum_apply],
+  refine eq.not_gt _,
+  exact (finset.sum_eq_single i (λ j _, finsupp.single_eq_of_ne) (λ h, (h hi).elim)).trans
+    finsupp.single_eq_same,
 end
 
 lemma Q'_zero_under_ideal (v : fin 3 → k) (hv : v ∈ L_func.ker) : Q' v = 0 := begin
-  rw [linear_map.mem_ker, L_func_apply, char_two_sub, char_two_sub] at hv,
+  rw [linear_map.mem_ker, L_func_apply] at hv,
   have h0 : α * β * γ * v 0 = 0,
   { have := congr_arg ((*) (β * γ)) hv,
     simp only [mul_zero, mul_add, ←mul_assoc] at this,
@@ -230,20 +243,19 @@ end
 /-- The quadratic form (metric) is just euclidean -/
 @[simps]
 def Q : quadratic_form k L :=
-{ to_fun := λ x, quotient.lift_on' x Q' $ λ a b h, begin
+quadratic_form.of_polar
+  (λ x, quotient.lift_on' x Q' $ λ a b h, begin
     rw submodule.quotient_rel_r_def at h,
     suffices : Q' (a - b) = 0,
     { rwa [Q'_sub, sub_eq_zero] at this, },
     apply Q'_zero_under_ideal (a - b) h,
-  end,
-  to_fun_smul := λ a x, begin
+  end)
+  (λ a x, begin
     induction x using quotient.induction_on,
     exact Q'.to_fun_smul a x,
-  end,
-  polar_add_left' := by { rintros ⟨x⟩ ⟨x'⟩ ⟨y⟩, exact Q'.polar_add_left' x x' y },
-  polar_smul_left' := by { rintros c ⟨x⟩ ⟨y⟩, exact Q'.polar_smul_left' c x y },
-  polar_add_right' := by { rintros ⟨x⟩ ⟨y⟩ ⟨y'⟩, exact Q'.polar_add_right' x y y' },
-  polar_smul_right' := by { rintros c ⟨x⟩ ⟨y⟩, exact Q'.polar_smul_right' c x y }, }
+  end)
+  (by { rintros ⟨x⟩ ⟨x'⟩ ⟨y⟩, exact Q'.polar_add_left x x' y })
+  (by { rintros c ⟨x⟩ ⟨y⟩, exact Q'.polar_smul_left c x y })
 
 open clifford_algebra
 
@@ -277,7 +289,7 @@ begin
     simpa [smul_sub, smul_smul, mul_assoc β γ γ, mul_right_comm β γ β, mul_right_comm β γ α, mul_comm β α] using this,
   },
   have : (α • x' - β • y' - γ • z') * x' = α • 1 - β • (y' * x') - γ • (z' * x'),
-  { simp [-Q_to_fun, sub_mul], },
+  { simp [sub_mul], },
   rw ← this,
   rw [quot_obv, zero_mul],
 end
@@ -304,21 +316,21 @@ begin
   rw [coeff_mul_X', coeff_mul_X', if_pos],
   swap, {
     rw finsupp.support_sum_eq_bUnion,
-    { simp_rw [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0),
+    { simp_rw [finsupp.support_single_ne_zero _ (one_ne_zero : 1 ≠ 0),
         finset.bUnion_singleton_eq_self],
       exact finset.mem_univ _, },
     { intros i j hij,
-      simp only [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0), finset.disjoint_singleton],
+      simp only [finsupp.support_single_ne_zero _ (one_ne_zero : 1 ≠ 0), finset.disjoint_singleton],
       exact hij },
   },
   rw if_neg,
   rw [←finset.add_sum_erase _ _ (finset.mem_univ i), add_tsub_cancel_left,
     finsupp.support_sum_eq_bUnion],
-  { simp_rw [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0),
+  { simp_rw [finsupp.support_single_ne_zero _ (one_ne_zero : 1 ≠ 0),
       finset.bUnion_singleton_eq_self],
     exact finset.not_mem_erase _ _, },
   { intros i j hij,
-    simp only [finsupp.support_single_ne_zero (one_ne_zero : 1 ≠ 0), finset.disjoint_singleton],
+    simp only [finsupp.support_single_ne_zero _ (one_ne_zero : 1 ≠ 0), finset.disjoint_singleton],
     exact hij },
 end
 

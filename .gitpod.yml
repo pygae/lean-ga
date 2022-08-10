@@ -5,4 +5,7 @@ vscode:
     - jroesch.lean
 
 tasks:
-  - command: . /home/gitpod/.profile && leanproject get-mathlib-cache
+  - before: . /home/gitpod/.profile
+  - init: |
+      leanproject get-mathlib-cache
+      lean --make src

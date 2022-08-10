@@ -4,20 +4,32 @@ Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import linear_algebra.clifford_algebra.grading
-import linear_algebra.quadratic_form.prod
-import linear_algebra.dfinsupp
-import linear_algebra.quadratic_form.prod
-import algebra.algebra.subalgebra.basic
-import algebra.direct_sum.internal
-import data.zmod.basic
-import geometric_algebra.from_mathlib.fold
+import linear_algebra.clifford_algebra.fold
 
 /-!
-# Grading by ℤ / 2ℤ, using `direct_sum`
+# The universal property of the even subalgebra
 
-This file is an alternative to the `add_monoid_algebra` approach using `direct_sum`.
+## Main results
 
-The main result is now in mathlib, as `clifford_algebra.graded_algebra`.
+* `clifford_algebra.even Q`: The even subalgebra of `clifford_algebra Q`.
+* `clifford_algebra.even_hom`: A shorthand for the subtype of bilinear maps that satisfy the
+  universal property of the even subalgebra
+* `clifford_algebra.even.lift`: The universal property of the even subalgebra, which states
+  that every bilinear map `f` with `f v v = Q v` and `f u v * f v w = Q v • f u w` is in unique
+  correspondence with an algebra morphism from `clifford_algebra.even Q`.
+
+## Implementation notes
+
+The approach here is outlined in "Computing with the universal properties of the Clifford algebra
+and the even subalgebra" (to appear).
+
+The broad summary is that we have two tricks available to us for implementing complex recursors on
+top of `clifford_algebra.lift`: the first is to use morphisms as the output type, such as
+`A = module.End R N` which is how we obtained `clifford_algebra.foldr`; and the second is to use
+`N = (N', S)` where `N'` is the value we wish to compute, and `S` is some auxiliary state passed
+between one recursor and the next.
+For the universal property of the even subalgebra, we apply a variant of the first trick again by
+choosing `S` to itself be a sumbmodule of morphisms.
 -/
 
 namespace clifford_algebra
@@ -29,7 +41,7 @@ open_locale direct_sum
 
 variables (Q)
 
-/-- The even submodule is also a subalgebra. -/
+/-- The even submodule `clifford_algebra.even_odd Q 0` is also a subalgebra. -/
 def even : subalgebra R (clifford_algebra Q) :=
 (even_odd Q 0).to_subalgebra
   set_like.graded_monoid.one_mem
@@ -83,12 +95,21 @@ namespace even.lift
 /-- An auxiliary submodule used to store the half-applied values of `f`.
 This is the span of elements `f'` such that `∃ x m₂, ∀ m₁, f' m₁ = f m₁ m₂ * x`.  -/
 private def S : submodule R (M →ₗ[R] A) :=
-submodule.span R {f' | ∃ x m₂, f' = (algebra.lmul_right R x).comp (f.flip m₂)}
+submodule.span R {f' | ∃ x m₂, f' = linear_map.lcomp R _ (f.flip m₂) (linear_map.mul_right R x)}
 
-/-- An auxiliary bilinear map that is later passed into `clifford_algebra.fold` .-/
+/-- An auxiliary bilinear map that is later passed into `clifford_algebra.fold`. Our desired result
+is stored in the `A` part of the accumulator, while auxiliary recursion state is stored in the `S f`
+part. -/
 private def f_fold : M →ₗ[R] (A × S f) →ₗ[R] (A × S f) :=
 linear_map.mk₂ R (λ m acc,
-  (acc.2 m, ⟨(algebra.lmul_right R acc.1).comp (f.flip m), submodule.subset_span $ ⟨_, _, rfl⟩⟩))
+  /- We could write this `snd` term in a point-free style as follows, but it wouldn't help as we
+  don't have any prod or subtype combinators to deal with n-linear maps of this degree.
+  ```lean
+  (linear_map.lcomp R _ (algebra.lmul R A).to_linear_map.flip).comp $
+    (linear_map.llcomp R M A A).flip.comp f.flip : M →ₗ[R] A →ₗ[R] M →ₗ[R] A)
+  ```
+  -/
+  (acc.2 m, ⟨(linear_map.mul_right R acc.1).comp (f.flip m), submodule.subset_span $ ⟨_, _, rfl⟩⟩))
   (λ m₁ m₂ a, prod.ext
     (linear_map.map_add _ m₁ m₂)
     (subtype.ext $ linear_map.ext $ λ m₃,
@@ -102,13 +123,13 @@ linear_map.mk₂ R (λ m acc,
   (λ m a₁ a₂, prod.ext rfl (subtype.ext $ linear_map.ext $ λ m₃, mul_add _ _ _))
   (λ c m a, prod.ext rfl (subtype.ext $ linear_map.ext $ λ m₃, mul_smul_comm _ _ _))
 
-@[simp] lemma fst_f_fold_f_fold (m₁ m₂ : M) (x : A × S f) :
+@[simp] private lemma fst_f_fold_f_fold (m₁ m₂ : M) (x : A × S f) :
   (f_fold f m₁ (f_fold f m₂ x)).fst = f m₁ m₂ * x.fst := rfl
 
-@[simp] lemma snd_f_fold_f_fold (m₁ m₂ m₃ : M) (x : A × S f) :
+@[simp] private lemma snd_f_fold_f_fold (m₁ m₂ m₃ : M) (x : A × S f) :
   ((f_fold f m₁ (f_fold f m₂ x)).snd : M →ₗ[R] A) m₃ = f m₃ m₁ * (x.snd : M →ₗ[R] A) m₂ := rfl
 
-lemma f_fold_f_fold (hf : ∀ m, f m m = algebra_map R _ (Q m))
+private lemma f_fold_f_fold (hf : ∀ m, f m m = algebra_map R _ (Q m))
   (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) (m : M) (x : A × S f) :
   f_fold f m (f_fold f m x) = Q m • x :=
 begin
@@ -130,19 +151,14 @@ begin
       rw [linear_map.smul_apply, linear_map.smul_apply, mul_smul_comm, ihx, smul_comm] } },
 end
 
-lemma f_fold_comp_f_fold (hf : ∀ m, f m m = algebra_map R _ (Q m))
-  (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) (m : M) :
-  f_fold f m ∘ₗ f_fold f m = Q m • linear_map.id :=
-linear_map.ext (f_fold_f_fold Q f hf hf₂ m)
-
-/-- The final auxiliary construction for `clifford_algebra.even.lift`. -/
-@[simps]
-def aux (hf : ∀ m, f m m = algebra_map R _ (Q m))
+/-- The final auxiliary construction for `clifford_algebra.even.lift`. This map is the forwards
+direction of that equivalence, but not in the fully-bundled form. -/
+@[simps apply] def aux (hf : ∀ m, f m m = algebra_map R _ (Q m))
   (hf₂ : ∀ m₁ m₂ m₃, f m₁ m₂ * f m₂ m₃ = Q m₂ • f m₁ m₃) :
   clifford_algebra.even Q →ₗ[R] A :=
 begin
   refine _ ∘ₗ (even Q).val.to_linear_map,
-  exact linear_map.fst _ _ _ ∘ₗ foldr Q (f_fold f) (f_fold_comp_f_fold Q f hf hf₂) (1, 0),
+  exact linear_map.fst _ _ _ ∘ₗ foldr Q (f_fold f) (f_fold_f_fold Q f hf hf₂) (1, 0),
 end
 
 @[simp] lemma aux_one
@@ -206,8 +222,8 @@ variables {A}
 /-- Every algebra morphism from the even subalgebra is in one-to-one correspondence with a
 bilinear map that sends duplicate arguments to the quadratic form, and contracts across
 multiplication. -/
-def even.lift :
-  even_hom Q A ≃ (clifford_algebra.even Q →ₐ[R] A) :=
+@[simps symm_apply_coe]
+def even.lift : even_hom Q A ≃ (clifford_algebra.even Q →ₐ[R] A) :=
 { to_fun := λ f, alg_hom.of_linear_map
     (aux Q f f.prop.1 f.prop.2) (aux_one Q f f.prop.1 f.prop.2) (aux_mul Q f f.prop.1 f.prop.2),
   inv_fun := λ F, ⟨(even.ι Q).compr₂ F.to_linear_map,

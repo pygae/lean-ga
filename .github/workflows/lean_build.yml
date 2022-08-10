@@ -9,7 +9,7 @@ jobs:
     steps:
 
     - name: checkout project
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -17,5 +17,53 @@ jobs:
       if: github.ref == 'refs/heads/master'
       uses: leanprover-contrib/update-versions-action@master
 
-    - name: build project
-      uses: leanprover-contrib/lean-build-action@master
+    - name: Install elan
+      run: |
+        set -o pipefail
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- --default-toolchain none -y
+        ~/.elan/bin/lean --version
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+    - name: install Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Install leanproject
+      run: |
+        python3 -m pip install --user pipx
+        python3 -m pipx ensurepath
+        source ~/.profile
+        pipx install mathlibtools
+
+    - name: Set up olean cache
+      uses: actions/cache@v3
+      with:
+        path: _cache
+        key: oleans
+
+    - name: Configure
+      run: |
+        leanpkg configure
+        leanproject get-mathlib-cache
+        leanproject get-cache --fallback=download-first || true
+
+    - name: Build
+      run: |
+        set -o pipefail
+        # TODO: allow noisy files in a better way
+        lean --json --make src | (python3 _target/deps/mathlib/scripts/detect_errors.py || true)
+
+    - name: Save olean cache
+      run: |
+        leanproject mk-cache
+
+    - name: Export symbols
+      run: |
+        leanproject mk-all
+        lean --run export.lean > lean-decl-info.tex
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: lean-decl-info
+        path: lean-decl-info.tex
