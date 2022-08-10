@@ -148,7 +148,7 @@ variables (h : B.to_quadratic_form = Q' - Q) (h' : B'.to_quadratic_form = Q'' - 
 /-- Convert between two algebras of different quadratic form -/
 def alpha (h : B.to_quadratic_form = Q' - Q) :
   clifford_algebra Q →ₗ[R] clifford_algebra Q' :=
-foldr Q (alpha_aux Q' B) (λ m, linear_map.ext $ λ x, (alpha_aux_alpha_aux Q' B m x).trans $
+foldr Q (alpha_aux Q' B) (λ m x, (alpha_aux_alpha_aux Q' B m x).trans $
   begin
     dsimp [←bilin_form.to_quadratic_form_apply],
     rw [h, quadratic_form.sub_apply, sub_sub_cancel],

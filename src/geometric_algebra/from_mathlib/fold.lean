@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import linear_algebra.clifford_algebra.basic
+import linear_algebra.clifford_algebra.fold
 import linear_algebra.bilinear_form
 import linear_algebra.tensor_product
 import linear_algebra.prod
@@ -14,10 +14,9 @@ import linear_algebra.clifford_algebra.grading
 
 ## Main definitions
 
-* `clifford_algebra.foldr`: a computation rule for building linear maps out of the clifford
-  algebra.
 * `clifford_algebra.foldr'`: a computation rule for building linear maps out of the clifford
   algebra.
+
 -/
 
 universes u1 u2 u3
@@ -29,29 +28,6 @@ variables (Q : quadratic_form R M)
 
 namespace clifford_algebra
 
-/-- Fold a bilinear map along the generators of a term of the clifford algebra, with the rule
-given by `foldr Q f hf n (ι Q m * x) = f m (foldr Q f hf n x)`.
-
-For example, `foldr f hf n (r • ι R u + ι R v * ι R w) = r • f u n + f v (f w n)`. -/
-def foldr (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m, (f m).comp (f m) = (Q m) • linear_map.id) :
-  N →ₗ[R] clifford_algebra Q →ₗ[R] N :=
-(clifford_algebra.lift Q ⟨f, hf⟩).to_linear_map.flip
-
-@[simp] lemma foldr_ι (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (m : M) :
-  foldr Q f hf n (ι Q m) = f m n :=
-linear_map.congr_fun (lift_ι_apply _ _ _) n
-
-@[simp] lemma foldr_algebra_map (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (r : R) :
-  foldr Q f hf n (algebra_map R _ r) = r • n :=
-linear_map.congr_fun (alg_hom.commutes _ r) n
-
-@[simp] lemma foldr_one (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) :
-  foldr Q f hf n 1 = n :=
-linear_map.congr_fun (alg_hom.map_one _) n
-
-@[simp] lemma foldr_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : clifford_algebra Q) :
-  foldr Q f hf n (a * b) = foldr Q f hf (foldr Q f hf n b) a :=
-linear_map.congr_fun (alg_hom.map_mul _ _ _) n
 
 lemma foldr_induction {P : clifford_algebra Q → Prop}
   (hr : ∀ r : R, P (algebra_map _ _ r))
@@ -80,7 +56,6 @@ begin
     exact h_ι_mul _ },
   { simpa only [map_zero] using hr 0}
 end
-
 
 /-- Auxiliary definition for `clifford_algebra.foldr'` -/
 def foldr'_aux (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N) :
@@ -123,7 +98,7 @@ def foldr' (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
   (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx)
   (n : N) :
   clifford_algebra Q →ₗ[R] N :=
-linear_map.snd _ _ _ ∘ₗ foldr Q (foldr'_aux Q f) (foldr'_aux_comp_foldr'_aux Q _ hf) (1, n)
+linear_map.snd _ _ _ ∘ₗ foldr Q (foldr'_aux Q f) (foldr'_aux_foldr'_aux Q _ hf) (1, n)
 
 lemma foldr'_algebra_map (f : M →ₗ[R] clifford_algebra Q × N →ₗ[R] N)
   (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (n r) :
