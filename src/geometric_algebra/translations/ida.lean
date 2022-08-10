@@ -55,7 +55,7 @@ instance : add_comm_group multivector :=
   add_left_neg := λ _, ext _ _ (add_left_neg _) (add_left_neg _) (add_left_neg _) (add_left_neg _) }
 
 /-! scalar multiplication is also component-wise -/
-instance : has_scalar ℝ multivector := ⟨λ r x,
+instance : has_smul ℝ multivector := ⟨λ r x,
 { scalar := r • x.scalar,
   vector := r • x.vector,
   bivec := r • x.bivec,

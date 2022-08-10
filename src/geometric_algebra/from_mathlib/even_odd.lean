@@ -95,7 +95,7 @@ namespace even.lift
 /-- An auxiliary submodule used to store the half-applied values of `f`.
 This is the span of elements `f'` such that `∃ x m₂, ∀ m₁, f' m₁ = f m₁ m₂ * x`.  -/
 private def S : submodule R (M →ₗ[R] A) :=
-submodule.span R {f' | ∃ x m₂, f' = linear_map.lcomp R _ (f.flip m₂) (algebra.lmul_right R x)}
+submodule.span R {f' | ∃ x m₂, f' = linear_map.lcomp R _ (f.flip m₂) (linear_map.mul_right R x)}
 
 /-- An auxiliary bilinear map that is later passed into `clifford_algebra.fold`. Our desired result
 is stored in the `A` part of the accumulator, while auxiliary recursion state is stored in the `S f`
@@ -109,7 +109,7 @@ linear_map.mk₂ R (λ m acc,
     (linear_map.llcomp R M A A).flip.comp f.flip : M →ₗ[R] A →ₗ[R] M →ₗ[R] A)
   ```
   -/
-  (acc.2 m, ⟨(algebra.lmul_right R acc.1).comp (f.flip m), submodule.subset_span $ ⟨_, _, rfl⟩⟩))
+  (acc.2 m, ⟨(linear_map.mul_right R acc.1).comp (f.flip m), submodule.subset_span $ ⟨_, _, rfl⟩⟩))
   (λ m₁ m₂ a, prod.ext
     (linear_map.map_add _ m₁ m₂)
     (subtype.ext $ linear_map.ext $ λ m₃,

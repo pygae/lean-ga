@@ -52,7 +52,7 @@ class has_grade_select
 (select : G →ₗ[A 0] (Π₀ r, A r))
 
 /- TODO: check precedence -/
-notation `⟨`:0 g`⟩_`:0 r:100 := has_grade_select.select g r
+local notation `⟨`:0 g`⟩_`:0 r:100 := has_grade_select.select g r
 
 -- introducing these needs types which restrict the domain of A to `{z // z : ℤ, z %2 == 0}`
 -- notation `⟨`:0 g`⟩₊`:0 := has_grade_select.select_even
