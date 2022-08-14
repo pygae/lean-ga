@@ -1,0 +1,81 @@
+# Modified from https://github.com/leanprover-community/liquid/blob/master/.github/workflows/gh-pages.yml
+# Modifications are marked with "NOTE:"
+on:
+  push:
+    branches-ignore:
+      - gh-pages
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install elan
+        run: |
+          set -o pipefail
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -v -y
+          sudo ln -s $HOME/.elan/bin/* /usr/local/bin;
+
+      - name: Install python Lean dependencies
+        run: python -m pip install --upgrade pip requests markdown2 toml mathlibtools toposort invoke
+
+      - name: Link and fetch mathlib
+        run: |
+          # NOTE: Get the corresponding Lean code
+          # TODO: Currently this is unnecessary and can be simpified in future because
+          # the blueprint sits inside the Lean code, unlike https://github.com/leanprover-community/liquid
+          # NOTE: Enter the root of the blueprint
+          cd docs/blueprint
+          ln -s  ${GITHUB_WORKSPACE} project
+          cd project && leanproject get-m && cd ..
+          # https://leanprover.zulipchat.com/#narrow/stream/267928-condensed-mathematics/topic/blueprint/near/292717229
+          ulimit -s 1048576
+          inv decls
+
+      - name: Install Leanblueprint and generate web in tex env
+        id: generate_files
+        uses: xu-cheng/texlive-action/full@v1
+        with:
+          run: |
+            apk update
+            apk add --update make py3-pip git
+            # git config --global --add safe.directory ${GITHUB_WORKSPACE}
+            python3 -m pip install --upgrade pip requests wheel
+            apk add pkgconfig graphviz graphviz-dev gcc musl-dev && \
+            python3 -m pip install pygraphviz --global-option=build_ext --global-option="-L/usr/lib/graphviz/" --global-option="-R/usr/lib/graphviz/"
+            python3 -m pip install invoke git+https://github.com/plastex/plastex.git git+https://github.com/PatrickMassot/leanblueprint.git
+            # NOTE: Enter the root of the blueprint
+            cd docs/blueprint
+            inv pdf; cp print/blueprint.bbl src/web.bbl; inv qweb
+            cp print/blueprint.pdf web/
+
+            branch=${GITHUB_REF##*/}
+            if [[ $branch != "master" ]]; then
+              mv web web2
+              #NOTE: Branch names could contain '/'
+              mkdir -p "web/$branch"
+              mv web2/* "web/$branch/"
+            fi
+            echo "##[set-output name=keep_files;]$([[ ${GITHUB_REF##*/} == "master" ]] && echo "false" || echo "true")"
+
+      # For non-master branches we temporarily deploy to https://pygae.github.io/lean-ga/blueprint/<branch_name>
+      # All such files will then get deleted when there's a deploy to master.
+
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.github_token }}
+          # NOTE: web is inside docs/blueprint
+          publish_dir: ./docs/blueprint/web
+          # NOTE: To avoid overwriting existing files in gh_pages, we deploy it to a subdirectory
+          destination_dir: blueprint
+          keep_files: ${{ steps.generate_files.outputs.keep_files }}

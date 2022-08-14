@@ -2,3 +2,5 @@
 /_target
 /leanpkg.path
 src/all.lean
+**/.DS_Store
+src/list_decls.lean

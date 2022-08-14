@@ -1,0 +1,17 @@
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+*.paux
+*.synctex.gz
+web
+.python-version
+project
+
+decls.pickle
+
+src/content_liquid
