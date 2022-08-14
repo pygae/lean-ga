@@ -4,3 +4,5 @@
 src/all.lean
 **/.DS_Store
 src/list_decls.lean
+decls.pickle
+decls.yaml

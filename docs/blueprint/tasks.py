@@ -55,7 +55,7 @@ def qweb(ctx):
 @task
 def serve(ctx):
     """Locally serve the web version (useful to see the dep graph)"""
-    port = 8081
+    port = 8080
     print(f'http://localhost:{port}/')
     cwd = os.getcwd()
     os.chdir(ROOT/'web')
