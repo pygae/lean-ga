@@ -53,7 +53,7 @@ ln -s path/to/lean-ga project   # modify as needed
 
 The source for the blueprint is in `src`. 
 If you only want to build it as a `pdf` file then you can simply run 
-`xelatex blueprint.tex` or `lualatex blueprint.tex` (or even `pdflatex blueprint.tex`
+`xelatex print.tex` or `lualatex print.tex` (or even `pdflatex print.tex`
 if you are stuck in the past).
 
 More complicated goals are easier to handle using [python invoke](https://www.pyinvoke.org/).

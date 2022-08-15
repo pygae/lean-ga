@@ -67,3 +67,30 @@ jobs:
       with:
         name: lean-decl-info
         path: lean-decl-info.tex
+
+    - name: Set up TeXLive cache
+      uses: actions/cache@v3
+      with:
+        path: /usr/local/texlive/
+        key: texlive
+
+    - name: blueprint deps
+      run: |
+        sudo apt-get update
+        sudo apt install graphviz libgraphviz-dev pandoc texlive-full texlive-xetex
+        pip install invoke git+https://github.com/plastex/plastex.git git+https://github.com/PatrickMassot/leanblueprint.git
+
+    - name: build blueprint
+      run: |
+        inv all
+
+    - name: deploy blueprint
+      if: contains('|refs/heads/master|refs/heads/blueprint|', github.ref)
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.github_token }}
+        # NOTE: web is inside docs/blueprint
+        publish_dir: ./blueprint/web
+        # NOTE: To avoid overwriting existing files in gh_pages, we deploy it to a subdirectory
+        destination_dir: blueprint
+      
