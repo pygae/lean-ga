@@ -35,21 +35,9 @@ apt install texlive-extra-utils
 apt install texlive-xetex
 ```
 
-## Initial setup
-
-NOTE: The following file paths are relative to `docs/blueprint`.
-
-The blueprint needs to know where a compiled version
-of the Lean source code lives.
-In the root directory of the blueprint repo,
-create a symlink `project` pointing to the root of
-the `lean-ga` repository:
-
-```bash
-ln -s path/to/lean-ga project   # modify as needed
-```
-
 ## Building
+
+NOTE: The following file paths are relative to `blueprint/`.
 
 The source for the blueprint is in `src`. 
 If you only want to build it as a `pdf` file then you can simply run 
