@@ -76,7 +76,7 @@ jobs:
 
     - name: Install blueprint deps
       run: |
-        apt-fast install texlive-xetex
+        apt-fast -y install texlive-xetex
         pip install invoke git+https://github.com/plastex/plastex.git git+https://github.com/PatrickMassot/leanblueprint.git
 
     - name: Build blueprint
