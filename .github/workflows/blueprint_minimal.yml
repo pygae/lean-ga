@@ -26,8 +26,8 @@ jobs:
         tlmgr repository remove http://mirror.ctan.org/systems/texlive/tlnet
         tlmgr option repository ftp://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2019/tlnet-final
         # Fixes https://tex.stackexchange.com/questions/537376/tlmgr-unexpected-return-value-from-verify-checksum-5-for-main-repository
-        tlmgr --verify-repo=none install latex latex-bin
-        fmtutil-sys --all
+        sudo tlmgr --verify-repo=none install latex latex-bin
+        sudo fmtutil-sys --all
         
         pip install invoke git+https://github.com/plastex/plastex.git git+https://github.com/PatrickMassot/leanblueprint.git
 
