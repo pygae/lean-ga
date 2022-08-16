@@ -76,13 +76,7 @@ jobs:
 
     - name: Install blueprint deps
       run: |
-        # Fixes https://tex.stackexchange.com/questions/23164/i-cant-find-the-format-file-xelatex-fmt
-        # Fixes https://tex.stackexchange.com/questions/137428/tlmgr-cannot-setup-tlpdb
-        tlmgr init-usertree
-        # Fixes https://tex.stackexchange.com/questions/537376/tlmgr-unexpected-return-value-from-verify-checksum-5-for-main-repository
-        tlmgr --verify-repo=none install latex latex-bin
-        fmtutil-sys --all
-        
+        apt-fast install texlive-xetex
         pip install invoke git+https://github.com/plastex/plastex.git git+https://github.com/PatrickMassot/leanblueprint.git
 
     - name: Build blueprint
