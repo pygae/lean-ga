@@ -1,5 +1,7 @@
 on:
   push:
+    branches-ignore:
+      - blueprint
   pull_request:
 
 jobs:
