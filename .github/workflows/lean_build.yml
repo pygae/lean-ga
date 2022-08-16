@@ -24,7 +24,7 @@ jobs:
         ~/.elan/bin/lean --version
         echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
-    - name: install Python
+    - name: Install Python
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
@@ -68,21 +68,21 @@ jobs:
         name: lean-decl-info
         path: lean-decl-info.tex
 
-    - name: blueprint apt deps with cache
+    - name: Install blueprint apt deps with cache
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
         packages: graphviz libgraphviz-dev pandoc texlive-full texlive-xetex
         version: 1.0
 
-    - name: blueprint deps
+    - name: Install blueprint deps
       run: |
         pip install invoke git+https://github.com/plastex/plastex.git git+https://github.com/PatrickMassot/leanblueprint.git
 
-    - name: build blueprint
+    - name: Build blueprint
       run: |
         inv all
 
-    - name: deploy blueprint
+    - name: Deploy blueprint
       if: contains('|refs/heads/master|refs/heads/blueprint|', github.ref)
       uses: peaceiris/actions-gh-pages@v3
       with:
