@@ -68,16 +68,14 @@ jobs:
         name: lean-decl-info
         path: lean-decl-info.tex
 
-    - name: Set up TeXLive cache
-      uses: actions/cache@v3
+    - name: blueprint apt deps with cache
+      uses: awalsh128/cache-apt-pkgs-action@latest
       with:
-        path: /usr/share/texlive/
-        key: texlive
+        packages: graphviz libgraphviz-dev pandoc texlive-full texlive-xetex
+        version: 1.0
 
     - name: blueprint deps
       run: |
-        sudo apt-get update
-        sudo apt install graphviz libgraphviz-dev pandoc texlive-full texlive-xetex
         pip install invoke git+https://github.com/plastex/plastex.git git+https://github.com/PatrickMassot/leanblueprint.git
 
     - name: build blueprint
