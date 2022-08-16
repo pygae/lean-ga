@@ -21,7 +21,7 @@ jobs:
 
     - name: Install blueprint deps
       run: |
-        sudo texconfig rehash
+        fmtutil ---all
         pip install invoke git+https://github.com/plastex/plastex.git git+https://github.com/PatrickMassot/leanblueprint.git
 
     - name: Build blueprint PDF
