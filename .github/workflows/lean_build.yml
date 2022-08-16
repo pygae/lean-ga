@@ -73,7 +73,7 @@ jobs:
     - name: Install blueprint apt deps with cache
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
-        packages: graphviz libgraphviz-dev
+        packages: graphviz libgraphviz-dev pandoc
         version: 1.0
 
     - uses: actions/cache@v3
