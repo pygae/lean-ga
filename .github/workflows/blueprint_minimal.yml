@@ -16,8 +16,20 @@ jobs:
     - name: Install blueprint apt deps with cache
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
-        packages: graphviz libgraphviz-dev pandoc texlive-full
+        packages: graphviz libgraphviz-dev
         version: 1.0
+
+    - uses: actions/cache@v3
+      name: Tectonic Cache
+      with:
+        path: ~/.cache/Tectonic
+        key: ${{ runner.os }}-tectonic-${{ hashFiles('**/*.tex') }}
+        restore-keys: |
+          ${{ runner.os }}-tectonic-
+    - uses: wtfjoke/setup-tectonic@v1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        biber-version: "latest"
 
     - name: Install blueprint deps
       run: |
