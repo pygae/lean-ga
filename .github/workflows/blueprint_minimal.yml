@@ -20,5 +20,6 @@ jobs:
 
     - name: Build blueprint PDF
       run: |
+        cd blueprint
         inv bp
       
