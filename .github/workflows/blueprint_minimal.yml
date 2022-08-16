@@ -16,19 +16,6 @@ jobs:
 
     - name: Install blueprint deps
       run: |
-        # Fixes https://tex.stackexchange.com/questions/23164/i-cant-find-the-format-file-xelatex-fmt
-        # Fixes https://tex.stackexchange.com/questions/137428/tlmgr-cannot-setup-tlpdb
-        tlmgr init-usertree
-
-        # Fixes https://tex.stackexchange.com/questions/540429/tlmgr-in-ubuntu-20-04-local-tex-live-2019-is-older-than-remote-repository-2
-        tlmgr repository add ftp://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2019/tlnet-final
-        tlmgr repository list
-        tlmgr repository remove http://mirror.ctan.org/systems/texlive/tlnet
-        tlmgr option repository ftp://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2019/tlnet-final
-        # Fixes https://tex.stackexchange.com/questions/537376/tlmgr-unexpected-return-value-from-verify-checksum-5-for-main-repository
-        sudo tlmgr --verify-repo=none install latex latex-bin
-        sudo fmtutil-sys --all
-        
         pip install invoke git+https://github.com/plastex/plastex.git git+https://github.com/PatrickMassot/leanblueprint.git
 
     - name: Build blueprint PDF
