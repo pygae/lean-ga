@@ -77,8 +77,8 @@ jobs:
     - name: Install blueprint deps
       run: |
         # Fixes https://tex.stackexchange.com/questions/23164/i-cant-find-the-format-file-xelatex-fmt
-        sudo tlmgr install latex latex-bin
-        sudo fmtutil-sys --all
+        tlmgr install latex latex-bin
+        fmtutil-sys --all
         pip install invoke git+https://github.com/plastex/plastex.git git+https://github.com/PatrickMassot/leanblueprint.git
 
     - name: Build blueprint
