@@ -23,7 +23,7 @@ def bp(ctx):
 def web(ctx):
     cwd = os.getcwd()
     os.chdir(BP_DIR/'src')
-    run('plastex -c plastex.cfg web.tex', env={'TEXINPUTS': '../src'})
+    run('plastex -c plastex.cfg web.tex')
     os.chdir(cwd)
 
 @task
