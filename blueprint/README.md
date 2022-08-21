@@ -7,6 +7,7 @@
 * Slides
   - [ICCA2020](https://pygae.github.io/lean-ga/ICCA2020/)
   - [Noncommutative algebras, computer algebra systems, and theorem provers](https://eric-wieser.github.io/divf-2022)
+  - [The Universal Property of the Clifford Algebra](https://eric-wieser.github.io/brno-2021/)
 
 Much of the project infrastructure has been adapted from the [liquid tensor experiment](https://leanprover-community.github.io/lean-liquid/) and [Unit Fractions](https://github.com/b-mehta/unit-fractions).
 
