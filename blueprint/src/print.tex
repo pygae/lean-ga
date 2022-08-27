@@ -1,51 +1,19 @@
 \documentclass[11pt]{amsart}
 
-\usepackage{amsfonts, amsthm, amssymb, amsmath}
-\usepackage{tikz-cd}
-\usetikzlibrary{decorations}
+\input{preamble}
 
+% begin print specific preambles
 \usepackage{unicode-math}
 \usepackage{fontspec}
 \setmathfont{latinmodern-math.otf}
 \setmathfont[range=\varnothing]{Asana-Math.otf}
-
-\usepackage{blueprint}
-
 \setlength{\textwidth}{6.5in}
 \setlength{\oddsidemargin}{-0.1in}
 \setlength{\evensidemargin}{-0.1in}
+% end print specific preambles
 
-\numberwithin{equation}{subsection}
-\newtheorem{theorem}{Theorem}
-\numberwithin{theorem}{subsection}
-\newtheorem*{theoremx}{Theorem} % theorem not in dep graph
-\newtheorem*{remarkx}{Remark} % unnumbered remark
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{lemmax}[theorem]{Lemma} % lemma not in dep graph
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{conjecture}[theorem]{Conjecture}
-\newtheorem{problem}[theorem]{Problem}
-\newtheorem{assumption}[theorem]{Assumption}
-\newtheorem{defprop}[theorem]{Definition/Proposition}
-
-\theoremstyle{definition}
-\newtheorem{remark}[theorem]{Remark}
-\newtheorem{exercise}[theorem]{Exercise}
-\newtheorem{warning}[theorem]{Warning}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{question}[theorem]{Question}
-\newtheorem{example}[theorem]{Example}
-\newtheorem{examples}[theorem]{Examples}
-\newtheorem{observation}[theorem]{Observation}
-
-\date{\today}
-
-\setcounter{tocdepth}{1}
-
-% FIXME: Add this later
-% \input{macros}
-
+\usepackage{blueprint}
+\input{macros}
 \input{meta}
 
 \begin{document}

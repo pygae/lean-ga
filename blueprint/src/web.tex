@@ -1,42 +1,13 @@
 \documentclass{article}
 
+\input{preamble}
+
+% begin web specific preambles
+
+% end web specific preambles
+
 \usepackage[dep_graph, coverage, project=../../]{blueprint}
-
-\usepackage{amsfonts, amsthm, amssymb, amsmath}
-\usepackage{tikz-cd}
-\usetikzlibrary{decorations}
-
-\numberwithin{equation}{subsection}
-\newtheorem{theorem}{Theorem}
-\numberwithin{theorem}{subsection}
-\newtheorem*{theoremx}{Theorem} % theorem not in dep graph
-\newtheorem*{remarkx}{Remark} % unnumbered remark
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{lemmax}[theorem]{Lemma} % lemma not in dep graph
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{conjecture}[theorem]{Conjecture}
-\newtheorem{problem}[theorem]{Problem}
-\newtheorem{assumption}[theorem]{Assumption}
-\newtheorem{defprop}[theorem]{Definition/Proposition}
-
-\theoremstyle{definition}
-\newtheorem{remark}[theorem]{Remark}
-\newtheorem{exercise}[theorem]{Exercise}
-\newtheorem{warning}[theorem]{Warning}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{question}[theorem]{Question}
-\newtheorem{example}[theorem]{Example}
-\newtheorem{examples}[theorem]{Examples}
-\newtheorem{observation}[theorem]{Observation}
-
-\date{\today}
-
-\setcounter{tocdepth}{1}
-
-% FIXME: Add this later
-% \input{macros}
-
+\input{macros}
 \input{meta}
 
 \begin{document}

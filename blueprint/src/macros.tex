@@ -1,0 +1,46 @@
+% \newtheoremstyle{example} % name of the style to be used
+% {\topsep} % measure of space to leave above the theorem. E.g.: 3pt
+% {\topsep} % measure of space to leave below the theorem. E.g.: 3pt
+% {} % name of font to use in the body of the theorem
+% {} % measure of space to indent
+% {} % name of head font
+% {} % punctuation between head and body
+% {\newline} % space after theorem head; " " = normal interword space
+% {%
+%   \thmname{\color{RawSienna} #1}~\thmnumber{\color{RawSienna} #2}\thmnote{\color{RawSienna} \ -\ #3}.\\*%
+% }%
+
+\numberwithin{equation}{subsection}
+\newtheorem{theorem}{Theorem}
+\numberwithin{theorem}{subsection}
+\newtheorem*{theoremx}{Theorem} % theorem not in dep graph
+\newtheorem*{remarkx}{Remark} % unnumbered remark
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{lemmax}[theorem]{Lemma} % lemma not in dep graph
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{defprop}[theorem]{Definition/Proposition}
+
+\theoremstyle{definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{warning}[theorem]{Warning}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{question}[theorem]{Question}
+\newtheorem{observation}[theorem]{Observation}
+
+% \theoremstyle{example}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{examples}[theorem]{Examples}
+
+\newcommand{\vocab}[1]{\textbf{\color{MidnightBlue!70!black} #1}}
+
+\newcommand{\CC}{\mathbb C}
+\newcommand{\FF}{\mathbb F}
+\newcommand{\NN}{\mathbb N}
+\newcommand{\QQ}{\mathbb Q}
+\newcommand{\RR}{\mathbb R}
+\newcommand{\ZZ}{\mathbb Z}

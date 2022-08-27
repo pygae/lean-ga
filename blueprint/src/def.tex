@@ -1,0 +1,60 @@
+\subsection{Clifford algebras - definition}
+\label{sec:def}
+
+% \begin{definition}% [Quadratic module]
+%   \label{def:quadratic_module}
+%   \leanok
+
+%   Let $M$ be a module over a commutative ring $R$, let $Q: V \to R$ be a quadratic form.
+
+%   The pair $(M, Q)$ is a \vocab{quadratic module} (over $R$).
+% \end{definition}
+
+% \begin{definition} % [Clifford algebra]
+%     \label{def:clifford_algebra}
+%     \lean{clifford_algebra}
+%     \leanok
+%     \uses{dummy}
+
+%     Let $(M, Q)$ be a quadratic module.
+
+%     A \vocab{Clifford algebra} over $M$, denoted $\mathcal{G}(M)$, is
+%     the quotient of the tensor algebra $T(M)$
+%     by the equivalence relation $v \otimes v \sim Q(v)$.
+% \end{definition}
+
+\begin{definition}[Clifford algebra]
+    \label{def:clifford_algebra}
+    \lean{clifford_algebra}
+    \leanok
+    \uses{dummy}
+
+    Let $M$ be a module over a commutative ring $R$, equipped with a quadratic form $Q: V \to R$.
+
+    A \vocab{Clifford algebra} over $M$, denoted $\mathcal{G}(M)$, is
+    the quotient of the tensor algebra $T(M)$
+    by the equivalence relation $v \otimes v \sim Q(v)$.
+\end{definition}
+
+\begin{remark}
+  \label{mk:two_sided_ideals}
+  
+  In literatures, the quotient is by the two-sided ideal $I_Q$ generated from the set
+  $\{ v \otimes v - Q(v) \:\vert\: v \in V \}$.
+
+  As of writing, mathlib does not have direct support for two-sided ideals,
+  but it does support the equivalent operation of taking the quotient by a suitable closure of
+  a relation like $v \otimes v \approx Q(v)$.
+
+  Hence the definition above.
+
+\end{remark}
+
+\begin{example}[Clifford algebra over a vector space]
+  \label{ex:clifford_algebra_v}
+
+  Let $V$ be a vector space over $\RR$, equipped with a quadratic form $Q$.
+  
+  Since $\RR$ is a commutative ring and $V$ is a module,
+  definition \ref{def:clifford_algebra} of Clifford algebra applies.
+\end{example}
