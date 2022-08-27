@@ -12,10 +12,10 @@
 <meta name="generator" content="plasTeX" />
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>The Blueprint For Formalizing Geometric Algebra in Lean: Introduction</title>
-<link rel="next" href="cha-foundations.html" title="Foundations" />
-<link rel="prev" href="index.html" title="The Blueprint For Formalizing Geometric Algebra in Lean" />
-<link rel="up" href="index.html" title="The Blueprint For Formalizing Geometric Algebra in Lean" />
+<title>The Blueprint For Formalizing Geometric Algebra in Lean: Clifford algebras - definition</title>
+<link rel="next" href="sect0003.html" title="Involutions" />
+<link rel="prev" href="sect0002.html" title="Preliminaries" />
+<link rel="up" href="cha-foundations.html" title="Foundations" />
 <link rel="stylesheet" href="styles/theme-white.css" />
 <link rel="stylesheet" href="styles/amsthm.css" />
 <link rel="stylesheet" href="styles/style.css" />
@@ -30,17 +30,17 @@
 <div class="wrapper">
 <nav class="toc">
 <ul class="sub-toc-0">
-<li class=" active current">
+<li class="">
   <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Introduction</span></a>
  </li>
-<li class="">
+<li class=" active">
   <a href="cha-foundations.html"><span class="toc_ref">1</span> <span class="toc_entry">Foundations</span></a>
-  <span class="expand-toc">▶</span>
-  <ul class="sub-toc-1">
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
      <li class="">
   <a href="sect0002.html"><span class="toc_ref">1.1</span> <span class="toc_entry">Preliminaries</span></a>
  </li>
-<li class="">
+<li class=" active current">
   <a href="sec-def.html"><span class="toc_ref">1.2</span> <span class="toc_entry">Clifford algebras - definition</span></a>
  </li>
 <li class="">
@@ -109,21 +109,80 @@
 
 
 <div class="main-text">
-<h2 id="a0000000002">Introduction</h2>
+<h2 id="sec:def">1.2 Clifford algebras - definition</h2>
 
-<p>The goal of this document is to provide a detailed account of the formalization of Geometric Algebra (GA) a.k.a. Clifford Algebra <span class="cite">
-	[
-	<a href="sect0017.html#hestenes2012clifford" >HS84</a>
-	]
-</span> in the Lean formal proof verification system <span class="cite">
-	[
-	<a href="sect0017.html#lean_2015" >dMKA\(^{+}\)15</a>
-	]
-</span> and using its Mathematical Library <span class="cite">
-	[
-	<a href="sect0017.html#themathlibcommunityLeanMathematicalLibrary2020" >The20</a>
-	]
-</span>.  </p>
+<p><div class="definition_thmwrapper" id="def:clifford_algebra">
+  <div class="definition_thmheading">
+    <span class="definition_thmcaption">
+    Definition
+    </span>
+    <span class="definition_thmlabel">1.2.1</span>
+    <span class="definition_thmtitle">Clifford algebra</span>
+    ✓
+    <div class="thm_icons">
+    <a class="icon proof" href="sec-def.html#def:clifford_algebra">#</a>
+    <button class="modal lean">L∃∀N</button>
+    <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+                <ul class="uses">
+          <li><a href="https://github.com/leanprover-community/mathlib/blob/e1f01165ce7a8b650014e98bab47cdff5317e52e/src/linear_algebra/clifford_algebra/basic.lean#L69">clifford_algebra</a></li>
+        </ul>
+
+      </div>
+    </div>
+
+  </div>
+  </div>
+  <div class="definition_thmcontent">
+  
+<p>Let \(M\) be a module over a commutative ring \(R\), equipped with a quadratic form \(Q: V \to R\). </p>
+<p>A <b class="bfseries"><span style="color:#1F5C65"> Clifford algebra</span></b> over \(M\), denoted \(\mathcal{G}(M)\), is the quotient of the tensor algebra \(T(M)\) by the equivalence relation \(v \otimes v \sim Q(v)\). </p>
+
+  </div>
+</div> </p>
+<p><div class="remark_thmwrapper" id="mk:two_sided_ideals">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">1.2.2</span>
+    <div class="thm_icons">
+    <a class="icon proof" href="sec-def.html#mk:two_sided_ideals">#</a>
+
+  </div>
+  </div>
+  <div class="remark_thmcontent">
+  
+<p>In literatures, the quotient is by the two-sided ideal \(I_Q\) generated from the set \(\{  v \otimes v - Q(v) \: \vert \:  v \in V \} \). </p>
+<p>As of writing, mathlib does not have direct support for two-sided ideals, but it does support the equivalent operation of taking the quotient by a suitable closure of a relation like \(v \otimes v \approx Q(v)\). </p>
+<p>Hence the definition above. </p>
+
+  </div>
+</div> </p>
+<p><div class="example_thmwrapper" id="ex:clifford_algebra_v">
+  <div class="example_thmheading">
+    <span class="example_thmcaption">
+    Example
+    </span>
+    <span class="example_thmlabel">1.2.3</span>
+    <span class="example_thmtitle">Clifford algebra over a vector space</span>
+    <div class="thm_icons">
+    <a class="icon proof" href="sec-def.html#ex:clifford_algebra_v">#</a>
+
+  </div>
+  </div>
+  <div class="example_thmcontent">
+  
+<p>Let \(V\) be a vector space over \(\mathbb R\), equipped with a quadratic form \(Q\). </p>
+<p>Since \(\mathbb R\) is a commutative ring and \(V\) is a module, definition <a href="sec-def.html#def:clifford_algebra">1.2.1</a> of Clifford algebra applies. </p>
+
+  </div>
+</div>  </p>
 
 </div> <!--main-text -->
 </div> <!-- content-wrapper -->
@@ -131,11 +190,11 @@
 </div> <!-- wrapper -->
 
 <nav class="prev_up_next">
-  <a href="index.html" title="The Blueprint For Formalizing Geometric Algebra in Lean"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+  <a href="sect0002.html" title="Preliminaries"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
 </a>
-  <a href="index.html" title="The Blueprint For Formalizing Geometric Algebra in Lean"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+  <a href="cha-foundations.html" title="Foundations"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
 </a>
-  <a href="cha-foundations.html" title="Foundations"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+  <a href="sect0003.html" title="Involutions"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
 </a>
 </nav>
 

@@ -1,0 +1,26 @@
+/*
+    red        RawSienna                #8C2700
+    green      ForestGreen!70!black     #399D3C
+    blue       MidnightBlue             #027E91
+    dark blue  MidnightBlue!70!black    #1F5C65
+    black      RedViolet!70!black
+*/
+.example_thmwrapper {
+    border: 1px solid #8C2700;
+    padding: 1em 1em 1em 1em;
+    background-color: #fddccf;
+}
+
+.example_thmheading {
+    color: #8C2700;
+}
+
+.remark_thmwrapper {
+    border-left: 5px solid #399D3C;
+    padding: 1em 1em 1em 1em;
+    background-color: #d4f0d5;
+}
+
+.remark_thmheading {
+    color: #399D3C;
+}
