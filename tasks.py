@@ -31,7 +31,6 @@ def bp(ctx):
     os.chdir(BP_DIR)
     run('mkdir -p print && cd src && tectonic --keep-intermediates --outdir ../print print.tex')
     run('cp print/print.bbl src/web.bbl')
-    shutil.copy2(BP_DIR/'print'/'print.pdf', BP_DIR/'web'/'blueprint.pdf')
     os.chdir(cwd)
 
 @task
@@ -108,5 +107,5 @@ def all(ctx):
     """
     Run all tasks: `decls`, `bp`, and `web`
     """
-
-    pass
+    
+    shutil.copy2(BP_DIR/'print'/'print.pdf', BP_DIR/'web'/'blueprint.pdf')
