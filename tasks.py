@@ -44,6 +44,11 @@ def web(ctx):
     run('plastex -c plastex.cfg web.tex')
     os.chdir(cwd)
 
+    try:
+        shutil.copy2(BP_DIR/'print'/'print.pdf', BP_DIR/'web'/'blueprint.pdf')
+    except Exception as e:
+        print(e)
+
 @task
 def serve(ctx, port=8080):
     """
@@ -73,7 +78,7 @@ def serve(ctx, port=8080):
 
     os.chdir(cwd)
 
-@task
+@task(bp, web)
 def dev(ctx):
     """
     Serve the blueprint website, rebuild PDF and the website on file changes
@@ -108,4 +113,4 @@ def all(ctx):
     Run all tasks: `decls`, `bp`, and `web`
     """
     
-    shutil.copy2(BP_DIR/'print'/'print.pdf', BP_DIR/'web'/'blueprint.pdf')
+    pass
