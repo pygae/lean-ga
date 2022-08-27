@@ -48,7 +48,7 @@ Then some minimal LaTex related packages if you use tectonic and don't have a us
 # On Ubuntu:
 apt-get install dvisvgm texlive-binaries pdf2svg
 # On Mac:
-
+brew install pdf2svg
 ```
 
 ## Building
