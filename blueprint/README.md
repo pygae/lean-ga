@@ -9,31 +9,46 @@
   - [Noncommutative algebras, computer algebra systems, and theorem provers](https://eric-wieser.github.io/divf-2022)
   - [The Universal Property of the Clifford Algebra](https://eric-wieser.github.io/brno-2021/)
 
-Much of the project infrastructure has been adapted from the [liquid tensor experiment](https://leanprover-community.github.io/lean-liquid/) and [Unit Fractions](https://github.com/b-mehta/unit-fractions).
+Much of the project infrastructure has been adapted from the [liquid tensor experiment](https://leanprover-community.github.io/liquid/) and [Unit Fractions](https://github.com/b-mehta/unit-fractions).
 
 ## Dependencies
 
 If you simply want to produce the `pdf` version of the blueprint, you don't
-need anything beyond your usual TeX installation.
+need anything beyond your usual TeX installation, or you may install and use [tectonic](https://tectonic-typesetting.github.io/en-US/install.html).
 
 In order to build the `html` version you need 
 [plasTeX](https://github.com/plastex/plastex/) and its 
-[blueprint plugin](https://github.com/PatrickMassot/leanblueprint). 
-You first need to make sure you have a decent python (at least 3.6). 
-Then you can install:
+[blueprint plugin](https://github.com/PatrickMassot/leanblueprint) and a few extra dependencies. 
+
+You first need to install Graphviz and PyGraphviz:
 
 ```bash
-pip install git+https://github.com/plastex/plastex.git
-pip install git+https://github.com/PatrickMassot/leanblueprint.git
-pip install invoke
+# On Ubuntu:
+apt-get install graphviz libgraphviz-dev
+# On Mac:
+brew install graphviz
+/opt/homebrew/Cellar/graphviz/5.0.1
+# change `GV_PATH` to the path shown by `brew info graphviz`
+export GV_PATH=/opt/homebrew/Cellar/graphviz/5.0.1/
+pip install --global-option=build_ext \
+              --global-option="-I$GV_PATH/include/" \
+              --global-option="-L$GV_PATH/lib/" \
+              pygraphviz
 ```
 
-Also installing `pdf2svg`, `pdfcrop`, and `xelatex` may be useful:
+and some other Python packages:
 
 ```bash
-apt install pdf2svg
-apt install texlive-extra-utils
-apt install texlive-xetex
+pip install -r requirements.txt
+```
+
+Then some minimal LaTex related packages if you use tectonic and don't have a usual TeX installation:
+
+```bash
+# On Ubuntu:
+apt-get install dvisvgm texlive-binaries pdf2svg
+# On Mac:
+
 ```
 
 ## Building
@@ -42,12 +57,13 @@ NOTE: The following file paths are relative to `blueprint/`.
 
 The source for the blueprint is in `src`. 
 If you only want to build it as a `pdf` file then you can simply run 
-`xelatex print.tex` or `lualatex print.tex` (or even `pdflatex print.tex`
-if you are stuck in the past).
+`xelatex print.tex` or `tectonic print.tex` depending on your TeX choice.
 
 More complicated goals are easier to handle using [python invoke](https://www.pyinvoke.org/).
-You can run `inv -l` to see the available actions. In particular `inv web` will build the website
-and `inv serve` will serve it locally on port 8000.
+You can run `inv -l` to see the available actions and their functions.
+
+In particular `inv bp` will build the PDF file, `inv web` will build the website,
+and `inv dev` will serve the website locally on http://localhost:8080/ and rebuild PDF and the website on file changes. 
 
 Note that the dependency graph using graph-viz won't work if you simply open `web/dep_graph.html` in 
 a browser because of browser paranoia. It has to be accessed through a web server. 

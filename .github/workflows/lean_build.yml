@@ -91,7 +91,7 @@ jobs:
 
     - name: Install blueprint deps
       run: |
-        pip install invoke git+https://github.com/plastex/plastex.git git+https://github.com/PatrickMassot/leanblueprint.git
+        pip install -r requirements.txt
 
     - name: Build blueprint
       run: |
