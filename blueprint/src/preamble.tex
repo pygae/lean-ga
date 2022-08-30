@@ -1,4 +1,4 @@
-\usepackage[dvipsnames]{xcolor}
+\usepackage[usenames,svgnames,dvipsnames]{xcolor}
 \usepackage{amsfonts, amsthm, amssymb, amsmath}
 \usepackage{tikz-cd}
 \usetikzlibrary{decorations}
@@ -8,3 +8,175 @@
 \date{\today}
 
 \setcounter{tocdepth}{1}
+
+\ifplastex
+% begin web specific preambles
+% end web specific preambles
+\else
+% begin print specific preambles
+\usepackage{unicode-math}
+\usepackage{fontspec}
+\setmathfont{latinmodern-math.otf}
+\setmathfont[range=\varnothing]{Asana-Math.otf}
+\setlength{\textwidth}{6.5in}
+\setlength{\oddsidemargin}{-0.1in}
+\setlength{\evensidemargin}{-0.1in}
+% end print specific preambles
+\fi
+
+%%fakesection Defining theorem styles
+
+\ifplastex
+% theorem styles are implemented in style.css for plastex i.e. website
+% here we simply use the default styles
+\else
+% theorem styles are implemented by package `mdframed` for LaTeX i.e. PDF
+% mostly follows https://github.com/vEnhance/napkin/blob/main/tex/preamble.tex
+\usepackage{thmtools}
+\usepackage[framemethod=TikZ]{mdframed}
+
+\theoremstyle{definition}
+\mdfdefinestyle{mdbluebox}{%
+	roundcorner = 10pt,
+	linewidth=1pt,
+	skipabove=12pt,
+	innerbottommargin=9pt,
+	skipbelow=2pt,
+	nobreak=true,
+	linecolor=blue,
+	backgroundcolor=TealBlue!5,
+}
+\declaretheoremstyle[
+	headfont=\sffamily\bfseries\color{MidnightBlue},
+	mdframed={style=mdbluebox},
+	headpunct={\\[3pt]},
+	postheadspace={0pt}
+]{thmbluebox}
+
+\mdfdefinestyle{mdredbox}{%
+	linewidth=0.5pt,
+	skipabove=12pt,
+	frametitleaboveskip=5pt,
+	frametitlebelowskip=0pt,
+	skipbelow=2pt,
+	frametitlefont=\bfseries,
+	innertopmargin=4pt,
+	innerbottommargin=8pt,
+	nobreak=true,
+	linecolor=RawSienna,
+	backgroundcolor=Salmon!5,
+}
+\declaretheoremstyle[
+	headfont=\bfseries\color{RawSienna},
+	mdframed={style=mdredbox},
+	headpunct={\\[3pt]},
+	postheadspace={0pt},
+]{thmredbox}
+
+\mdfdefinestyle{mdgreenbox}{%
+	skipabove=8pt,
+	linewidth=2pt,
+	rightline=false,
+	leftline=true,
+	topline=false,
+	bottomline=false,
+	linecolor=ForestGreen,
+	backgroundcolor=ForestGreen!5,
+}
+\declaretheoremstyle[
+	headfont=\bfseries\sffamily\color{ForestGreen!70!black},
+	bodyfont=\normalfont,
+	spaceabove=2pt,
+	spacebelow=1pt,
+	mdframed={style=mdgreenbox},
+	headpunct={ --- },
+]{thmgreenbox}
+\declaretheoremstyle[
+	headfont=\bfseries\sffamily\color{ForestGreen!70!black},
+	bodyfont=\normalfont,
+	spaceabove=2pt,
+	spacebelow=1pt,
+	mdframed={style=mdgreenbox},
+	headpunct={},
+]{thmgreenbox*}
+
+\mdfdefinestyle{mdblackbox}{%
+	skipabove=8pt,
+	linewidth=3pt,
+	rightline=false,
+	leftline=true,
+	topline=false,
+	bottomline=false,
+	linecolor=black,
+	backgroundcolor=RedViolet!5!gray!5,
+}
+\declaretheoremstyle[
+	headfont=\bfseries,
+	bodyfont=\normalfont\small,
+	spaceabove=0pt,
+	spacebelow=0pt,
+	mdframed={style=mdblackbox}
+]{thmblackbox}
+\fi
+
+%%fakesection Applying theorem styles
+
+\numberwithin{equation}{subsection}
+
+\ifplastex
+
+% \theoremstyle{plain}
+
+\newtheorem{theorem}{Theorem}
+\numberwithin{theorem}{subsection}
+
+\newtheorem*{theoremx}{Theorem} % theorem not in dep graph
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{lemmax}[theorem]{Lemma} % lemma not in dep graph
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+% \newtheorem{conjecture}[theorem]{Conjecture}
+% \newtheorem{defprop}[theorem]{Definition/Proposition}
+
+% \newtheorem{problem}[theorem]{Problem}
+% \newtheorem{assumption}[theorem]{Assumption}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+% \newtheorem{exercise}[theorem]{Exercise}
+% \newtheorem{warning}[theorem]{Warning}
+% \newtheorem{question}[theorem]{Question}
+% \newtheorem{observation}[theorem]{Observation}
+
+\theoremstyle{definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{examples}[theorem]{Examples}
+
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem*{remarkx}{Remark} % unnumbered remark
+
+\else
+
+\theoremstyle{definition}
+\declaretheorem[style=thmbluebox,name=Theorem,numberwithin=subsection]{theorem}
+\declaretheorem[style=thmbluebox,name=Theorem,numberwithin=subsection]{theoremx} % theorem not in dep graph
+\declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
+\declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemmax} % lemma not in dep graph
+\declaretheorem[style=thmbluebox,name=Corollary,sibling=theorem]{corollary}
+\declaretheorem[style=thmbluebox,name=Proposition,sibling=theorem]{proposition}
+
+\theoremstyle{definition}
+% \newtheorem{claim}[theorem]{Claim}
+\newtheorem{definition}[theorem]{Definition}
+% \newtheorem{fact}[theorem]{Fact}
+% \newtheorem{abuse}[theorem]{Abuse of Notation}
+
+\declaretheorem[style=thmredbox,name=Example,sibling=theorem]{example}
+
+\theoremstyle{theorem}
+% \declaretheorem[name=Question,sibling=theorem,style=thmblackbox]{ques}
+% \declaretheorem[name=Exercise,sibling=theorem,style=thmblackbox]{exercise}
+\declaretheorem[name=Remark,sibling=theorem,style=thmgreenbox]{remark}
+\declaretheorem[name=Remark,sibling=theorem,style=thmgreenbox*]{remark*}
+% \declaretheorem[name=Step,style=thmgreenbox]{step} % only used in Lebesgue int
+\fi
