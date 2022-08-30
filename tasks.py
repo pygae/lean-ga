@@ -1,3 +1,9 @@
+"""
+This file specifies tasks mostly for generating the blueprint for formalizing Geometric Algebra.
+
+Check out blueprint/README.md for more information. 
+"""
+
 import os
 import shutil
 from pathlib import Path
@@ -6,8 +12,6 @@ from invoke import run, task
 from mathlibtools.lib import LeanProject
 import http.server
 import socketserver
-
-# from blueprint.tasks import web, bp, serve, dev
 
 ROOT = Path(__file__).parent
 BP_DIR = ROOT/'blueprint'
@@ -82,6 +86,8 @@ def serve(ctx, port=8080):
 def dev(ctx):
     """
     Serve the blueprint website, rebuild PDF and the website on file changes
+
+    Note: this will not run/rerun task `decls`
     """
 
     from watchfiles import run_process, DefaultFilter
