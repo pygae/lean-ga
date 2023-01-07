@@ -241,6 +241,6 @@ variables {Q}
 def wedge [invertible (2 : R)] (x y : clifford_algebra Q) : clifford_algebra Q :=
 (equiv_exterior Q).symm (equiv_exterior Q x * equiv_exterior Q y)
 
-infix ` ⋏ `:70 := wedge
+infix (name := clifford_algebra.wedge) ` ⋏ `:70 := wedge
 
 end clifford_algebra

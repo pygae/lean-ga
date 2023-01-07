@@ -59,8 +59,8 @@ def conj : Π {n}, Gₙ α n → Gₙ α n
 def conj_d : Π {n}, Gₙ α n → Gₙ α n
 | 0 x := x
 | (n + 1) ⟨x₁, x₂⟩ := (conj x₁, -conj x₂)
-prefix `̅`:max := conj  -- this unicode is probably a bad idea...
-notation `̅`:max x `ᵈ` := conj_d x -- this unicode is definitly a bad idea!
+prefix (name := laurent.conj) `̅`:max := conj  -- this unicode is probably a bad idea...
+notation (name := laurent.conj_d) `̅`:max x `ᵈ` := conj_d x -- this unicode is definitly a bad idea!
 
 -- vee and wedge
 reserve infix `⋎`:70
@@ -68,13 +68,13 @@ def vee : Π {n}, Gₙ α n → Gₙ α n → Gₙ α n
 | 0 x y := (x * y : α)
 | (n + 1) ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ := let infix ` ⋎ ` := vee in
     (x₁ ⋎ y₂ + ̅x₂ ⋎ y₁, x₂ ⋎ y₂)
-infix ` ⋎ ` := vee
+infix (name := laurent.vee) ` ⋎ ` := vee
 reserve infix `⋏`:70
 def wedge : Π {n}, Gₙ α n → Gₙ α n → Gₙ α n
 | 0 x y := (x * y : α)
 | (n + 1) ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ := let infix ` ⋏ ` := wedge in
     (x₂ ⋏ y₂, x₁ ⋏ y₂ + x₂ ⋏ ̅y₁ᵈ)
-infix ` ⋏ ` := wedge
+infix (name := laurent.wedge) ` ⋏ ` := wedge
 
 variables {a b : Gₙ α 2}
 #check (a + b) ⋎ (a ⋏ b)
