@@ -78,7 +78,7 @@ namespace graded_module
 
   /- locally bind the notation above to our A and G -/
   -- TODO I have a feeling that this notation would not survive very long
-  local notation `⟨`:0 g`⟩_`:0 r:100 := @has_grade_select.select A G _ _ _ _ g r
+  local notation (name := grade_select) `⟨`:0 g`⟩_`:0 r:100 := @has_grade_select.select A G _ _ _ _ g r
 
   /-- convert from r-vectors to multi-vectors -/
   instance has_coe (r : ℤ) : has_coe (A r) G := { coe := to_fun }
