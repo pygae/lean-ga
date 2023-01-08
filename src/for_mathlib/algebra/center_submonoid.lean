@@ -27,12 +27,19 @@ instance : set_like (center_submonoid R A) A :=
 { coe := center_submonoid.carrier,
   coe_injective' := λ x y h, by { cases x, cases y, congr' } }
 
+instance : submonoid_class (center_submonoid R A) A :=
+{ one_mem := λ S, S.to_submonoid.one_mem,
+  mul_mem := λ S _ _, S.to_submonoid.mul_mem, }
+
 instance : nonempty S.to_sub_mul_action := ⟨⟨1, S.to_submonoid.one_mem⟩⟩
 
+instance : zero_mem_class (center_submonoid R A) A :=
+{ zero_mem := λ S,  S.to_sub_mul_action.zero_mem ⟨1, S.to_submonoid.one_mem⟩, }
+
 lemma smul_mem (r : R) {a : A} : a ∈ S → r • a ∈ S := S.to_sub_mul_action.smul_mem r
-lemma mul_mem {a b : A} : a ∈ S → b ∈ S → a * b ∈ S := S.to_submonoid.mul_mem
-lemma one_mem : (1 : A) ∈ S := S.to_submonoid.one_mem
-lemma zero_mem : (0 : A) ∈ S := S.to_sub_mul_action.zero_mem ⟨1, S.one_mem⟩
+protected lemma mul_mem {a b : A} : a ∈ S → b ∈ S → a * b ∈ S := S.to_submonoid.mul_mem
+protected lemma one_mem : (1 : A) ∈ S := S.to_submonoid.one_mem
+protected lemma zero_mem : (0 : A) ∈ S := S.to_sub_mul_action.zero_mem ⟨1, S.one_mem⟩
 
 @[simp] lemma algebra_map_mem (r : R) : algebra_map R A r ∈ S :=
 by { rw algebra_map_eq_smul_one r, exact S.smul_mem r S.one_mem, }
@@ -65,8 +72,8 @@ instance : monoid_with_zero S :=
 instance [nontrivial A] : nontrivial S :=
 nontrivial_of_ne 0 1 (subtype.ne_of_val_ne zero_ne_one)
 
-@[simp, norm_cast] lemma coe_zero : ((0 : S) : A) = 0 := rfl
-@[simp, norm_cast] lemma coe_smul (k : R) (v : S) : (↑(k • v) : A) = k • v := rfl
+@[simp, norm_cast] protected lemma coe_zero : ((0 : S) : A) = 0 := rfl
+@[simp, norm_cast] protected lemma coe_smul (k : R) (v : S) : (↑(k • v) : A) = k • v := rfl
 
 end semiring
 

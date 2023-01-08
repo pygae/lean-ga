@@ -2,6 +2,7 @@ import linear_algebra.clifford_algebra
 import data.matrix.notation
 import data.real.basic
 import analysis.inner_product_space.basic
+import for_mathlib.analysis.inner_product_space.basic
 /-!
 # Plane-based Geometric algebra
 

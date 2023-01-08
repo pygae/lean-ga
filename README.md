@@ -19,7 +19,6 @@ Of particular interest are:
     * [`clifford_algebra_complex.equiv`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra_complex.equiv): the complex numbers have an isomorphic clifford algebra.
     * [`clifford_algebra_quaternion.equiv`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra_quaternion.equiv): the quaternion numbers have an isomorphic clifford algebra.
     * [`clifford_algebra.as_exterior`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra.as_exterior): the exterior algebra has an isomorphic clifford algebra
-    * [`clifford_algebra.equiv_even`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra.equiv_even): every clifford algebra is isomorphic to the even subalgera of a larger algebra
   * [`exterior_algebra`](https://pygae.github.io/lean-ga-docs/find/exterior_algebra)
   * [`alternating_map`](https://pygae.github.io/lean-ga-docs/find/alternating_map)
 * Translations of other formalizations:
@@ -41,6 +40,11 @@ Update for [ICACGA](https://icacga.org/)
 This repository has been updated to contain some of the examples in the paper _"Computing with the universal properties of the Clifford algebra and the even subalgebra"_, submitted to the ICACGA conference.
 In turn, that paper contains permalinks that lead back to commits within this repository.
 Many of the examples in that paper have since graduated to mathlib and are no longer in this repository.
+
+The main results from that work are:
+
+* [`clifford_algebra.equiv_even`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra.equiv_even): every clifford algebra is isomorphic to the even subalgebra of a larger algebra.
+* [`clifford_algebra.equiv_exterior`](https://pygae.github.io/lean-ga-docs/find/clifford_algebra.equiv_exterior): every clifford algebra over a ring of characteristic not two is isomorphic as a module to the exterior algebra.
 
 Contributing
 ------------
