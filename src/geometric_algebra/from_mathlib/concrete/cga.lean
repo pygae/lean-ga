@@ -48,7 +48,7 @@ def ni : conformalize V := (0, 0, 1)
 
 /-- The embedding of points from `V` to `conformalize V`. -/
 def up (x : V) : conformalize V :=
-n0 + of_v x + (1 / 2 * ∥x∥^2 : ℝ) • ni
+n0 + of_v x + (1 / 2 * ‖x‖^2 : ℝ) • ni
 
 /-! ## The metric on the conformalized space -/
 
@@ -57,7 +57,7 @@ def Q : quadratic_form ℝ (conformalize V) :=
 (bilin_form_of_real_inner.comp v v).to_quadratic_form - (2 : ℝ) • quadratic_form.lin_mul_lin c_n0 c_ni
 
 /-- Show the definition is what we expect. -/
-@[simp] lemma Q_apply (x : conformalize V) : Q x = ∥x.v∥^2 - 2 * (x.c_n0 * x.c_ni) :=
+@[simp] lemma Q_apply (x : conformalize V) : Q x = ‖x.v‖^2 - 2 * (x.c_n0 * x.c_ni) :=
 by simp [Q, inner_self_eq_norm_sq_to_K]
 
 @[simp] lemma Q_up (x : V) : Q (up x) = 0 :=
@@ -85,7 +85,7 @@ by simp [quadratic_form.polar]
 @[simp] lemma Q_polar_of_v_of_v (x y : V) : quadratic_form.polar Q (of_v x) (of_v y) = 2 * inner x y :=
 begin
   rw [quadratic_form.polar, Q_apply],
-  suffices : ∥x + y∥ ^ 2 - ∥x∥ ^ 2 - ∥y∥ ^ 2 = 2 * inner x y,
+  suffices : ‖x + y‖ ^ 2 - ‖x‖ ^ 2 - ‖y‖ ^ 2 = 2 * inner x y,
   { simpa using this, },
   simp only [norm_sq_eq_inner, is_R_or_C.re_to_real],
   rw [inner_add_add_self, ←real_inner_comm y x, two_mul],

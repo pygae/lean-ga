@@ -34,7 +34,7 @@ def Q : quadratic_form ℝ (projectivize V) :=
 (bilin_form_of_real_inner.comp v v).to_quadratic_form
 
 /-- Show the definition is what we expect. -/
-@[simp] lemma Q_apply (x : projectivize V) : Q x = ∥x.v∥^2 :=
+@[simp] lemma Q_apply (x : projectivize V) : Q x = ‖x.v‖^2 :=
 by simp [Q, inner_self_eq_norm_sq_to_K]
 
 variables (V)
