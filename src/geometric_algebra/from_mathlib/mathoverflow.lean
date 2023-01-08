@@ -106,7 +106,7 @@ instance : fact (0 < 2) := ⟨zero_lt_two⟩
 lemma comap_C_span_le_bot :
   k_ideal.comap (C : zmod 2 →+* (mv_polynomial (fin 3) (zmod 2))) ≤ ⊥ :=
 begin
-  refine (ideal.comap_span_le _ _ constant_coeff_C _).trans _,
+  refine (ideal.comap_span_le _ _ (constant_coeff_C _) _).trans _,
   refine (ideal.span_le_bot _).2 _,
   rintro x ⟨_, ⟨i, rfl⟩, rfl⟩,
   rw [ring_hom.map_mul, constant_coeff_X, mul_zero, set.mem_singleton_iff],

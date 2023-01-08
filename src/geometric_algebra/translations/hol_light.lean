@@ -49,7 +49,7 @@ begin
     unfold generic_prod,
     simp [finset.smul_sum, add_smul, smul_add, mul_assoc, mul_left_comm _ c _],
     dsimp only,
-    congr, ext1, congr, ext1, convert pi.single_smul _ _ _; refl
+    congr, ext1 ai, congr, ext1 bi, convert pi.single_smul' (ai ∆ bi) c _; refl
   } }
 end
 

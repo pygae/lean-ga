@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import linear_algebra.clifford_algebra.conjugation
 import linear_algebra.quadratic_form.prod
 import geometric_algebra.from_mathlib.even_odd
+import linear_algebra.clifford_algebra.even_equiv
 /-!
 # The isomorphism with the even subalgebra
 

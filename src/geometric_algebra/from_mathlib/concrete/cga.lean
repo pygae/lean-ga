@@ -1,5 +1,6 @@
 import linear_algebra.clifford_algebra
 import analysis.inner_product_space.basic
+import for_mathlib.analysis.inner_product_space.basic
 import geometric_algebra.from_mathlib.basic
 /-!
 # Conformal Geometric algebra
