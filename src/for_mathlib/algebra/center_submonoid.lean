@@ -72,8 +72,8 @@ instance : monoid_with_zero S :=
 instance [nontrivial A] : nontrivial S :=
 nontrivial_of_ne 0 1 (subtype.ne_of_val_ne zero_ne_one)
 
-@[simp, norm_cast] protected lemma coe_zero : ((0 : S) : A) = 0 := rfl
-@[simp, norm_cast] protected lemma coe_smul (k : R) (v : S) : (↑(k • v) : A) = k • v := rfl
+@[simp, norm_cast] lemma coe_zero : ((0 : S) : A) = 0 := rfl
+@[simp, norm_cast] lemma coe_smul (k : R) (v : S) : (↑(k • v) : A) = k • v := rfl
 
 end semiring
 
