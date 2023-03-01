@@ -4,7 +4,7 @@ Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 
-import linear_algebra.clifford_algebra.even
+import linear_algebra.clifford_algebra.even_equiv
 /-!
 # The isomorphism with the even subalgebra
 
