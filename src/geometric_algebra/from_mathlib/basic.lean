@@ -3,7 +3,7 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import linear_algebra.clifford_algebra
+import linear_algebra.clifford_algebra.basic
 
 variables {R : Type*} [comm_ring R]
 variables {M : Type*} [add_comm_group M] [module R M]

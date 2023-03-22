@@ -4,6 +4,7 @@ Released under MIT license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import geometric_algebra.from_mathlib.basic
+import linear_algebra.clifford_algebra.conjugation
 import algebra.module.opposites
 
 variables {R : Type*} [comm_ring R]

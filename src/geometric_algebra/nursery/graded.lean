@@ -1,5 +1,5 @@
 -- Definition of a graded algebra, with no other operations defined
-import algebra.group
+import algebra.group.basic
 import linear_algebra.tensor_product
 import linear_algebra.dfinsupp
 import tactic.ring

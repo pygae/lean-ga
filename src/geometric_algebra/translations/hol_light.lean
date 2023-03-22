@@ -1,7 +1,7 @@
 import data.nat.basic
 import data.real.basic
 import data.fintype.basic
-import algebra.big_operators
+import algebra.big_operators.basic
 import linear_algebra.basic
 import linear_algebra.tensor_product
 import order.symm_diff

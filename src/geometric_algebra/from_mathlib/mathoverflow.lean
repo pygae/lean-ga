@@ -1,6 +1,6 @@
 import data.mv_polynomial.comm_ring
 import linear_algebra.finsupp
-import linear_algebra.clifford_algebra
+import linear_algebra.clifford_algebra.basic
 import data.zmod.basic
 import data.matrix.notation
 import field_theory.mv_polynomial
@@ -64,8 +64,8 @@ def k_ideal := ideal.span { x : mv_polynomial (fin 3) (zmod 2) | ∃ i, x = X i 
 instance fact.zero_lt_two : fact (0 < 2) := ⟨zero_lt_two⟩
 instance fact.one_lt_two : fact (1 < 2) := ⟨one_lt_two⟩
 
-
-lemma _root_.mv_polynomial.support_smul {S R σ} [comm_semiring R] [monoid S] [distrib_mul_action S R]
+-- note; more general than `mv_polynomial.support_smul`
+lemma _root_.mv_polynomial.support_smul' {S R σ} [comm_semiring R] [monoid S] [distrib_mul_action S R]
   {r : S} {p : mv_polynomial σ R} :
   (r • p).support ⊆ p.support := finsupp.support_smul
 
