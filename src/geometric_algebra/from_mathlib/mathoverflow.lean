@@ -93,6 +93,13 @@ lemma ideal.mem_span_range_iff_exists_fun {ι R} [fintype ι] [comm_semiring R] 
   x ∈ ideal.span (set.range g) ↔ ∃ f : ι → R, ∑ i, f i * g i = x :=
 mem_span_range_iff_exists_fun _
 
+instance ulift.algebra' {R A} [comm_semiring R] [semiring A] [algebra R A] : algebra (ulift R) A :=
+{ to_fun := λ r, algebra_map R A r.down,
+  commutes' := λ r x, algebra.commutes r.down x,
+  smul_def' := λ r x, algebra.smul_def' r.down x,
+  .. ulift.module,
+  .. (algebra_map R A).comp (ulift.ring_equiv : ulift R ≃+* R).to_ring_hom }
+
 end for_mathlib
 
 namespace q60596
@@ -332,16 +339,19 @@ end q60596
 
 /- The generate statement: not every Clifford algebra has an injective algebra map -/
 -- TODO: https://github.com/leanprover-community/mathlib/pull/18644/files
-lemma {v} clifford_algebra.not_forall_algebra_map_injective :
-  ¬∀ (R : Type) (M : Type v) [comm_ring R] [add_comm_group M], by exactI
+lemma {u v} clifford_algebra.not_forall_algebra_map_injective :
+  ¬∀ (R : Type u) (M : Type v) [comm_ring R] [add_comm_group M], by exactI
    ∀ [module R M], by exactI
    ∀ (Q : quadratic_form R M),
     function.injective (algebra_map R $ clifford_algebra Q) :=
 λ h, q60596.algebra_map_not_injective $ λ x y hxy, begin
-  let uQ := q60596.Q.comp (linear_equiv.ulift q60596.k _).to_linear_map,
-  refine h q60596.k (ulift q60596.L)
-    (q60596.Q.comp $ (linear_equiv.ulift q60596.k _).to_linear_map) _,
+  let f := (linear_equiv.ulift.{u} q60596.k q60596.k).symm.to_linear_map.restrict_scalars (ulift.{u} q60596.k),
+  let uQ := (q60596.Q.comp (linear_equiv.ulift q60596.k _).to_linear_map),
+  let uQ := linear_map.comp_quadratic_form f uQ,
+  have := h (ulift q60596.k) (ulift q60596.L) uQ,
   let uC := clifford_algebra.map q60596.Q uQ
     (linear_equiv.ulift q60596.k q60596.L).symm.to_linear_map (λ _, rfl),
   simpa using uC.congr_arg hxy,
 end
+
+#check linear_map.comp_quadratic_form
