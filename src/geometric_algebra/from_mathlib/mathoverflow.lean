@@ -9,7 +9,7 @@ import algebra.char_p.quotient
 import data.nat.prime
 import algebra.char_p.pi
 import algebra.char_p.two
-
+import ring_theory.mv_polynomial.ideal
 /-!
 An attempt to formalize https://mathoverflow.net/questions/60596/clifford-pbw-theorem-for-quadratic-form/87958#87958
 
@@ -59,7 +59,7 @@ namespace q60596
 
 open mv_polynomial
 
-def k_ideal := ideal.span { x : mv_polynomial (fin 3) (zmod 2) | ∃ i, x = X i * X i }
+def k_ideal := ideal.span (set.range (λ i, (X i * X i : mv_polynomial (fin 3) (zmod 2))))
 
 instance fact.zero_lt_two : fact (0 < 2) := ⟨zero_lt_two⟩
 instance fact.one_lt_two : fact (1 < 2) := ⟨one_lt_two⟩
@@ -74,25 +74,10 @@ open_locale big_operators
 lemma mem_k_ideal_iff (x : mv_polynomial (fin 3) (zmod 2)) :
   x ∈ k_ideal ↔ ∃ f : fin 3 → mv_polynomial (fin 3) (zmod 2), x = ∑ i, f i * X i * X i   :=
 begin
-  split,
-  { intro hx,
-    apply submodule.span_induction hx,
-    { rintros x ⟨i, rfl⟩,
-      refine ⟨pi.single i 1, _⟩,
-      rw [finset.sum_eq_single_of_mem i (finset.mem_univ _), pi.single_eq_same, one_mul],
-      intros b _ hb,
-      rw [pi.single_eq_of_ne hb, zero_mul, zero_mul], },
-    { refine ⟨0, _⟩, simp only [pi.zero_apply, zero_mul, finset.sum_const_zero] },
-    { rintros x y ⟨fx, rfl⟩ ⟨fy, rfl⟩,
-      refine ⟨fx + fy, _⟩,
-      simp only [finset.sum_add_distrib, add_mul, pi.add_apply], },
-    { rintros c x ⟨fx, rfl⟩,
-      refine ⟨c • fx, _⟩,
-      simp only [finset.mul_sum, pi.smul_apply, smul_eq_mul, ←mul_assoc] } },
-  { rintro ⟨f, rfl⟩,
-    refine submodule.sum_mem _ (λ i _, _),
-    rw mul_assoc,
-    exact ideal.mul_mem_left _ _ (ideal.subset_span ⟨_, rfl⟩) }
+  dunfold k_ideal ideal.span,
+  rw mem_span_range_iff_exists_fun (mv_polynomial (fin 3) (zmod 2)),
+  simp_rw [smul_eq_mul, mul_assoc, eq_comm],
+  apply_instance,
 end
 
 -- 𝔽₂[α, β, γ] / (α², β², γ²)
