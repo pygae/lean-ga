@@ -67,6 +67,32 @@ lemma _root_.mv_polynomial.support_smul' {S R σ} [comm_semiring R] [monoid S] [
   {r : S} {p : mv_polynomial σ R} :
   (r • p).support ⊆ p.support := finsupp.support_smul
 
+lemma finsupp.to_multiset_sup {α} [decidable_eq α] (f g : α →₀ ℕ) :
+  (f ⊔ g).to_multiset = f.to_multiset ∪ g.to_multiset :=
+begin
+  ext,
+  simp_rw [multiset.count_union, finsupp.count_to_multiset, finsupp.sup_apply, sup_eq_max],
+end
+
+lemma finsupp.to_multiset_inf {α} [decidable_eq α] (f g : α →₀ ℕ) :
+  (f ⊓ g).to_multiset = f.to_multiset ∩ g.to_multiset :=
+begin
+  ext,
+  simp_rw [multiset.count_inter, finsupp.count_to_multiset, finsupp.inf_apply, inf_eq_min],
+end
+
+/-- `equiv.ulift` as a `linear_equiv`. -/
+@[simps]
+def {w u v} linear_equiv.ulift
+  (R : Type u) (M : Type v) [semiring R] [add_comm_monoid M] [module R M]: ulift.{w} M ≃ₗ[R] M :=
+{ map_add' := λ x y, rfl,
+  map_smul' := λ c x, rfl,
+  .. equiv.ulift }
+
+lemma ideal.mem_span_range_iff_exists_fun {ι R} [fintype ι] [comm_semiring R] (g : ι → R) (x : R) :
+  x ∈ ideal.span (set.range g) ↔ ∃ f : ι → R, ∑ i, f i * g i = x :=
+mem_span_range_iff_exists_fun _
+
 end for_mathlib
 
 namespace q60596
@@ -77,16 +103,7 @@ open mv_polynomial
 def k_ideal : ideal (mv_polynomial (fin 3) (zmod 2)) :=
 ideal.span (set.range (λ i, (X i * X i : mv_polynomial (fin 3) (zmod 2))))
 
--- lemma mem_k_ideal_iff (x : mv_polynomial (fin 3) (zmod 2)) :
---   x ∈ k_ideal ↔ ∃ f : fin 3 → mv_polynomial (fin 3) (zmod 2), x = ∑ i, f i * X i * X i :=
--- begin
---   dunfold k_ideal ideal.span,
---   rw mem_span_range_iff_exists_fun (mv_polynomial (fin 3) (zmod 2)),
---   simp_rw [smul_eq_mul, mul_assoc, eq_comm],
---   apply_instance,
--- end
-
-lemma mem_k_ideal_iff' (x : mv_polynomial (fin 3) (zmod 2)) :
+lemma mem_k_ideal_iff (x : mv_polynomial (fin 3) (zmod 2)) :
   x ∈ k_ideal ↔ ∀ (m : fin 3 →₀ ℕ), m ∈ x.support → ∃ i, 2 ≤ m i :=
 begin
   have : k_ideal =
@@ -99,7 +116,7 @@ end
 lemma X0_X1_X2_nmem_k_ideal : (X 0 * X 1 * X 2 : mv_polynomial (fin 3) (zmod 2)) ∉ k_ideal :=
 begin
   intro h,
-  simp_rw [mem_k_ideal_iff', support_mul_X, support_X, finset.map_singleton,
+  simp_rw [mem_k_ideal_iff, support_mul_X, support_X, finset.map_singleton,
     add_right_embedding_apply, finset.mem_singleton, forall_eq,
     ←fin.sum_univ_three (λ i, finsupp.single i 1), ←finsupp.equiv_fun_on_finite_const,
     finsupp.equiv_fun_on_finite_symm_apply_to_fun] at h,
@@ -111,7 +128,7 @@ end
 lemma mul_self_mem_k_ideal_of_X0_X1_X2_mul_mem {x : mv_polynomial (fin 3) (zmod 2)}
   (h : X 0 * X 1 * X 2 * x ∈ k_ideal) : x * x ∈ k_ideal :=
 begin
-  rw mem_k_ideal_iff' at h,
+  rw mem_k_ideal_iff at h,
   have : x ∈ ideal.span ((X : fin 3 → mv_polynomial _ (zmod 2)) '' set.univ),
   { rw [mem_ideal_span_X_image],
     intros m hm,
@@ -126,7 +143,7 @@ begin
     cases nat.le_of_add_le_add_left hi },
   rw [as_sum x, char_two.sum_mul_self],
   refine sum_mem (λ m hm, _),
-  rw [mem_k_ideal_iff', monomial_mul],
+  rw [mem_k_ideal_iff, monomial_mul],
   intros m' hm',
   obtain rfl := finset.mem_singleton.1 (support_monomial_subset hm'),
   rw mem_ideal_span_X_image at this,
@@ -137,10 +154,6 @@ end
 -- 𝔽₂[α, β, γ] / (α², β², γ²)
 @[derive [comm_ring, comm_semiring, ring, semiring, add_comm_group, add_comm_monoid]]
 def k := _ ⧸ k_ideal
-
-instance : fact (nat.prime 2) := ⟨nat.prime_two⟩
-
-instance : fact (0 < 2) := ⟨zero_lt_two⟩
 
 lemma comap_C_span_le_bot :
   k_ideal.comap (C : zmod 2 →+* (mv_polynomial (fin 3) (zmod 2))) ≤ ⊥ :=
@@ -157,14 +170,10 @@ begin
   dunfold k,
   rw char_p.quotient_iff'',
   have : (nat.cast_ring_hom (mv_polynomial (fin 3) (zmod 2))) = C.comp (nat.cast_ring_hom _),
-  { ext1 r, exact (map_nat_cast (C : _ →+* mv_polynomial (fin 3) (zmod 2)) r).symm, },
+  { ext1 r, refl },
   rw [this, ←ideal.comap_comap, ←ring_hom.comap_ker],
-  apply ideal.comap_mono,
-  refine comap_C_span_le_bot.trans bot_le,
+  exact ideal.comap_mono (comap_C_span_le_bot.trans bot_le),
 end
-
-lemma two_eq_zero : (2 : k) = 0 :=
-by simpa only [nat.cast_bit0, nat.cast_one] using char_p.cast_eq_zero k 2
 
 abbreviation α : k := ideal.quotient.mk _ (mv_polynomial.X 0)
 abbreviation β : k := ideal.quotient.mk _ (mv_polynomial.X 1)
@@ -174,10 +183,9 @@ abbreviation γ : k := ideal.quotient.mk _ (mv_polynomial.X 2)
 @[simp] lemma X_sq (i : fin 3) :
   ideal.quotient.mk _ (mv_polynomial.X i) * ideal.quotient.mk _ (mv_polynomial.X i) = (0 : k) :=
 begin
-  change ideal.quotient.mk _ _ = ideal.quotient.mk _ _,
-  simp only [ideal.quotient.eq, sub_zero, ideal.span],
-  apply submodule.subset_span,
-  refine ⟨i, rfl⟩,
+  change ideal.quotient.mk _ _ = _,
+  rw [ideal.quotient.eq_zero_iff_mem],
+  exact ideal.subset_span ⟨i, rfl⟩,
 end
 
 /-- If an element multiplied by `αβγ` is zero then it squares to zero. -/
@@ -201,18 +209,12 @@ def L_func : (fin 3 → k) →ₗ[k] k :=
 @[derive [add_comm_group, module k]]
 def L := _ ⧸ L_func.ker
 
--- local attribute [irreducible] k
-
 def sq {ι R : Type*} [comm_ring R] (i : ι) : quadratic_form R (ι → R) :=
 quadratic_form.sq.comp $ linear_map.proj i
 
 lemma sq_map_add_char_two {ι R : Type*} [comm_ring R] [char_p R 2] (i : ι) (a b : ι → R) :
   sq i (a + b) = sq i a + sq i b :=
-begin
-  dsimp [sq],
-  rw [add_mul, mul_add, mul_add, ←char_two.neg_eq (b i * a i)],
-  ring
-end
+char_two.add_mul_self _ _
 
 lemma sq_map_sub_char_two {ι R : Type*} [comm_ring R] [char_p R 2] (i : ι) (a b : ι → R) :
   sq i (a - b) = sq i a - sq i b :=
@@ -223,6 +225,7 @@ end
 
 open_locale big_operators
 
+/-- The quadratic form (metric) is just euclidean -/
 def Q' : quadratic_form k (fin 3 → k) :=
 ∑ i, sq i
 
@@ -263,7 +266,7 @@ begin
     add_zero, add_zero],
 end
 
-/-- The quadratic form (metric) is just euclidean -/
+/-- `Q'`, lifted to operate on the quotient space `L`. -/
 @[simps]
 def Q : quadratic_form k L :=
 quadratic_form.of_polar
@@ -282,7 +285,7 @@ quadratic_form.of_polar
 
 open clifford_algebra
 
-/-! Shorthand for basis vectors in the cliford algebra -/
+/-! Shorthand for basis vectors in the Clifford algebra -/
 abbreviation x' : clifford_algebra Q := ι Q $ submodule.quotient.mk (pi.single 0 1)
 abbreviation y' : clifford_algebra Q := ι Q $ submodule.quotient.mk (pi.single 1 1)
 abbreviation z' : clifford_algebra Q := ι Q $ submodule.quotient.mk (pi.single 2 1)
@@ -327,76 +330,18 @@ end
 
 end q60596
 
--- open mv_polynomial
-
--- #print degree_of
-
--- example :
---   let s := ideal.span {x : mv_polynomial (fin 3) (zmod 2) | ∃ (i : fin 3), x = X i * X i} in
---   (X 0 * X 1 * X 2 : mv_polynomial (fin 3) (zmod 2)) ∉  s :=
--- begin
---   intros,
---   let s' := submodule.span (zmod 2) {x : mv_polynomial (fin 3) (zmod 2) | ∃ f r i, x = monomial f r ∧ 2 ≤ f i},
---   have hXii : ∀ i, (X i * X i : mv_polynomial (fin 3) (zmod 2)) = monomial (finsupp.single i 2) 1,
---   { intro i, simp [X], congr, sorry /- trivial -/},
---   have : ∀ x, x ∈ s ↔ x ∈ s',
---   begin
---     intro x,
---     split;
---     intro h,
---     { refine submodule.span_induction h _ s'.zero_mem (λ x y, s'.add_mem) _,
---       { rintros x ⟨i, rfl⟩,
---         refine submodule.subset_span ⟨finsupp.single i 2, 1, i, hXii i, le_of_eq _⟩,
---         simp, },
---       { rintros x y hy,
---         rw smul_eq_mul,
---         sorry -- tricky
---         },},
---     { refine submodule.span_induction h _ s.zero_mem (λ x y, s.add_mem) _,
---       { rintros x ⟨f, r, i, rfl, hx⟩,
---         have : monomial f r = monomial (f - finsupp.single i 2) r * monomial (finsupp.single i 2) 1 :=
---         begin
---           simp,
---           congr,
---           ext,
---           by_cases h : a = i; [simp [h], simp [finsupp.single_eq_of_ne (ne.symm h)]],
---           rw nat.sub_add_cancel hx,
---         end,
---         rw this,
---         refine s.mul_mem_left _ (submodule.subset_span ⟨i, (hXii i).symm⟩), },
---       { rintros x y hy,
---         rw algebra.smul_def,
---         exact s.mul_mem_left _ hy, }, },
---   end,
---   intro h,
---   rw this at h,
---   sorry,
--- end
-
--- variables {R : Type*} {σ : Type*} [comm_semiring R]
-
--- lemma degrees_mul_of_disjoint {p q : mv_polynomial σ R} (h : multiset.disjoint p.degrees q.degrees) :
---   (p * q).degrees = p.degrees + q.degrees :=
--- begin
---   apply le_antisymm,
---   { apply degrees_mul },
---   { apply multiset.add_le
---     { apply le_degrees_add h },
---     { rw add_comm, apply le_degrees_add h.symm } }
--- end
-
--- lemma foo {α β : Type*} [has_zero β] (a :α) (b : β) (h : b ≠ 0): (finsupp.single a b).support = {a} := finsupp.support_single_ne_zero h
-
--- lemma degrees_X (n : σ) [nontrivial R] : degrees (X n : mv_polynomial σ R) = {n} :=
--- (degrees_monomial_eq _ _ one_ne_zero).trans (finsupp.to_multiset_single _ _)
-
--- -- by simp [degrees, X, monomial, finsupp.support_single_ne_zero (one_ne_zero)]
-
--- #check finsupp.support_mul
-
--- def quotient.mk.alg {R : Type*} [comm_ring R] (I : ideal R) : R → I.quotient := begin
---   have := I.quotient.mk _,
-
--- end
-
--- •
+/- The generate statement: not every Clifford algebra has an injective algebra map -/
+-- TODO: https://github.com/leanprover-community/mathlib/pull/18644/files
+lemma {v} clifford_algebra.not_forall_algebra_map_injective :
+  ¬∀ (R : Type) (M : Type v) [comm_ring R] [add_comm_group M], by exactI
+   ∀ [module R M], by exactI
+   ∀ (Q : quadratic_form R M),
+    function.injective (algebra_map R $ clifford_algebra Q) :=
+λ h, q60596.algebra_map_not_injective $ λ x y hxy, begin
+  let uQ := q60596.Q.comp (linear_equiv.ulift q60596.k _).to_linear_map,
+  refine h q60596.k (ulift q60596.L)
+    (q60596.Q.comp $ (linear_equiv.ulift q60596.k _).to_linear_map) _,
+  let uC := clifford_algebra.map q60596.Q uQ
+    (linear_equiv.ulift q60596.k q60596.L).symm.to_linear_map (λ _, rfl),
+  simpa using uC.congr_arg hxy,
+end
