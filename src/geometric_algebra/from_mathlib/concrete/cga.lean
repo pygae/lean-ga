@@ -12,7 +12,7 @@ A typical usage would use `CGA (euclidean_space ℝ 3)`.
 -- the real numbers are not computable
 noncomputable theory
 
-variables (V : Type*) [inner_product_space ℝ V]
+variables (V : Type*) [normed_add_comm_group V] [inner_product_space ℝ V]
 
 /-! ## The conformalized space `conformalize V` -/
 /-- A conformalized vector has additional $n_0$ and $n_\infty$ components -/
@@ -86,7 +86,7 @@ begin
   rw [quadratic_form.polar, Q_apply],
   suffices : ‖x + y‖ ^ 2 - ‖x‖ ^ 2 - ‖y‖ ^ 2 = 2 * inner x y,
   { simpa using this, },
-  simp only [norm_sq_eq_inner, is_R_or_C.re_to_real],
+  simp only [@norm_sq_eq_inner ℝ, is_R_or_C.re_to_real],
   rw [inner_add_add_self, ←real_inner_comm y x, two_mul],
   abel,
 end
@@ -95,7 +95,7 @@ end
 @[simp] lemma Q_polar_up (x y : V) : quadratic_form.polar Q (up x) (up y) = -dist x y ^ 2 :=
 begin
   dunfold up,
-  simp only [dist_eq_norm, norm_sq_eq_inner, is_R_or_C.re_to_real, inner_sub_sub_self, ←real_inner_comm y x],
+  simp only [dist_eq_norm, @norm_sq_eq_inner ℝ, is_R_or_C.re_to_real, inner_sub_sub_self, ←real_inner_comm y x],
   simp [mul_right_comm, two_mul],
   abel
 end

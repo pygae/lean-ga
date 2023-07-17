@@ -15,7 +15,7 @@ This file is underdeveloped compared to one for `conformalize`, but is included 
 -- the real numbers are not computable
 noncomputable theory
 
-variables (V : Type*) [inner_product_space ℝ V]
+variables (V : Type*) [normed_add_comm_group V] [inner_product_space ℝ V]
 
 /-- A projectivized vector has additional e0 component -/
 @[derive [add_comm_group, module ℝ]]
