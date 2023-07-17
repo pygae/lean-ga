@@ -58,8 +58,14 @@ def comp (g : Q₂.isometric_map Q₃) (f : Q₁.isometric_map Q₂) : Q₁.isom
   map_app' := by { intro m, rw [← f.map_app, ← g.map_app] },
   .. (g.to_linear_map : M₂ →ₗ[R] M₃).comp (f.to_linear_map : M₁ →ₗ[R] M₂) }
 
-@[simp] lemma to_linear_map_comp  (g : Q₂.isometric_map Q₃) (f : Q₁.isometric_map Q₂) :
+@[simp] lemma to_linear_map_comp (g : Q₂.isometric_map Q₃) (f : Q₁.isometric_map Q₂) :
   (g.comp f).to_linear_map = g.to_linear_map.comp f.to_linear_map := rfl
 
+/-- Isometries are isometric maps -/
+@[simps?]
+def _root_.quadratic_form.isometry.to_isometric_map (g : Q₁.isometry Q₂) :
+  Q₁.isometric_map Q₂ := { ..g }
+
 end isometric_map
+
 end quadratic_form
