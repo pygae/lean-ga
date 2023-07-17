@@ -49,7 +49,7 @@ instance concrete_category : concrete_category.{v} (QuadraticModule.{v} R) :=
 { forget := { obj := λ R, R, map := λ R S f, (f : R → S) },
   forget_faithful := { } }
 
-instance has_forget_to_AddCommGroup : has_forget₂ (QuadraticModule R) (Module R) :=
+instance has_forget_to_Module : has_forget₂ (QuadraticModule R) (Module R) :=
 { forget₂ :=
   { obj := λ M, Module.of R M,
     map := λ M₁ M₂ f, isometric_map.to_linear_map f } }
