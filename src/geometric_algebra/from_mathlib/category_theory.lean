@@ -4,8 +4,16 @@ import geometric_algebra.from_mathlib.basic
 import for_mathlib.linear_algebra.quadratic_form.isometric_map
 
 open category_theory
+open quadratic_form
 
-/-! # Category-theoretic interpretations of `clifford_algebra` -/
+/-! # Category-theoretic interpretations of `clifford_algebra`
+
+## Main definitions
+
+* `QuadraticModule R`: the category of quadratic modules
+* `CliffordAlgebra`: the functor from quadratic modules to algebras
+
+-/
 
 universes v u
 
@@ -20,7 +28,6 @@ structure QuadraticModule extends Module.{v} R :=
 variables {R}
 
 namespace QuadraticModule
-open quadratic_form
 
 instance : has_coe_to_sort (QuadraticModule.{v} R) (Type v) := ⟨QuadraticModule.carrier⟩
 
@@ -51,6 +58,8 @@ instance (M N : QuadraticModule R) : linear_map_class (M ⟶ N) R M N :=
 { coe := λ f, f,
   .. isometric_map.semilinear_map_class }
 
+end QuadraticModule
+
 /-- The "clifford algebra" functor, sending a quadratic R-module V to the clifford algebra on `V`. -/
 @[simps]
 def CliffordAlgebra : QuadraticModule.{u} R ⥤ Algebra.{u} R :=
@@ -67,5 +76,3 @@ def CliffordAlgebra : QuadraticModule.{u} R ⥤ Algebra.{u} R :=
     simp only [free_algebra.lift_ι_apply, category_theory.coe_comp, function.comp_app,
       types_comp_apply]
   end }
-
-end QuadraticModule
