@@ -3,19 +3,22 @@ import linear_algebra.clifford_algebra.basic
 import geometric_algebra.from_mathlib.basic
 import for_mathlib.linear_algebra.quadratic_form.isometric_map
 
-open category_theory
-open quadratic_form
-
 /-! # Category-theoretic interpretations of `clifford_algebra`
 
 ## Main definitions
 
 * `QuadraticModule R`: the category of quadratic modules
 * `CliffordAlgebra`: the functor from quadratic modules to algebras
+* `clifford_algebra.is_initial`: the clifford algebra is initial in the category of pairs
+  `(A, clifford_hom Q A)`.
 
 -/
 
-universes v u
+open category_theory
+open quadratic_form
+open clifford_algebra
+
+universes v u w
 
 set_option old_structure_cmd true
 
@@ -76,3 +79,53 @@ def CliffordAlgebra : QuadraticModule.{u} R ⥤ Algebra.{u} R :=
     simp only [free_algebra.lift_ι_apply, category_theory.coe_comp, function.comp_app,
       types_comp_apply]
   end }
+.
+
+variables {M : Type w} [add_comm_group M] [module R M] (Q : quadratic_form R M)
+
+/--
+The category of `clifford_hom`s
+
+https://empg.maths.ed.ac.uk/Activities/Spin/Lecture1.pdf
+-/
+structure Cliff :=
+(alg : Algebra.{v} R)
+(hom : clifford_hom Q alg)
+
+namespace Cliff
+
+/-- Convert a `clifford_hom Q A` to an element of `Cliff Q`. -/
+def of {A : Type v} [ring A] [algebra R A] (f : clifford_hom Q A) : Cliff.{v} Q :=
+{ alg := Algebra.of R A, hom := f } 
+
+instance : category (Cliff Q) :=
+{ hom := λ f g, {h : f.alg ⟶ g.alg // (alg_hom.to_linear_map h).comp f.hom.val = g.hom.val },
+  id := λ f, ⟨𝟙 _, linear_map.ext $ λ _, rfl⟩,
+  comp := λ x y z f g, ⟨f.val ≫ g.val,
+    by simp only [category_struct.comp, alg_hom.comp_to_linear_map, linear_map.comp_assoc,
+      f.property, g.property]⟩,
+  id_comp' := λ x y f, subtype.ext $ category.id_comp f,
+  comp_id' := λ x y f, subtype.ext $ category.comp_id f,
+  assoc' := λ w x y z f g h, subtype.ext $ category.assoc f g h }
+
+instance concrete_category : concrete_category.{v} (Cliff.{v} Q) :=
+{ forget := { obj := λ x, x.alg, map := λ x y f, (forget _).map (subtype.val f : _) },
+  forget_faithful := { } }
+
+instance has_forget_to_Algebra : has_forget₂ (Cliff Q) (Algebra R) :=
+{ forget₂ :=
+  { obj := λ x, x.alg,
+    map := λ x y f, f.val } }
+
+instance (Y : Cliff Q) : unique (Cliff.of Q ⟨ι Q, ι_sq_scalar Q⟩ ⟶ Y) :=
+{ default := ⟨clifford_algebra.lift Q Y.hom, let ⟨A, ι, hι⟩ := Y in ι_comp_lift ι hι⟩,
+  uniq := λ f, subtype.ext begin
+    obtain ⟨A, ι, hι⟩ := Y,
+    exact (clifford_algebra.lift_unique _ hι f.val).mp f.prop,
+  end }
+
+end Cliff
+
+/-- The clifford algebra is the initial obect in in `Cliff`. -/
+def clifford_algebra.is_initial : limits.is_initial (Cliff.of Q ⟨ι Q, ι_sq_scalar Q⟩) :=
+limits.is_initial.of_unique _
