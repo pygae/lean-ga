@@ -84,7 +84,7 @@ def CliffordAlgebra : QuadraticModule.{u} R ⥤ Algebra.{u} R :=
 variables {M : Type w} [add_comm_group M] [module R M] (Q : quadratic_form R M)
 
 /--
-The category of `clifford_hom`s
+The category of pairs of algebras and `clifford_hom`s to those algebras.
 
 https://empg.maths.ed.ac.uk/Activities/Spin/Lecture1.pdf
 -/
