@@ -7,21 +7,23 @@ variables [inner_product_space ℝ V] [inner_product_space ℝ W]
 
 open_locale tensor_product
 
+lemma is_symm_bilin_form_of_real_inner : (bilin_form_of_real_inner : bilin_form ℝ V).is_symm :=
+λ x y, real_inner_comm _ _
+
+lemma pos_def_bilin_form_of_real_inner :
+  (bilin_form_of_real_inner : bilin_form ℝ V).to_quadratic_form.pos_def :=
+λ x hx, lt_of_le_of_ne' real_inner_self_nonneg (inner_self_ne_zero.mpr hx)
+
 noncomputable instance : inner_product_space.core ℝ (V ⊗[ℝ] W) :=
 { inner := λ x y, bilin_form_of_real_inner.tmul bilin_form_of_real_inner x y,
   conj_symm := λ x y,
-    bilin_form.is_symm.tmul (λ x y, real_inner_comm _ _) (λ x y, real_inner_comm _ _) y x,
+    bilin_form.is_symm.tmul is_symm_bilin_form_of_real_inner is_symm_bilin_form_of_real_inner y x,
   nonneg_re := λ x, begin
     simp only [is_R_or_C.re_to_real],
-    induction x using tensor_product.induction_on with v w x y hx hy,
-    { simp only [bilin_form.zero_right] },
-    { simp only [bilin_form.tmul.equations._eqn_1, bilin_form_of_real_inner_apply,
-        bilin_form.tensor_distrib_tmul],
-      exact mul_nonneg real_inner_self_nonneg real_inner_self_nonneg, },
-    { simp only [bilin_form.add_left, bilin_form.add_right],
-      sorry },
+    exact (pos_def_bilin_form_of_real_inner.tmul pos_def_bilin_form_of_real_inner).nonneg _, 
   end,
-  definite := sorry,
+  definite := λ x hx,
+    (pos_def_bilin_form_of_real_inner.tmul pos_def_bilin_form_of_real_inner).anisotropic _ hx,
   add_left := bilin_form.add_left,
   smul_left := λ _ _ _, bilin_form.bilin_smul_left _ _ _ _ }
 

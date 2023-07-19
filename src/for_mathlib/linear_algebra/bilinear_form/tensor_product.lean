@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import linear_algebra.bilinear_form.tensor_product
+import linear_algebra.quadratic_form.basic
+import data.is_R_or_C.basic
 
 universes u v w
 variables {ι : Type*} {R : Type*} {M₁ M₂ : Type*}
@@ -31,3 +33,14 @@ tensor_product.ext' $ λ x₁ x₂, tensor_product.ext' $ λ y₁ y₂,
 end comm_semiring
 
 end bilin_form
+
+namespace quadratic_form
+variables [add_comm_group M₁] [add_comm_group M₂]
+variables [module ℝ M₁] [module ℝ M₂]
+
+lemma _root_.quadratic_form.pos_def.tmul {B₁ : bilin_form ℝ M₁} {B₂ : bilin_form ℝ M₂}
+  (hB₁ : B₁.to_quadratic_form.pos_def) (hB₂ : B₂.to_quadratic_form.pos_def) :
+  (B₁.tmul B₂).to_quadratic_form.pos_def :=
+sorry
+
+end quadratic_form
