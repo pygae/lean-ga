@@ -120,6 +120,6 @@ instance (Y : Cliff Q) : unique (Cliff.of Q ⟨ι Q, ι_sq_scalar Q⟩ ⟶ Y) :=
 
 end Cliff
 
-/-- The clifford algebra is the initial obect in in `Cliff`. -/
+/-- The clifford algebra is the initial object in `Cliff`. -/
 def clifford_algebra.is_initial : limits.is_initial (Cliff.of Q ⟨ι Q, ι_sq_scalar Q⟩) :=
 limits.is_initial.of_unique _
