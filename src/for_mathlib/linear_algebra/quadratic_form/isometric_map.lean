@@ -6,13 +6,14 @@ Note that `quadratic_form.isometry` is already taken for isometric equivalences.
 -/
 set_option old_structure_cmd true
 
-variables {ι R M M₁ M₂ M₃ : Type*}
+variables {ι R M M₁ M₂ M₃ M₄ : Type*}
 
 namespace quadratic_form
 
 variables [semiring R]
-variables [add_comm_monoid M] [add_comm_monoid M₁] [add_comm_monoid M₂] [add_comm_monoid M₃]
-variables [module R M] [module R M₁] [module R M₂] [module R M₃]
+variables [add_comm_monoid M]
+variables [add_comm_monoid M₁] [add_comm_monoid M₂] [add_comm_monoid M₃] [add_comm_monoid M₄]
+variables [module R M] [module R M₁] [module R M₂] [module R M₃] [module R M₄]
 
 /-- An isometry between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
 is a linear equivalence between `M₁` and `M₂` that commutes with the quadratic forms. -/
@@ -22,7 +23,8 @@ is a linear equivalence between `M₁` and `M₂` that commutes with the quadrat
 
 namespace isometric_map
 
-variables {Q₁ : quadratic_form R M₁} {Q₂ : quadratic_form R M₂} {Q₃ : quadratic_form R M₃}
+variables {Q₁ : quadratic_form R M₁} {Q₂ : quadratic_form R M₂}
+variables {Q₃ : quadratic_form R M₃} {Q₄ : quadratic_form R M₄}
 
 instance : semilinear_map_class (Q₁.isometric_map Q₂) (ring_hom.id R) M₁ M₂ :=
 { coe := λ f, f.to_linear_map,
@@ -60,6 +62,11 @@ def comp (g : Q₂.isometric_map Q₃) (f : Q₁.isometric_map Q₂) : Q₁.isom
 
 @[simp] lemma to_linear_map_comp (g : Q₂.isometric_map Q₃) (f : Q₁.isometric_map Q₂) :
   (g.comp f).to_linear_map = g.to_linear_map.comp f.to_linear_map := rfl
+
+@[simp] lemma id_comp (f : Q₁.isometric_map Q₂) : (id Q₂).comp f = f := ext $ λ _, rfl
+@[simp] lemma comp_id (f : Q₁.isometric_map Q₂) : f.comp (id Q₁) = f := ext $ λ _, rfl
+lemma comp_assoc (h : Q₃.isometric_map Q₄) (g : Q₂.isometric_map Q₃) (f : Q₁.isometric_map Q₂) :
+  (h.comp g).comp f = h.comp (g.comp f) := ext $ λ _, rfl
 
 /-- Isometries are isometric maps -/
 @[simps]
