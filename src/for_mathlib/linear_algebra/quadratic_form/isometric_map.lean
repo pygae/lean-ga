@@ -62,9 +62,25 @@ def comp (g : Q₂.isometric_map Q₃) (f : Q₁.isometric_map Q₂) : Q₁.isom
   (g.comp f).to_linear_map = g.to_linear_map.comp f.to_linear_map := rfl
 
 /-- Isometries are isometric maps -/
-@[simps?]
+@[simps]
 def _root_.quadratic_form.isometry.to_isometric_map (g : Q₁.isometry Q₂) :
   Q₁.isometric_map Q₂ := { ..g }
+
+/-- There is a zero map from any module with the zero form. -/
+instance : has_zero ((0 : quadratic_form R M₁).isometric_map Q₂) :=
+{ zero :=
+  { map_app' := λ m, map_zero _,
+    ..(0 : M₁ →ₗ[R] M₂) } }
+
+/-- There is a zero map from the trivial module. -/
+instance [subsingleton M₁] : has_zero (Q₁.isometric_map Q₂) :=
+{ zero :=
+  { map_app' := λ m, subsingleton.elim 0 m ▸ (map_zero _).trans (map_zero _).symm,
+    ..(0 : M₁ →ₗ[R] M₂) } }
+
+/-- Maps into the zero module are trivial -/
+instance [subsingleton M₂] : subsingleton (Q₁.isometric_map Q₂) :=
+⟨λ f g, ext $ λ _, subsingleton.elim _ _⟩
 
 end isometric_map
 
