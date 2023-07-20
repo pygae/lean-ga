@@ -8,12 +8,7 @@ variables {V: Type*} [add_comm_group V] [module ℝ V]
 
 open_locale tensor_product
 
-#check bilin_form.tmul
-
-def quadratic_form.complexify (Q : quadratic_form ℝ V) :
+noncomputable def quadratic_form.complexify (Q : quadratic_form ℝ V) :
   quadratic_form ℂ (ℂ ⊗[ℝ] V) :=
-{ to_fun := ,
-  to_fun_smul := _,
-  exists_companion' := _ }
--- bilin_form.to_quadratic_form $
---   (bilin_form.tmul _ Q.associated)
+bilin_form.to_quadratic_form $
+  (bilin_form.tmul' (linear_map.mul ℂ ℂ).to_bilin Q.associated)
