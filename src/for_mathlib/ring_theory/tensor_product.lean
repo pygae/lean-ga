@@ -141,7 +141,8 @@ notation (name := tensor_product')
   M ` ⊗[`:100 R `] `:0 N:100 := tensor_product R M N
 
 -- /-- A tensor product analogue of `mul_left_comm`. -/
--- def right_comm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
+def right_comm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
+sorry
 -- -- assoc R A _ _ _ ≪≫ₗ begin
 -- --   sorry
 -- -- end
@@ -153,12 +154,47 @@ notation (name := tensor_product')
 --     e₃ := (assoc R A P Q M) in
 -- e₁ ≪≫ₗ (e₂ ≪≫ₗ e₃)
 
+#print tensor_product.assoc
+
+/-- Heterobasic version of `tensor_product.assoc`:
+
+Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
+def assoc' : ((M ⊗[R] N) ⊗[R] Q) ≃ₗ[A] (M ⊗[R] (N ⊗[R] Q)) :=
+begin
+  refine linear_equiv.of_linear
+    (lift $ lift $ _ ∘ₗ mk R A M (N ⊗[R] Q))  --  (lcurry R _ _ _ _)
+    (lift $ _ ∘ₗ (curry $ mk R A (M ⊗[R] N) Q)) _ _, -- (uncurry R _ _ _)
+    -- (ext $ linear_map.ext $ λ m, ext' $ λ n p, _)
+    -- (ext $ flip_inj $ linear_map.ext $ λ p, ext' $ λ m n, _),
+  repeat { rw lift.tmul <|> rw compr₂_apply <|> rw comp_apply <|>
+    rw mk_apply <|> rw flip_apply <|> rw lcurry_apply <|>
+    rw uncurry_apply <|> rw curry_apply <|> rw id_apply }
+end
+
+#check assoc
+-- linear_equiv.of_linear
+--   (lift $ tensor_product.uncurry A _ _ _ $ comp (lcurry R A _ _ _) $
+--     tensor_product.mk A M (P ⊗[R] N))
+--   (tensor_product.uncurry A _ _ _ $ comp (uncurry R A _ _ _) $
+--     by { apply tensor_product.curry, exact (mk R A _ _) })
+--   (by { ext, refl, })
+--   (by { ext, simp only [curry_apply, tensor_product.curry_apply, mk_apply, tensor_product.mk_apply,
+--               uncurry_apply, tensor_product.uncurry_apply, id_apply, lift_tmul, compr₂_apply,
+--               restrict_scalars_apply, function.comp_app, to_fun_eq_coe, lcurry_apply,
+--               linear_map.comp_apply] })
+
+
 /-- Heterobasic version of `tensor_tensor_tensor_comm`:
+
+
 
 Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
 def tensor_tensor_tensor_comm :
   (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
-sorry
+(assoc R A _ _ _).symm ≪≫ₗ begin
+  sorry
+
+end
 
 @[simp] lemma tensor_tensor_tensor_comm_apply (m : M) (n : N) (p : P) (q : Q) :
   tensor_tensor_tensor_comm R A M N P Q ((m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q) :=
