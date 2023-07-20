@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import linear_algebra.bilinear_form.tensor_product
-import ring_theory.tensor_product
+import for_mathlib.ring_theory.tensor_product
 import linear_algebra.quadratic_form.basic
 import data.is_R_or_C.basic
 import for_mathlib.linear_algebra.tensor_product
+import for_mathlib.linear_algebra.bilinear_form.basic
 
 universes u v w
 variables {ι : Type*} {R S : Type*} {M₁ M₂ : Type*}
@@ -63,7 +64,7 @@ def tensor_distrib' : bilin_form S M₁ ⊗[R] bilin_form R M₂ →ₗ[S] bilin
   ≪≫ₗ (tensor_product.lift.equiv S (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) S).symm
   ≪≫ₗ linear_map.to_bilin).to_linear_map
   ∘ₗ _
-  ∘ₗ (tensor_product.congr
+  ∘ₗ (tensor_product.algebra_tensor_module.congr
     (bilin_form.to_lin ≪≫ₗ tensor_product.lift.equiv S M₁ M₁ S)
     (bilin_form.to_lin ≪≫ₗ tensor_product.lift.equiv R M₂ M₂ R)).to_linear_map
 
