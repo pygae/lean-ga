@@ -34,7 +34,7 @@ def tensor_distrib' : bilin_form A M₁ ⊗[R] bilin_form R M₂ →ₗ[A] bilin
     (bilin_form.to_lin ≪≫ₗ tensor_product.lift.equiv A M₁ M₁ A)
     (bilin_form.to_lin ≪≫ₗ tensor_product.lift.equiv R M₂ M₂ R)).to_linear_map
 
-@[simp] lemma tensor_distrib_tmul' (B₁ : bilin_form A M₁) (B₂ : bilin_form R M₂)
+@[simp] lemma tensor_distrib'_tmul (B₁ : bilin_form A M₁) (B₂ : bilin_form R M₂)
   (m₁ : M₁) (m₂ : M₂) (m₁' : M₁) (m₂' : M₂) :
   tensor_distrib' (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂') = B₁ m₁ m₁' * algebra_map R A (B₂ m₂ m₂') :=
 begin
@@ -56,7 +56,7 @@ end
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
 @[reducible]
 protected def tmul' (B₁ : bilin_form A M₁) (B₂ : bilin_form R M₂) : bilin_form A (M₁ ⊗[R] M₂) :=
-tensor_distrib (B₁ ⊗ₜ[R] B₂)
+tensor_distrib' (B₁ ⊗ₜ[R] B₂)
 
 #check bilin_form.tensor_distrib
 
