@@ -11,102 +11,47 @@ import for_mathlib.linear_algebra.tensor_product
 import for_mathlib.linear_algebra.bilinear_form.basic
 
 universes u v w
-variables {ι : Type*} {R S : Type*} {M₁ M₂ : Type*}
+variables {ι : Type*} {R A : Type*} {M₁ M₂ : Type*}
 
 open_locale tensor_product
 
 namespace bilin_form
 
 section comm_semiring
-variables [comm_semiring R] [comm_semiring S]
+variables [comm_semiring R] [comm_semiring A]
 variables [add_comm_monoid M₁] [add_comm_monoid M₂]
-variables [algebra R S] [module R M₁] [module S M₁]
-variables [smul_comm_class R S M₁] [smul_comm_class S R M₁] [smul_comm_class R S S] [is_scalar_tower R S M₁]
+variables [algebra R A] [module R M₁] [module A M₁]
+variables [smul_comm_class R A M₁] [smul_comm_class A R M₁] [smul_comm_class R A A] [is_scalar_tower R A M₁]
 variables [module R M₂]
 
-notation (name := tensor_product')
-  M ` ⊗[`:100 R `] `:0 N:100 := tensor_product R M N
-
-set_option pp.parens true
-
-#check tensor_product.algebra_tensor_module.lift.equiv R S (M₁ ⊗ M₂) (M₁ ⊗ M₂) S
-
-#check tensor_product.tensor_tensor_tensor_comm R M₁ M₂ M₁ M₂
-
-instance : module R (M₁ ⊗[S] M₁) := tensor_product.left_module
-instance : smul_comm_class R S (M₁ ⊗[S] M₁) := tensor_product.smul_comm_class_left
-instance foo : module S ((M₁ ⊗[S] M₁) ⊗[R] (M₂ ⊗[R] M₂)) := tensor_product.left_module
-
-instance : is_scalar_tower R S (M₁ ⊗[R] M₂) := tensor_product.is_scalar_tower_left
-
-instance : smul_comm_class R S (bilin_form S M₁) := bilin_form.smul_comm_class
-instance : module S (bilin_form S M₁ ⊗[R] bilin_form R M₂) := tensor_product.left_module
-
-section
-variables (R S M₁ M₂)
-
-def tensor_tensor_tensor_comm' :
-  ((M₁ ⊗[R] M₂) ⊗[S] (M₁ ⊗[R] M₂) ≃ₗ[S] (M₁ ⊗[S] M₁) ⊗[R] (M₂ ⊗[R] M₂)) := sorry
-
-end
-
-#check ((
-  tensor_tensor_tensor_comm' _ _ _ _ : (((M₁ ⊗[R] M₂) ⊗[S] (M₁ ⊗[R] M₂)) ≃ₗ[S] ((M₁ ⊗[S] M₁) ⊗[R] (M₂ ⊗[R] M₂)))
-  -- tensor_product.tensor_tensor_tensor_comm R M₁ M₂ M₁ M₂
-
-).dual_map
-  ≪≫ₗ (tensor_product.lift.equiv S (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) S).symm
-  ≪≫ₗ linear_map.to_bilin).to_linear_map
--- #exit
 /-- The tensor product of two bilinear forms injects into bilinear forms on tensor products. -/
-def tensor_distrib' : bilin_form S M₁ ⊗[R] bilin_form R M₂ →ₗ[S] bilin_form S (M₁ ⊗[R] M₂) :=
-((tensor_tensor_tensor_comm' R S M₁ M₂).dual_map
-  ≪≫ₗ (tensor_product.lift.equiv S (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) S).symm
+def tensor_distrib' : bilin_form A M₁ ⊗[R] bilin_form R M₂ →ₗ[A] bilin_form A (M₁ ⊗[R] M₂) :=
+((tensor_product.algebra_tensor_module.tensor_tensor_tensor_comm R A M₁ M₂ M₁ M₂).dual_map
+  ≪≫ₗ (tensor_product.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm
   ≪≫ₗ linear_map.to_bilin).to_linear_map
-  ∘ₗ _
+  ∘ₗ tensor_product.algebra_tensor_module.dual_distrib R _ _ _
   ∘ₗ (tensor_product.algebra_tensor_module.congr
-    (bilin_form.to_lin ≪≫ₗ tensor_product.lift.equiv S M₁ M₁ S)
+    (bilin_form.to_lin ≪≫ₗ tensor_product.lift.equiv A M₁ M₁ A)
     (bilin_form.to_lin ≪≫ₗ tensor_product.lift.equiv R M₂ M₂ R)).to_linear_map
 
-@[simp] lemma tensor_distrib_tmul (B₁ : bilin_form R M₁) (B₂ : bilin_form R M₂)
+@[simp] lemma tensor_distrib_tmul' (B₁ : bilin_form A M₁) (B₂ : bilin_form R M₂)
   (m₁ : M₁) (m₂ : M₂) (m₁' : M₁) (m₂' : M₂) :
-  tensor_distrib (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂') = B₁ m₁ m₁' * B₂ m₂ m₂' :=
-rfl
-
-/-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
-@[reducible]
-protected def tmul (B₁ : bilin_form R M₁) (B₂ : bilin_form R M₂) : bilin_form R (M₁ ⊗[R] M₂) :=
-tensor_distrib (B₁ ⊗ₜ[R] B₂)
-
-end comm_semiring
-
-
-section comm_semiring
-variables [comm_semiring R]
-variables [add_comm_monoid M₁] [add_comm_monoid M₂]
-variables [module R M₁] [module R M₂]
-
-/-- The tensor product of two bilinear forms injects into bilinear forms on tensor products. -/
-def tensor_distrib'' : bilin_form R M₁ ⊗[R] bilin_form R M₂ →ₗ[R] bilin_form R (M₁ ⊗[R] M₂) :=
-((tensor_product.tensor_tensor_tensor_comm R M₁ M₂ M₁ M₂).dual_map
-  ≪≫ₗ (tensor_product.lift.equiv R (M₁ ⊗ M₂) (M₁ ⊗ M₂) R).symm
-  ≪≫ₗ linear_map.to_bilin).to_linear_map
-  ∘ₗ tensor_product.dual_distrib R _ _
-  ∘ₗ (tensor_product.congr
-    (bilin_form.to_lin ≪≫ₗ tensor_product.lift.equiv R _ _ _)
-    (bilin_form.to_lin ≪≫ₗ tensor_product.lift.equiv R _ _ _)).to_linear_map
-
-#print tensor_distrib''
-
-@[simp] lemma tensor_distrib_tmul (B₁ : bilin_form R M₁) (B₂ : bilin_form R M₂)
-  (m₁ : M₁) (m₂ : M₂) (m₁' : M₁) (m₂' : M₂) :
-  tensor_distrib (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂') = B₁ m₁ m₁' * B₂ m₂ m₂' :=
-rfl
-
-/-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
-@[reducible]
-protected def tmul (B₁ : bilin_form R M₁) (B₂ : bilin_form R M₂) : bilin_form R (M₁ ⊗[R] M₂) :=
-tensor_distrib (B₁ ⊗ₜ[R] B₂)
+  tensor_distrib' (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂') = B₁ m₁ m₁' * algebra_map R A (B₂ m₂ m₂') :=
+begin
+  -- will be refl once we fill the sorry in `tensor_product.algebra_tensor_module.tensor_tensor_tensor_comm`
+  simp only [tensor_distrib', linear_map.comp_apply, linear_equiv.coe_to_linear_map,
+    tensor_product.algebra_tensor_module.tensor_tensor_tensor_comm_apply, linear_equiv.trans_apply,
+    linear_map.to_bilin_apply, tensor_product.algebra_tensor_module.dual_distrib_apply,
+    tensor_product.algebra_tensor_module.congr_tmul,
+    linear_equiv.dual_map_apply,
+    tensor_product.lift.equiv_apply,
+    bilin_form.to_lin_apply,
+    tensor_product.algebra_tensor_module.tensor_tensor_tensor_comm_apply,
+    tensor_product.algebra_tensor_module.dual_distrib_apply,
+    tensor_product.lift.equiv_apply,
+    tensor_product.lift.equiv_symm_apply,
+    linear_equiv.dual_map_apply],
+end
 
 end comm_semiring
 

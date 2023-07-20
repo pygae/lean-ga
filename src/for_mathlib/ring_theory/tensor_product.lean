@@ -90,16 +90,17 @@ rfl
 
 variables (R A M N P Q)
 
-/- Heterobasic `tensor_product.id` -/
+/- Heterobasic `tensor_product.rid` -/
 def rid : A ⊗[R] R ≃ₗ[A] A :=
 linear_equiv.of_linear
   (lift $ linear_map.flip $
-    (algebra.lsmul A A : A →ₐ[A] _).to_linear_map.restrict_scalars R  ∘ₗ algebra.linear_map R A)
+    (algebra.lsmul A A : A →ₐ[A] _).to_linear_map.flip.restrict_scalars R ∘ₗ algebra.linear_map R A)
   ((mk R A A R).flip 1)
-  (ext_ring $ show algebra_map R A 1 * 1 = 1, by simp)
-  (ext $ λ x y, show (algebra_map R A y * x) ⊗ₜ[R] 1 = x ⊗ₜ[R] y,
-    by rw [←_root_.algebra.smul_def, smul_tmul, smul_eq_mul, mul_one])
-
+  (ext_ring $ show 1 * algebra_map R A 1 = 1, by simp)
+  (ext $ λ x y, show (x * algebra_map R A y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y,
+    by rw [←algebra.commutes, ←_root_.algebra.smul_def, smul_tmul, smul_eq_mul, mul_one])
+  
+lemma rid_apply (a : A) (r : R) : rid R A (a ⊗ₜ r) = a * algebra_map R A r := rfl
 
 /-- A tensor product analogue of `mul_left_comm`. -/
 def left_comm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
@@ -114,12 +115,26 @@ open module (dual)
 def hom_tensor_hom_map : ((M →ₗ[A] P) ⊗[R] (N →ₗ[R] Q)) →ₗ[A] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
 lift map_bilinear
 
+@[simp] lemma hom_tensor_hom_map_apply (f : M →ₗ[A] P) (g : N →ₗ[R] Q) :
+  hom_tensor_hom_map R A M N P Q (f ⊗ₜ g) = map f g :=
+rfl
+
 /- Heterobasic `tensor_product.dual_distrib` -/
 def dual_distrib : (dual A M) ⊗[R] (dual R N) →ₗ[A] dual A (M ⊗[R] N) :=
 begin
   refine _ ∘ₗ hom_tensor_hom_map R A M N A R,
   exact comp_right (rid R A),
 end
+
+variables {R A M N P Q}
+
+@[simp]
+lemma dual_distrib_apply (f : dual A M) (g : dual R N) (m : M) (n : N) :
+  dual_distrib R A M N (f ⊗ₜ g) (m ⊗ₜ n) = f m * algebra_map R A (g n) :=
+rfl
+
+
+variables (R A M N P Q)
 
 set_option pp.parens true
 notation (name := tensor_product')
@@ -138,11 +153,16 @@ notation (name := tensor_product')
 --     e₃ := (assoc R A P Q M) in
 -- e₁ ≪≫ₗ (e₂ ≪≫ₗ e₃)
 
--- /-- Heterobasic version of `tensor_tensor_tensor_comm`:
+/-- Heterobasic version of `tensor_tensor_tensor_comm`:
 
--- Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
--- def tensor_tensor_tensor_comm :
---   (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
+Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
+def tensor_tensor_tensor_comm :
+  (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
+sorry
+
+@[simp] lemma tensor_tensor_tensor_comm_apply (m : M) (n : N) (p : P) (q : Q) :
+  tensor_tensor_tensor_comm R A M N P Q ((m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q) :=
+sorry
 -- let e₁ := (assoc R A (M ⊗[R] N) Q P).symm,
 --   e₁' := assoc R A M N (P ⊗[R] Q) in
 -- e₁ ≪≫ₗ congr (sorry : ((M ⊗[R] N) ⊗[A] P) ≃ₗ[A] ((M ⊗[A] P) ⊗[R] N)) (1 : Q ≃ₗ[R] Q) ≪≫ₗ
