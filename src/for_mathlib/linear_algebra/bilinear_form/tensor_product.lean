@@ -58,8 +58,6 @@ end
 protected def tmul' (B₁ : bilin_form A M₁) (B₂ : bilin_form R M₂) : bilin_form A (M₁ ⊗[R] M₂) :=
 tensor_distrib' (B₁ ⊗ₜ[R] B₂)
 
-#check bilin_form.tensor_distrib
-
 end comm_semiring
 
 section comm_semiring
