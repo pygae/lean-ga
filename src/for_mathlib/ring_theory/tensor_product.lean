@@ -27,7 +27,7 @@ variables [add_comm_monoid N] [module R N]
 variables [add_comm_monoid P] [module R P] [module A P] [is_scalar_tower R A P]
 variables [add_comm_monoid Q] [module R Q]
 
-/-- . -/
+/-- Heterobasic `tensor_product.map`. -/
 def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
 lift $ (show (Q →ₗ[R] P ⊗ Q) →ₗ[A] N →ₗ[R] P ⊗[R] Q,
   from{ to_fun := λ h, h ∘ₗ g,
@@ -90,6 +90,17 @@ rfl
 
 variables (R A M N P Q)
 
+/- Heterobasic `tensor_product.id` -/
+def rid : A ⊗[R] R ≃ₗ[A] A :=
+linear_equiv.of_linear
+  (lift $ linear_map.flip $
+    (algebra.lsmul A A : A →ₐ[A] _).to_linear_map.restrict_scalars R  ∘ₗ algebra.linear_map R A)
+  ((mk R A A R).flip 1)
+  (ext_ring $ show algebra_map R A 1 * 1 = 1, by simp)
+  (ext $ λ x y, show (algebra_map R A y * x) ⊗ₜ[R] 1 = x ⊗ₜ[R] y,
+    by rw [←_root_.algebra.smul_def, smul_tmul, smul_eq_mul, mul_one])
+
+
 /-- A tensor product analogue of `mul_left_comm`. -/
 def left_comm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
 let e₁ := (assoc R A M Q P).symm,
@@ -110,13 +121,9 @@ notation (name := tensor_product')
 /- Heterobasic `tensor_product.dual_distrib` -/
 def dual_distrib : (dual A M) ⊗[R] (dual R N) →ₗ[A] dual A (M ⊗[R] N) :=
 begin
-  refine _ ∘ₗ hom_tensor_hom_map _ _ _ _ _ _,
-  refine comp_right _,
-  exact (algebra.tensor_product.rid R A),
-  exact (comp_right ↑(tensor_product.lid R R)),
+  refine _ ∘ₗ hom_tensor_hom_map R A M N A R,
+  exact comp_right (rid R A),
 end
-
-#check tensor_product.rid
 
 -- set_option pp.parens true
 -- notation (name := tensor_product')
