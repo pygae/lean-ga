@@ -114,10 +114,6 @@ open module (dual)
 def hom_tensor_hom_map : ((M →ₗ[A] P) ⊗[R] (N →ₗ[R] Q)) →ₗ[A] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
 lift map_bilinear
 
-set_option pp.parens true
-notation (name := tensor_product')
-  M ` ⊗[`:100 R `] `:0 N:100 := tensor_product R M N
-
 /- Heterobasic `tensor_product.dual_distrib` -/
 def dual_distrib : (dual A M) ⊗[R] (dual R N) →ₗ[A] dual A (M ⊗[R] N) :=
 begin
@@ -125,9 +121,9 @@ begin
   exact comp_right (rid R A),
 end
 
--- set_option pp.parens true
--- notation (name := tensor_product')
---   M ` ⊗[`:100 R `] `:0 N:100 := tensor_product R M N
+set_option pp.parens true
+notation (name := tensor_product')
+  M ` ⊗[`:100 R `] `:0 N:100 := tensor_product R M N
 
 -- /-- A tensor product analogue of `mul_left_comm`. -/
 -- def right_comm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
