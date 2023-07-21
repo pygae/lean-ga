@@ -37,21 +37,7 @@ def tensor_distrib' : bilin_form A M₁ ⊗[R] bilin_form R M₂ →ₗ[A] bilin
 @[simp] lemma tensor_distrib'_tmul (B₁ : bilin_form A M₁) (B₂ : bilin_form R M₂)
   (m₁ : M₁) (m₂ : M₂) (m₁' : M₁) (m₂' : M₂) :
   tensor_distrib' (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂') = B₁ m₁ m₁' * algebra_map R A (B₂ m₂ m₂') :=
-begin
-  -- will be refl once we fill the sorry in `tensor_product.algebra_tensor_module.tensor_tensor_tensor_comm`
-  simp only [tensor_distrib', linear_map.comp_apply, linear_equiv.coe_to_linear_map,
-    tensor_product.algebra_tensor_module.tensor_tensor_tensor_comm_apply, linear_equiv.trans_apply,
-    linear_map.to_bilin_apply, tensor_product.algebra_tensor_module.dual_distrib_apply,
-    tensor_product.algebra_tensor_module.congr_tmul,
-    linear_equiv.dual_map_apply,
-    tensor_product.lift.equiv_apply,
-    bilin_form.to_lin_apply,
-    tensor_product.algebra_tensor_module.tensor_tensor_tensor_comm_apply,
-    tensor_product.algebra_tensor_module.dual_distrib_apply,
-    tensor_product.lift.equiv_apply,
-    tensor_product.lift.equiv_symm_apply,
-    linear_equiv.dual_map_apply],
-end
+rfl
 
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
 @[reducible]

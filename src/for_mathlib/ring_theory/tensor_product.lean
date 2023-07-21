@@ -140,9 +140,6 @@ set_option pp.parens true
 notation (name := tensor_product')
   M ` ⊗[`:100 R `] `:0 N:100 := tensor_product R M N
 
--- /-- A tensor product analogue of `mul_left_comm`. -/
-def right_comm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
-sorry
 -- -- assoc R A _ _ _ ≪≫ₗ begin
 -- --   sorry
 -- -- end
@@ -155,34 +152,60 @@ sorry
 -- e₁ ≪≫ₗ (e₂ ≪≫ₗ e₃)
 
 #print tensor_product.assoc
+#check curry
+
+/-- Heterobasic version of `tensor_product.uncurry`:
+
+Linearly constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P`
+with the property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
+the given bilinear map `M →[A] N →[R] P`. -/
+@[simps] def uncurry' : (N →ₗ[R] (Q →ₗ[R] P)) →ₗ[A] ((N ⊗[R] Q) →ₗ[R] P) :=
+{ to_fun := lift,
+  map_add' := λ f g, ext $ λ x y, by simp only [lift_tmul, add_apply],
+  map_smul' := λ c f, ext $ λ x y, by simp only [lift_tmul, smul_apply, ring_hom.id_apply] }
+
+/-- Heterobasic version of `tensor_product.lcurry`:
+
+Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
+bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
+@[simps] def lcurry' : ((N ⊗[R] Q) →ₗ[R] P) →ₗ[A] (N →ₗ[R] (Q →ₗ[R] P)) :=
+{ to_fun := curry,
+  map_add' := λ f g, rfl,
+  map_smul' := λ c f, rfl }
 
 /-- Heterobasic version of `tensor_product.assoc`:
 
 Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
 def assoc' : ((M ⊗[R] N) ⊗[R] Q) ≃ₗ[A] (M ⊗[R] (N ⊗[R] Q)) :=
+linear_equiv.of_linear
+    (lift $ lift $ lcurry' R A N _ Q ∘ₗ mk R A M (N ⊗[R] Q))  --  (lcurry R _ _ _ _)
+    (lift $ (uncurry' R _ _ _ _) ∘ₗ (curry $ mk R A (M ⊗[R] N) Q))
+    (curry_injective $ linear_map.ext $ λ m,
+      curry_injective $ linear_map.ext $ λ n, linear_map.ext $ λ q,
+        by exact eq.refl (m ⊗ₜ[R] (n ⊗ₜ[R] q)))
+    (curry_injective $ ext $ λ m n, linear_map.ext $ λ q,
+      by exact eq.refl ((m ⊗ₜ[R] n) ⊗ₜ[R] q))
+.
+instance : is_scalar_tower R A (P →ₗ[A] ((M ⊗[A] P) ⊗[R] Q)) := linear_map.is_scalar_tower
+instance : linear_map.compatible_smul
+    ((M ⊗[A] P) →ₗ[A] ((M ⊗[A] P) ⊗[R] Q))
+    (M →ₗ[A] (P →ₗ[A] ((M ⊗[A] P) ⊗[R] Q)))
+    R
+    A := is_scalar_tower.compatible_smul
+
+-- /-- A tensor product analogue of `mul_left_comm`. -/
+def right_comm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
 begin
   refine linear_equiv.of_linear
-    (lift $ lift $ _ ∘ₗ mk R A M (N ⊗[R] Q))  --  (lcurry R _ _ _ _)
-    (lift $ _ ∘ₗ (curry $ mk R A (M ⊗[R] N) Q)) _ _, -- (uncurry R _ _ _)
-    -- (ext $ linear_map.ext $ λ m, ext' $ λ n p, _)
-    -- (ext $ flip_inj $ linear_map.ext $ λ p, ext' $ λ m n, _),
-  repeat { rw lift.tmul <|> rw compr₂_apply <|> rw comp_apply <|>
-    rw mk_apply <|> rw flip_apply <|> rw lcurry_apply <|>
-    rw uncurry_apply <|> rw curry_apply <|> rw id_apply }
+    (lift $ lift $ flip $ lcurry R A M Q _ ∘ₗ (mk A A (M ⊗[R] Q) P).flip)
+    (lift $ lift $ flip $
+      (tensor_product.lcurry A M P ((M ⊗[A] P) ⊗[R] Q)).restrict_scalars R
+        ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
+    (curry_injective _)
+    (curry_injective _),
+  sorry,
+  sorry,
 end
-
-#check assoc
--- linear_equiv.of_linear
---   (lift $ tensor_product.uncurry A _ _ _ $ comp (lcurry R A _ _ _) $
---     tensor_product.mk A M (P ⊗[R] N))
---   (tensor_product.uncurry A _ _ _ $ comp (uncurry R A _ _ _) $
---     by { apply tensor_product.curry, exact (mk R A _ _) })
---   (by { ext, refl, })
---   (by { ext, simp only [curry_apply, tensor_product.curry_apply, mk_apply, tensor_product.mk_apply,
---               uncurry_apply, tensor_product.uncurry_apply, id_apply, lift_tmul, compr₂_apply,
---               restrict_scalars_apply, function.comp_app, to_fun_eq_coe, lcurry_apply,
---               linear_map.comp_apply] })
-
 
 /-- Heterobasic version of `tensor_tensor_tensor_comm`:
 
@@ -191,18 +214,11 @@ end
 Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
 def tensor_tensor_tensor_comm :
   (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
-(assoc R A _ _ _).symm ≪≫ₗ begin
-  sorry
-
-end
+(assoc R A _ _ _).symm ≪≫ₗ congr (right_comm R A _ _ _).symm 1 ≪≫ₗ assoc' R A _ _ _
 
 @[simp] lemma tensor_tensor_tensor_comm_apply (m : M) (n : N) (p : P) (q : Q) :
   tensor_tensor_tensor_comm R A M N P Q ((m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q) :=
-sorry
--- let e₁ := (assoc R A (M ⊗[R] N) Q P).symm,
---   e₁' := assoc R A M N (P ⊗[R] Q) in
--- e₁ ≪≫ₗ congr (sorry : ((M ⊗[R] N) ⊗[A] P) ≃ₗ[A] ((M ⊗[A] P) ⊗[R] N)) (1 : Q ≃ₗ[R] Q) ≪≫ₗ
---   sorry
+rfl
 
 end comm_semiring
 
