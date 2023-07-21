@@ -8,7 +8,7 @@ open tensor_product
 
 namespace tensor_product
 
-variables {R A M N P Q : Type*}
+variables {R A B C M N P Q : Type*}
 
 /-!
 ### The `A`-module structure on `A ⊗[R] M`
@@ -196,3 +196,34 @@ end comm_semiring
 end algebra_tensor_module
 
 end tensor_product
+
+namespace algebra.tensor_product
+variables {R S A B C : Type*}
+
+open_locale tensor_product
+
+variables [comm_semiring R] [comm_semiring S] [semiring A] [semiring B] [semiring C]
+variables [algebra R A] [algebra R B] [algebra R C]
+variables [algebra S A] [algebra S C]
+variables [algebra R S] [smul_comm_class R S A] [is_scalar_tower R S A] [is_scalar_tower R S C]
+
+/-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
+@[simps]
+def include_left' : A →ₐ[S] A ⊗[R] B :=
+{ commutes' := by simp,
+  ..include_left_ring_hom }
+
+@[ext]
+def ext' ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
+  (ha : f.comp include_left' = g.comp include_left')
+  (hb : (f.restrict_scalars R).comp include_right = (g.restrict_scalars R).comp include_right) :
+    f = g :=
+begin
+  apply @alg_hom.to_linear_map_injective S (A ⊗[R] B) C _ _ _ _ _ _ _ _,
+  ext a b,
+  have := congr_arg2 (*) (alg_hom.congr_fun ha a) (alg_hom.congr_fun hb b),
+  dsimp at *,
+  rwa [←f.map_mul, ←g.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this,
+end
+
+end algebra.tensor_product
