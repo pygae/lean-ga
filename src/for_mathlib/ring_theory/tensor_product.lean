@@ -16,9 +16,9 @@ variables {R A M N P Q : Type*}
 
 open linear_map
 open _root_.algebra (lsmul)
+open module (dual)
 
 namespace algebra_tensor_module
-
 
 section comm_semiring
 variables [comm_semiring R] [comm_semiring A] [algebra R A]
@@ -75,6 +75,7 @@ def map_bilinear : (M →ₗ[A] P) →ₗ[A] (N →ₗ[R] Q) →ₗ[R] (M ⊗[R]
   map_add' := λ f₁ f₂, linear_map.ext $ λ g, map_add_left _ _ _,
   map_smul' := λ c f, linear_map.ext $ λ g, map_smul_left _ _ _, }
 
+/-- Heterobasic `tensor_product.congr`. -/
 def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P ⊗[R] Q) :=
 linear_equiv.of_linear (map f g) (map f.symm g.symm)
   (ext $ λ m n, by simp; simp only [linear_equiv.apply_symm_apply])
@@ -102,14 +103,12 @@ linear_equiv.of_linear
   
 lemma rid_apply (a : A) (r : R) : rid R A (a ⊗ₜ r) = a * algebra_map R A r := rfl
 
-/-- A tensor product analogue of `mul_left_comm`. -/
+/-- Heterobasic `tensor_product.left_comm`. -/
 def left_comm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
 let e₁ := (assoc R A M Q P).symm,
     e₂ := congr (tensor_product.comm A M P) (1 : Q ≃ₗ[R] Q),
     e₃ := (assoc R A P Q M) in
 e₁ ≪≫ₗ (e₂ ≪≫ₗ e₃)
-
-open module (dual)
 
 /- Heterobasic `tensor_product.hom_tensor_hom_map` -/
 def hom_tensor_hom_map : ((M →ₗ[A] P) ⊗[R] (N →ₗ[R] Q)) →ₗ[A] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
@@ -136,28 +135,22 @@ rfl
 
 variables (R A M N P Q)
 
-/-- Heterobasic version of `tensor_product.uncurry`:
-
-Linearly constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P`
-with the property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
-the given bilinear map `M →[A] N →[R] P`. -/
+/-- A variant of `algebra_tensor_module.uncurry`, where only the outermost map is
+`A`-linear. -/
 @[simps] def uncurry' : (N →ₗ[R] (Q →ₗ[R] P)) →ₗ[A] ((N ⊗[R] Q) →ₗ[R] P) :=
 { to_fun := lift,
   map_add' := λ f g, ext $ λ x y, by simp only [lift_tmul, add_apply],
   map_smul' := λ c f, ext $ λ x y, by simp only [lift_tmul, smul_apply, ring_hom.id_apply] }
 
-/-- Heterobasic version of `tensor_product.lcurry`:
-
-Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
-bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
+/-- A variant of `algebra_tensor_module.lcurry`, where only the outermost map is
+`A`-linear. -/
 @[simps] def lcurry' : ((N ⊗[R] Q) →ₗ[R] P) →ₗ[A] (N →ₗ[R] (Q →ₗ[R] P)) :=
 { to_fun := curry,
   map_add' := λ f g, rfl,
   map_smul' := λ c f, rfl }
 
-/-- Heterobasic version of `tensor_product.assoc`:
-
-Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
+/-- A variant of `algebra_tensor_module.assoc`, where only the outermost map is
+`A`-linear. -/
 def assoc' : ((M ⊗[R] N) ⊗[R] Q) ≃ₗ[A] (M ⊗[R] (N ⊗[R] Q)) :=
 linear_equiv.of_linear
     (lift $ lift $ lcurry' R A N _ Q ∘ₗ mk R A M (N ⊗[R] Q))  --  (lcurry R _ _ _ _)
@@ -167,9 +160,8 @@ linear_equiv.of_linear
         by exact eq.refl (m ⊗ₜ[R] (n ⊗ₜ[R] q)))
     (curry_injective $ ext $ λ m n, linear_map.ext $ λ q,
       by exact eq.refl ((m ⊗ₜ[R] n) ⊗ₜ[R] q))
-.
 
--- /-- A tensor product analogue of `mul_right_comm`. -/
+/-- A tensor product analogue of `mul_right_comm`. -/
 def right_comm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
 begin
   haveI : is_scalar_tower R A (P →ₗ[A] ((M ⊗[A] P) ⊗[R] Q)) := linear_map.is_scalar_tower,
@@ -188,12 +180,12 @@ begin
     exact eq.refl ((m ⊗ₜ[A] p) ⊗ₜ[R] q) },
 end
 
-/-- Heterobasic version of `tensor_tensor_tensor_comm`:
-
-Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
+/-- Heterobasic version of `tensor_tensor_tensor_comm`. -/
 def tensor_tensor_tensor_comm :
   (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
 (assoc R A _ _ _).symm ≪≫ₗ congr (right_comm R A _ _ _).symm 1 ≪≫ₗ assoc' R A _ _ _
+
+variables {M N P Q}
 
 @[simp] lemma tensor_tensor_tensor_comm_apply (m : M) (n : N) (p : P) (q : Q) :
   tensor_tensor_tensor_comm R A M N P Q ((m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q) :=
