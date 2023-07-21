@@ -136,24 +136,6 @@ rfl
 
 variables (R A M N P Q)
 
-set_option pp.parens true
-notation (name := tensor_product')
-  M ` ⊗[`:100 R `] `:0 N:100 := tensor_product R M N
-
--- -- assoc R A _ _ _ ≪≫ₗ begin
--- --   sorry
--- -- end
--- linear_equiv.of_linear
---   (lift _)
---   (lift _) _ _
--- let e₁ := (assoc R A M Q P).symm,
---     e₂ := congr (tensor_product.comm A M P) (1 : Q ≃ₗ[R] Q),
---     e₃ := (assoc R A P Q M) in
--- e₁ ≪≫ₗ (e₂ ≪≫ₗ e₃)
-
-#print tensor_product.assoc
-#check curry
-
 /-- Heterobasic version of `tensor_product.uncurry`:
 
 Linearly constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P`
@@ -186,30 +168,27 @@ linear_equiv.of_linear
     (curry_injective $ ext $ λ m n, linear_map.ext $ λ q,
       by exact eq.refl ((m ⊗ₜ[R] n) ⊗ₜ[R] q))
 .
-instance : is_scalar_tower R A (P →ₗ[A] ((M ⊗[A] P) ⊗[R] Q)) := linear_map.is_scalar_tower
-instance : linear_map.compatible_smul
-    ((M ⊗[A] P) →ₗ[A] ((M ⊗[A] P) ⊗[R] Q))
-    (M →ₗ[A] (P →ₗ[A] ((M ⊗[A] P) ⊗[R] Q)))
-    R
-    A := is_scalar_tower.compatible_smul
 
--- /-- A tensor product analogue of `mul_left_comm`. -/
+-- /-- A tensor product analogue of `mul_right_comm`. -/
 def right_comm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
 begin
+  haveI : is_scalar_tower R A (P →ₗ[A] ((M ⊗[A] P) ⊗[R] Q)) := linear_map.is_scalar_tower,
+  haveI : linear_map.compatible_smul
+      ((M ⊗[A] P) →ₗ[A] ((M ⊗[A] P) ⊗[R] Q)) (M →ₗ[A] (P →ₗ[A] ((M ⊗[A] P) ⊗[R] Q))) R A :=
+    is_scalar_tower.compatible_smul,
   refine linear_equiv.of_linear
-    (lift $ lift $ flip $ lcurry R A M Q _ ∘ₗ (mk A A (M ⊗[R] Q) P).flip)
-    (lift $ lift $ flip $
+    (lift $ tensor_product.lift $ flip $
+      lcurry R A M Q ((M ⊗[R] Q) ⊗[A] P) ∘ₗ (mk A A (M ⊗[R] Q) P).flip)
+    (tensor_product.lift $ lift $ flip $
       (tensor_product.lcurry A M P ((M ⊗[A] P) ⊗[R] Q)).restrict_scalars R
-        ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
-    (curry_injective _)
-    (curry_injective _),
-  sorry,
-  sorry,
+        ∘ₗ (mk R A (M ⊗[A] P) Q).flip) _ _,
+  { refine (tensor_product.ext $ ext $ λ m q, linear_map.ext $ λ p, _),
+    exact eq.refl ((m ⊗ₜ[R] q) ⊗ₜ[A] p) },
+  { refine (curry_injective $ tensor_product.ext' $ λ m p, linear_map.ext $ λ q, _),
+    exact eq.refl ((m ⊗ₜ[A] p) ⊗ₜ[R] q) },
 end
 
 /-- Heterobasic version of `tensor_tensor_tensor_comm`:
-
-
 
 Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
 def tensor_tensor_tensor_comm :

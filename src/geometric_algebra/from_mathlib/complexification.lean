@@ -12,3 +12,10 @@ noncomputable def quadratic_form.complexify (Q : quadratic_form ℝ V) :
   quadratic_form ℂ (ℂ ⊗[ℝ] V) :=
 bilin_form.to_quadratic_form $
   (bilin_form.tmul' (linear_map.mul ℂ ℂ).to_bilin Q.associated)
+
+lemma complexify_apply (Q : quadratic_form ℝ V) (c : ℂ) (v : V) :
+  Q.complexify (c ⊗ₜ v) = (c*c) * algebra_map _ _ (Q v) :=
+begin
+  change (c*c) * algebra_map _ _ (Q.associated.to_quadratic_form v) = _,
+  rw quadratic_form.to_quadratic_form_associated,
+end
