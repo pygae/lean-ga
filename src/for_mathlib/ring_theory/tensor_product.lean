@@ -1,6 +1,15 @@
 import ring_theory.tensor_product
 import linear_algebra.dual
 
+/-! # Extras for `ring_theory.tensor_product`
+
+This file in mathlib starts with some heterobasic results, but quickly drops back to forcing
+various rings or algebra to be equal. This isn't enough for us when trying to base change a
+quadratic form.
+
+https://github.com/leanprover-community/mathlib4/pull/6035 adds some of these results to mathlib4.
+-/
+
 universes u v₁ v₂ v₃ v₄
 
 open_locale tensor_product

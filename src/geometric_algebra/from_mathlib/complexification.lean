@@ -9,23 +9,23 @@ import geometric_algebra.from_mathlib.basic
 
 In this file we show the isomorphism
 
-* `equiv_complexify Q : clifford_algebra Q.complexify ≃ₐ[ℂ] (ℂ ⊗[ℝ] clifford_algebra Q)`
+* `clifford_algebra.equiv_complexify Q : clifford_algebra Q.complexify ≃ₐ[ℂ] (ℂ ⊗[ℝ] clifford_algebra Q)`
 
 where
 
 * `quadratic_form.complexify Q : quadratic_form ℂ (ℂ ⊗[ℝ] V)`
 
+This covers §2.2 of https://empg.maths.ed.ac.uk/Activities/Spin/Lecture2.pdf.
 -/
 
-variables {V: Type*} [add_comm_group V] [module ℝ V]
-.
+variables {V : Type*} [add_comm_group V] [module ℝ V]
 
 open_locale tensor_product
 
 namespace quadratic_form
 
-noncomputable def complexify (Q : quadratic_form ℝ V) :
-  quadratic_form ℂ (ℂ ⊗[ℝ] V) :=
+/-- The complexification of a quadratic form, defined by $Q_ℂ(z ⊗ v) = z^2Q(v)$. -/
+noncomputable def complexify (Q : quadratic_form ℝ V) : quadratic_form ℂ (ℂ ⊗[ℝ] V) :=
 bilin_form.to_quadratic_form $
   (bilin_form.tmul' (linear_map.mul ℂ ℂ).to_bilin Q.associated)
 
@@ -51,11 +51,9 @@ end
   polar Q.complexify (c₁ ⊗ₜ[ℝ] v₁) (c₂ ⊗ₜ[ℝ] v₂) = (c₁ * c₂) * algebra_map _ _ (polar Q v₁ v₂) :=
 bilin_form.congr_fun (complexify.polar_bilin Q) _ _
 
-
-
 end quadratic_form
 
-
+-- this instance is nasty
 local attribute [-instance] module.complex_to_real
 
 section algebra_tower_instances
@@ -89,11 +87,10 @@ ring_quot.smul_comm_class _
 
 end algebra_tower_instances
 
-open clifford_algebra (ι)
+namespace clifford_algebra
 open quadratic_form (complexify_apply)
 
-local attribute [semireducible] clifford_algebra
-
+/-- Auxiliary construction: note this is really just a heterobasic `clifford_algebra.map`. -/
 noncomputable def of_complexify_aux (Q : quadratic_form ℝ V) :
   clifford_algebra Q →ₐ[ℝ] clifford_algebra Q.complexify :=
 clifford_algebra.lift Q begin
@@ -106,6 +103,8 @@ end
   of_complexify_aux Q (ι Q v) = ι Q.complexify (1 ⊗ₜ v) :=
 clifford_algebra.lift_ι_apply _ _ _
 
+/-- Convert from the complexified clifford algebra to the clifford algebra over a complexified
+module. -/
 noncomputable def of_complexify (Q : quadratic_form ℝ V) :
   ℂ ⊗[ℝ] clifford_algebra Q →ₐ[ℂ] clifford_algebra Q.complexify :=
 algebra.tensor_product.alg_hom_of_linear_map_tensor_product'
@@ -140,10 +139,8 @@ begin
   rw [map_one, ←algebra.algebra_map_eq_smul_one],
 end
 
-localized "notation (name := tensor_product)
-  M ` ⊗[`:100 R `] `:0 N:100 := tensor_product R M N" in tensor_product
-
-
+/-- Convert from the clifford algebra over a complexified module to the complexified clifford
+algebra. -/
 noncomputable def to_complexify (Q : quadratic_form ℝ V) :
   clifford_algebra Q.complexify →ₐ[ℂ] ℂ ⊗[ℝ] clifford_algebra Q :=
 clifford_algebra.lift _ $ begin
@@ -194,8 +191,15 @@ end
   of_complexify Q (to_complexify Q x) = x := 
 alg_hom.congr_fun (of_complexify_comp_to_complexify Q : _) x
 
+/-- Complexifying the vector space of a clifford algebra is isomorphic as a ℂ-algebra to
+complexifying the clifford algebra itself; $𝒞ℓ(ℂ ⊗ V, Q_ℂ) \iso ℂ ⊗ 𝒞ℓ(V, Q)$.
+
+This is `clifford_algebra.to_complexify` and `clifford_algebra.of_complexify` as an equivalence. -/
+@[simps]
 noncomputable def equiv_complexify (Q : quadratic_form ℝ V) :
   clifford_algebra Q.complexify ≃ₐ[ℂ] ℂ ⊗[ℝ] clifford_algebra Q :=
 alg_equiv.of_alg_hom (to_complexify Q) (of_complexify Q)
   (to_complexify_comp_of_complexify Q)
   (of_complexify_comp_to_complexify Q)
+
+end clifford_algebra
