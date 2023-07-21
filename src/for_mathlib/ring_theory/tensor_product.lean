@@ -198,21 +198,57 @@ end algebra_tensor_module
 end tensor_product
 
 namespace algebra.tensor_product
-variables {R S A B C : Type*}
+variables {R S A B C D : Type*}
 
 open_locale tensor_product
 
-variables [comm_semiring R] [comm_semiring S] [semiring A] [semiring B] [semiring C]
-variables [algebra R A] [algebra R B] [algebra R C]
+variables [comm_semiring R] [comm_semiring S] [semiring A] [semiring B] [semiring C] [semiring D]
+variables [algebra R A] [algebra R B] [algebra R C] [algebra R D]
 variables [algebra S A] [algebra S C]
 variables [algebra R S] [smul_comm_class R S A] [is_scalar_tower R S A] [is_scalar_tower R S C]
 
-/-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
+/-- a stronger version of `alg_hom_of_linear_map_tensor_product` -/
+def alg_hom_of_linear_map_tensor_product'
+  (f : A ⊗[R] B →ₗ[S] C)
+  (w₁ : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
+  (w₂ : ∀ r, f ((algebra_map S A) r ⊗ₜ[R] 1) = (algebra_map S C) r):
+  A ⊗[R] B →ₐ[S] C :=
+{ map_one' := by rw [←(algebra_map S C).map_one, ←w₂, (algebra_map S A).map_one]; refl,
+  map_zero' := by rw [linear_map.to_fun_eq_coe, map_zero],
+  map_mul' := λ x y, by
+  { rw linear_map.to_fun_eq_coe,
+    apply tensor_product.induction_on x,
+    { rw [zero_mul, map_zero, zero_mul] },
+    { intros a₁ b₁,
+      apply tensor_product.induction_on y,
+      { rw [mul_zero, map_zero, mul_zero] },
+      { intros a₂ b₂,
+        rw [tmul_mul_tmul, w₁] },
+      { intros x₁ x₂ h₁ h₂,
+        rw [mul_add, map_add, map_add, mul_add, h₁, h₂] } },
+    { intros x₁ x₂ h₁ h₂,
+      rw [add_mul, map_add, map_add, add_mul, h₁, h₂] } },
+  commutes' := λ r, by rw [linear_map.to_fun_eq_coe, algebra_map_apply, w₂],
+  .. f }
+
+@[simp]
+lemma alg_hom_of_linear_map_tensor_product'_apply (f w₁ w₂ x) :
+  (alg_hom_of_linear_map_tensor_product' f w₁ w₂ : A ⊗[R] B →ₐ[R] C) x = f x := rfl
+
+/-- a stronger version of `map` -/
+def map' (f : A →ₐ[S] C) (g : B →ₐ[R] D) : A ⊗[R] B →ₐ[S] C ⊗[R] D :=
+alg_hom_of_linear_map_tensor_product'
+  (tensor_product.algebra_tensor_module.map f.to_linear_map g.to_linear_map)
+  (by simp)
+  (by simp [alg_hom.commutes])
+
+/-- a stronger version of `include_left` -/
 @[simps]
 def include_left' : A →ₐ[S] A ⊗[R] B :=
 { commutes' := by simp,
   ..include_left_ring_hom }
 
+/-- a stronger version of `ext` -/
 @[ext]
 def ext' ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
   (ha : f.comp include_left' = g.comp include_left')

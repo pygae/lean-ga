@@ -70,8 +70,7 @@ clifford_algebra.lift_ι_apply _ _ _
 
 noncomputable def of_complexify (Q : quadratic_form ℝ V) :
   ℂ ⊗[ℝ] clifford_algebra Q →ₐ[ℂ] clifford_algebra Q.complexify :=
--- `algebra.tensor_product.product_left_alg_hom` doesn't work here :(
-alg_hom.of_linear_map
+algebra.tensor_product.alg_hom_of_linear_map_tensor_product'
   (tensor_product.algebra_tensor_module.lift $
     let f : ℂ →ₗ[ℂ] _ := (algebra.lsmul ℂ (clifford_algebra Q.complexify)).to_linear_map in
     linear_map.flip $ linear_map.flip (({
@@ -80,8 +79,13 @@ alg_hom.of_linear_map
       map_add' := λ f g, linear_map.ext $ λ x, rfl,
       map_smul' := λ (c : ℂ) g, linear_map.ext $ λ x, rfl,
     } : _ →ₗ[ℂ] _) ∘ₗ f) ∘ₗ (of_complexify_aux Q).to_linear_map)
-  (show (1 : ℂ) • of_complexify_aux Q 1 = 1, by simp only [map_one, one_smul])
-  (λ x y, sorry)
+  (λ z₁ z₂ b₁ b₂,
+    show (z₁ * z₂) • of_complexify_aux Q (b₁ * b₂)
+      = z₁ • of_complexify_aux Q b₁ * z₂ • of_complexify_aux Q b₂,
+    by rw [map_mul, smul_mul_smul])
+  (λ r,
+    show r • of_complexify_aux Q 1 = algebra_map ℂ (clifford_algebra Q.complexify) r,
+    by rw [map_one, algebra.algebra_map_eq_smul_one])
 
 @[simp] lemma of_complexify_tmul_ι (Q : quadratic_form ℝ V) (z : ℂ) (v : V) :
   of_complexify Q (z ⊗ₜ clifford_algebra.ι Q v) = clifford_algebra.ι _ (z ⊗ₜ v) :=
