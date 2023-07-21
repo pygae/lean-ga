@@ -207,6 +207,10 @@ variables [algebra R A] [algebra R B] [algebra R C] [algebra R D]
 variables [algebra S A] [algebra S C]
 variables [algebra R S] [smul_comm_class R S A] [is_scalar_tower R S A] [is_scalar_tower R S C]
 
+lemma algebra_map_tmul_one (r : R) :
+  algebra_map R A r ⊗ₜ[R] (1 : B) = 1 ⊗ₜ[R] algebra_map R B r :=
+by simpa only [algebra.algebra_map_eq_smul_one] using tensor_product.smul_tmul _ _ _
+
 /-- a stronger version of `alg_hom_of_linear_map_tensor_product` -/
 def alg_hom_of_linear_map_tensor_product'
   (f : A ⊗[R] B →ₗ[S] C)

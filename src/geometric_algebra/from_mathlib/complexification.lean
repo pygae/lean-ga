@@ -3,13 +3,28 @@ import data.complex.module
 import ring_theory.tensor_product
 import for_mathlib.linear_algebra.bilinear_form.tensor_product
 import for_mathlib.algebra.ring_quot
+import geometric_algebra.from_mathlib.basic
+
+/-! # Complexification of a clifford algebra
+
+In this file we show the isomorphism
+
+* `equiv_complexify Q : clifford_algebra Q.complexify ≃ₐ[ℂ] (ℂ ⊗[ℝ] clifford_algebra Q)`
+
+where
+
+* `quadratic_form.complexify Q : quadratic_form ℂ (ℂ ⊗[ℝ] V)`
+
+-/
 
 variables {V: Type*} [add_comm_group V] [module ℝ V]
 .
 
 open_locale tensor_product
 
-noncomputable def quadratic_form.complexify (Q : quadratic_form ℝ V) :
+namespace quadratic_form
+
+noncomputable def complexify (Q : quadratic_form ℝ V) :
   quadratic_form ℂ (ℂ ⊗[ℝ] V) :=
 bilin_form.to_quadratic_form $
   (bilin_form.tmul' (linear_map.mul ℂ ℂ).to_bilin Q.associated)
@@ -20,6 +35,26 @@ begin
   change (c*c) * algebra_map _ _ (Q.associated.to_quadratic_form v) = _,
   rw quadratic_form.to_quadratic_form_associated,
 end
+
+lemma complexify.polar_bilin (Q : quadratic_form ℝ V) :
+  Q.complexify.polar_bilin = (linear_map.mul ℂ ℂ).to_bilin.tmul' Q.polar_bilin :=
+begin
+  apply bilin_form.to_lin.injective _,
+  ext v w : 6,
+  change polar (Q.complexify) (1 ⊗ₜ[ℝ] v) (1 ⊗ₜ[ℝ] w) = 1 * 1 * algebra_map _ _ (polar Q v w),
+  simp_rw [polar, complexify_apply, ←tensor_product.tmul_add, complexify_apply, one_mul,
+    _root_.map_sub],
+end
+
+@[simp] lemma complexify_polar_apply (Q : quadratic_form ℝ V)
+  (c₁ : ℂ) (v₁ : V) (c₂ : ℂ) (v₂ : V):
+  polar Q.complexify (c₁ ⊗ₜ[ℝ] v₁) (c₂ ⊗ₜ[ℝ] v₂) = (c₁ * c₂) * algebra_map _ _ (polar Q v₁ v₂) :=
+bilin_form.congr_fun (complexify.polar_bilin Q) _ _
+
+
+
+end quadratic_form
+
 
 local attribute [-instance] module.complex_to_real
 
@@ -54,18 +89,21 @@ ring_quot.smul_comm_class _
 
 end algebra_tower_instances
 
+open clifford_algebra (ι)
+open quadratic_form (complexify_apply)
+
 local attribute [semireducible] clifford_algebra
 
 noncomputable def of_complexify_aux (Q : quadratic_form ℝ V) :
   clifford_algebra Q →ₐ[ℝ] clifford_algebra Q.complexify :=
 clifford_algebra.lift Q begin
-  refine ⟨(clifford_algebra.ι Q.complexify).restrict_scalars ℝ ∘ₗ tensor_product.mk ℝ ℂ V 1, λ v, _⟩,
+  refine ⟨(ι Q.complexify).restrict_scalars ℝ ∘ₗ tensor_product.mk ℝ ℂ V 1, λ v, _⟩,
   refine (clifford_algebra.ι_sq_scalar Q.complexify (1 ⊗ₜ v)).trans _,
   rw [complexify_apply, one_mul, one_mul, ←is_scalar_tower.algebra_map_apply],
 end
 
 @[simp] lemma of_complexify_aux_ι (Q : quadratic_form ℝ V) (v : V) :
-  of_complexify_aux Q (clifford_algebra.ι Q v) = clifford_algebra.ι Q.complexify (1 ⊗ₜ v) :=
+  of_complexify_aux Q (ι Q v) = ι Q.complexify (1 ⊗ₜ v) :=
 clifford_algebra.lift_ι_apply _ _ _
 
 noncomputable def of_complexify (Q : quadratic_form ℝ V) :
@@ -88,10 +126,10 @@ algebra.tensor_product.alg_hom_of_linear_map_tensor_product'
     by rw [map_one, algebra.algebra_map_eq_smul_one])
 
 @[simp] lemma of_complexify_tmul_ι (Q : quadratic_form ℝ V) (z : ℂ) (v : V) :
-  of_complexify Q (z ⊗ₜ clifford_algebra.ι Q v) = clifford_algebra.ι _ (z ⊗ₜ v) :=
+  of_complexify Q (z ⊗ₜ ι Q v) = ι _ (z ⊗ₜ v) :=
 begin
-  show z • of_complexify_aux Q (clifford_algebra.ι Q v)
-    = clifford_algebra.ι Q.complexify (z ⊗ₜ[ℝ] v),
+  show z • of_complexify_aux Q (ι Q v)
+    = ι Q.complexify (z ⊗ₜ[ℝ] v),
   rw [of_complexify_aux_ι, ←map_smul, tensor_product.smul_tmul', smul_eq_mul, mul_one],
 end
 
@@ -102,33 +140,26 @@ begin
   rw [map_one, ←algebra.algebra_map_eq_smul_one],
 end
 
+localized "notation (name := tensor_product)
+  M ` ⊗[`:100 R `] `:0 N:100 := tensor_product R M N" in tensor_product
+
+
 noncomputable def to_complexify (Q : quadratic_form ℝ V) :
   clifford_algebra Q.complexify →ₐ[ℂ] ℂ ⊗[ℝ] clifford_algebra Q :=
 clifford_algebra.lift _ $ begin
-  let φ := tensor_product.algebra_tensor_module.map (linear_map.id : ℂ →ₗ[ℂ] ℂ) (clifford_algebra.ι Q),
+  let φ := tensor_product.algebra_tensor_module.map (linear_map.id : ℂ →ₗ[ℂ] ℂ) (ι Q),
   refine ⟨φ, _⟩,
-  suffices : ∀ z v, φ (z ⊗ₜ v) * φ (z ⊗ₜ v) = algebra_map _ _ (Q.complexify (z ⊗ₜ v)),
-  { intro m,
-    induction m using tensor_product.induction_on with z v x y hx hy,
-    { simp },
-    { exact this _ _ },
-    { simp only [map_add],
-      -- not true :(
-      sorry } },
-  intros z v,
-  suffices : ∀ v, φ (1 ⊗ₜ v) * φ (1 ⊗ₜ v) = algebra_map _ _ (Q v),
-  { have := congr_arg ((•) (z*z)) (this v),
-    rw [←smul_mul_smul, ←map_smul, tensor_product.smul_tmul', smul_eq_mul, mul_one] at this,
-    rw [this, complexify_apply, map_mul, algebra.smul_def, ←is_scalar_tower.algebra_map_apply] },
-  intro v,
-  dsimp only [φ, tensor_product.algebra_tensor_module.map_tmul, complexify_apply, alg_hom.id_apply,
-    linear_map.id_apply, algebra.tensor_product.algebra_map_apply, algebra.tensor_product.tmul_mul_tmul],
-  rw [algebra.algebra_map_eq_smul_one, tensor_product.smul_tmul, ←algebra.algebra_map_eq_smul_one,
-    mul_one, clifford_algebra.ι_sq_scalar],
+  rw clifford_algebra.preserves_iff_bilin _ (is_unit.mk0 (2 : ℂ) two_ne_zero),
+  ext v w,
+  change (1 * 1) ⊗ₜ[ℝ] (ι Q v * ι Q w) + (1 * 1) ⊗ₜ[ℝ] (ι Q w * ι Q v) =
+    quadratic_form.polar (Q.complexify) (1 ⊗ₜ[ℝ] v) (1 ⊗ₜ[ℝ] w) ⊗ₜ[ℝ] 1,
+  rw [← tensor_product.tmul_add, clifford_algebra.ι_mul_ι_add_swap,
+    quadratic_form.complexify_polar_apply, one_mul, one_mul,
+    algebra.tensor_product.algebra_map_tmul_one],
 end
 
 @[simp] lemma to_complexify_ι (Q : quadratic_form ℝ V) (z : ℂ) (v : V) :
-  to_complexify Q (clifford_algebra.ι _ (z ⊗ₜ v)) = z ⊗ₜ clifford_algebra.ι Q v :=
+  to_complexify Q (ι _ (z ⊗ₜ v)) = z ⊗ₜ ι Q v :=
 clifford_algebra.lift_ι_apply _ _ _
 
 local attribute [ext] tensor_product.ext
@@ -141,8 +172,8 @@ begin
     rw [of_complexify_tmul_one, alg_hom.commutes, algebra.tensor_product.algebra_map_apply,
       algebra.id.map_eq_self] },
   { ext v,
-    change to_complexify Q (of_complexify Q (1 ⊗ₜ[ℝ] clifford_algebra.ι Q v))
-      = 1 ⊗ₜ[ℝ] clifford_algebra.ι Q v,
+    change to_complexify Q (of_complexify Q (1 ⊗ₜ[ℝ] ι Q v))
+      = 1 ⊗ₜ[ℝ] ι Q v,
     rw [of_complexify_tmul_ι, to_complexify_ι] },
 end
 
@@ -154,8 +185,8 @@ lemma of_complexify_comp_to_complexify (Q : quadratic_form ℝ V) :
   (of_complexify Q).comp (to_complexify Q) = alg_hom.id _ _ :=
 begin
   ext,
-  show of_complexify Q (to_complexify Q (clifford_algebra.ι Q.complexify (1 ⊗ₜ[ℝ] x)))
-    = clifford_algebra.ι Q.complexify (1 ⊗ₜ[ℝ] x),
+  show of_complexify Q (to_complexify Q (ι Q.complexify (1 ⊗ₜ[ℝ] x)))
+    = ι Q.complexify (1 ⊗ₜ[ℝ] x),
   rw [to_complexify_ι, of_complexify_tmul_ι],
 end
 
