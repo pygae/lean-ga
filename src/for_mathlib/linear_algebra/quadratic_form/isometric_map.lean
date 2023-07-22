@@ -23,70 +23,72 @@ is a linear equivalence between `M₁` and `M₂` that commutes with the quadrat
 
 namespace isometric_map
 
+notation Q₁ ` →qᵢ `:25 Q₂:0 := isometric_map Q₁ Q₂
+
 variables {Q₁ : quadratic_form R M₁} {Q₂ : quadratic_form R M₂}
 variables {Q₃ : quadratic_form R M₃} {Q₄ : quadratic_form R M₄}
 
-instance : semilinear_map_class (Q₁.isometric_map Q₂) (ring_hom.id R) M₁ M₂ :=
+instance : semilinear_map_class (Q₁ →qᵢ Q₂) (ring_hom.id R) M₁ M₂ :=
 { coe := λ f, f.to_linear_map,
   coe_injective' := λ f g h, by cases f; cases g; congr',
   map_add := λ f, f.to_linear_map.map_add,
   map_smulₛₗ := λ f, f.to_linear_map.map_smul }
 
 lemma to_linear_map_injective :
-  function.injective (isometric_map.to_linear_map : (Q₁.isometric_map Q₂) → (M₁ →ₗ[R] M₂)) :=
+  function.injective (isometric_map.to_linear_map : (Q₁ →qᵢ Q₂) → (M₁ →ₗ[R] M₂)) :=
 λ f g h, fun_like.coe_injective (congr_arg fun_like.coe h : _)
 
-@[ext] lemma ext ⦃f g : Q₁.isometric_map Q₂⦄ (h : ∀ x, f x = g x) : f = g := fun_like.ext _ _ h
+@[ext] lemma ext ⦃f g : Q₁ →qᵢ Q₂⦄ (h : ∀ x, f x = g x) : f = g := fun_like.ext _ _ h
 
 /-- See Note [custom simps projection]. -/
-protected def simps.apply (f : Q₁.isometric_map Q₂) : M₁ → M₂ := f
+protected def simps.apply (f : Q₁ →qᵢ Q₂) : M₁ → M₂ := f
 
 initialize_simps_projections isometric_map (to_fun → apply)
 
-@[simp] lemma map_app (f : Q₁.isometric_map Q₂) (m : M₁) : Q₂ (f m) = Q₁ m := f.map_app' m
+@[simp] lemma map_app (f : Q₁ →qᵢ Q₂) (m : M₁) : Q₂ (f m) = Q₁ m := f.map_app' m
 
-@[simp] lemma coe_to_linear_map (f : Q₁.isometric_map Q₂) : ⇑f.to_linear_map = f := rfl
+@[simp] lemma coe_to_linear_map (f : Q₁ →qᵢ Q₂) : ⇑f.to_linear_map = f := rfl
 
 /-- The identity isometry from a quadratic form to itself. -/
 @[simps]
-def id (Q : quadratic_form R M) : Q.isometric_map Q :=
+def id (Q : quadratic_form R M) : Q →qᵢ Q :=
 { map_app' := λ m, rfl,
   .. linear_map.id  }
 
 /-- The composition of two isometries between quadratic forms. -/
 @[simps]
-def comp (g : Q₂.isometric_map Q₃) (f : Q₁.isometric_map Q₂) : Q₁.isometric_map Q₃ :=
+def comp (g : Q₂ →qᵢ Q₃) (f : Q₁ →qᵢ Q₂) : Q₁ →qᵢ Q₃ :=
 { to_fun := λ x, g (f x),
   map_app' := by { intro m, rw [← f.map_app, ← g.map_app] },
   .. (g.to_linear_map : M₂ →ₗ[R] M₃).comp (f.to_linear_map : M₁ →ₗ[R] M₂) }
 
-@[simp] lemma to_linear_map_comp (g : Q₂.isometric_map Q₃) (f : Q₁.isometric_map Q₂) :
+@[simp] lemma to_linear_map_comp (g : Q₂ →qᵢ Q₃) (f : Q₁ →qᵢ Q₂) :
   (g.comp f).to_linear_map = g.to_linear_map.comp f.to_linear_map := rfl
 
-@[simp] lemma id_comp (f : Q₁.isometric_map Q₂) : (id Q₂).comp f = f := ext $ λ _, rfl
-@[simp] lemma comp_id (f : Q₁.isometric_map Q₂) : f.comp (id Q₁) = f := ext $ λ _, rfl
-lemma comp_assoc (h : Q₃.isometric_map Q₄) (g : Q₂.isometric_map Q₃) (f : Q₁.isometric_map Q₂) :
+@[simp] lemma id_comp (f : Q₁ →qᵢ Q₂) : (id Q₂).comp f = f := ext $ λ _, rfl
+@[simp] lemma comp_id (f : Q₁ →qᵢ Q₂) : f.comp (id Q₁) = f := ext $ λ _, rfl
+lemma comp_assoc (h : Q₃ →qᵢ Q₄) (g : Q₂ →qᵢ Q₃) (f : Q₁ →qᵢ Q₂) :
   (h.comp g).comp f = h.comp (g.comp f) := ext $ λ _, rfl
 
 /-- Isometries are isometric maps -/
 @[simps]
 def _root_.quadratic_form.isometry.to_isometric_map (g : Q₁.isometry Q₂) :
-  Q₁.isometric_map Q₂ := { ..g }
+  Q₁ →qᵢ Q₂ := { ..g }
 
 /-- There is a zero map from any module with the zero form. -/
-instance : has_zero ((0 : quadratic_form R M₁).isometric_map Q₂) :=
+instance : has_zero ((0 : quadratic_form R M₁) →qᵢ Q₂) :=
 { zero :=
   { map_app' := λ m, map_zero _,
     ..(0 : M₁ →ₗ[R] M₂) } }
 
 /-- There is a zero map from the trivial module. -/
-instance [subsingleton M₁] : has_zero (Q₁.isometric_map Q₂) :=
+instance [subsingleton M₁] : has_zero (Q₁ →qᵢ Q₂) :=
 { zero :=
   { map_app' := λ m, subsingleton.elim 0 m ▸ (map_zero _).trans (map_zero _).symm,
     ..(0 : M₁ →ₗ[R] M₂) } }
 
 /-- Maps into the zero module are trivial -/
-instance [subsingleton M₂] : subsingleton (Q₁.isometric_map Q₂) :=
+instance [subsingleton M₂] : subsingleton (Q₁ →qᵢ Q₂) :=
 ⟨λ f g, ext $ λ _, subsingleton.elim _ _⟩
 
 end isometric_map

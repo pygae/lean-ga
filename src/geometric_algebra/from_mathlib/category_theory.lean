@@ -41,7 +41,7 @@ instance (V : QuadraticModule.{v} R) : module R V := V.is_module
 def form (V : QuadraticModule.{v} R) : quadratic_form R V := V.form'
 
 instance category : category (QuadraticModule.{v} R) :=
-{ hom      := λ M N, M.form.isometric_map N.form,
+{ hom      := λ M N, M.form →qᵢ N.form,
   id       := λ M, isometric_map.id M.form,
   comp     := λ A B C f g, g.comp f,
   id_comp' := λ X Y, isometric_map.id_comp,
