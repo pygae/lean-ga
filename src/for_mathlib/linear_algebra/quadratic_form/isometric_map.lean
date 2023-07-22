@@ -82,7 +82,7 @@ instance : has_zero ((0 : quadratic_form R M₁) →qᵢ Q₂) :=
     ..(0 : M₁ →ₗ[R] M₂) } }
 
 /-- There is a zero map from the trivial module. -/
-instance [subsingleton M₁] : has_zero (Q₁ →qᵢ Q₂) :=
+instance has_zero_of_subsingleton [subsingleton M₁] : has_zero (Q₁ →qᵢ Q₂) :=
 { zero :=
   { map_app' := λ m, subsingleton.elim 0 m ▸ (map_zero _).trans (map_zero _).symm,
     ..(0 : M₁ →ₗ[R] M₂) } }
