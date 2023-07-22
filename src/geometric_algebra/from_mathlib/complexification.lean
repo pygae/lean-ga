@@ -18,40 +18,60 @@ where
 This covers §2.2 of https://empg.maths.ed.ac.uk/Activities/Spin/Lecture2.pdf.
 -/
 
-variables {V : Type*} [add_comm_group V] [module ℝ V]
+variables {R A V : Type*}
 
 open_locale tensor_product
 
 namespace quadratic_form
 
-/-- The complexification of a quadratic form, defined by $Q_ℂ(z ⊗ v) = z^2Q(v)$. -/
-noncomputable def complexify (Q : quadratic_form ℝ V) : quadratic_form ℂ (ℂ ⊗[ℝ] V) :=
-bilin_form.to_quadratic_form $
-  (bilin_form.tmul' (linear_map.mul ℂ ℂ).to_bilin Q.associated)
+variables [comm_ring R] [comm_ring A] [algebra R A] [invertible (2 : R)]
+variables [add_comm_group V] [module R V]
 
-@[simp] lemma complexify_apply (Q : quadratic_form ℝ V) (c : ℂ) (v : V) :
-  Q.complexify (c ⊗ₜ v) = (c*c) * algebra_map _ _ (Q v) :=
+variables (A)
+
+/-- Change the base of a quadratic form, defined by $Q_A(a ⊗ v) = a^2Q(v)$. -/
+def base_change (Q : quadratic_form R V) : quadratic_form A (A ⊗[R] V) :=
+bilin_form.to_quadratic_form $
+  (bilin_form.tmul' (linear_map.mul A A).to_bilin $ quadratic_form.associated Q)
+
+variables {A}
+
+@[simp] lemma base_change_apply (Q : quadratic_form R V) (c : A) (v : V) :
+  Q.base_change A (c ⊗ₜ v) = (c*c) * algebra_map _ _ (Q v) :=
 begin
   change (c*c) * algebra_map _ _ (Q.associated.to_quadratic_form v) = _,
   rw quadratic_form.to_quadratic_form_associated,
 end
 
-lemma complexify.polar_bilin (Q : quadratic_form ℝ V) :
-  Q.complexify.polar_bilin = (linear_map.mul ℂ ℂ).to_bilin.tmul' Q.polar_bilin :=
+variables (A)
+
+lemma base_change.polar_bilin (Q : quadratic_form R V) :
+  polar_bilin (Q.base_change A) = (linear_map.mul A A).to_bilin.tmul' Q.polar_bilin :=
 begin
   apply bilin_form.to_lin.injective _,
   ext v w : 6,
-  change polar (Q.complexify) (1 ⊗ₜ[ℝ] v) (1 ⊗ₜ[ℝ] w) = 1 * 1 * algebra_map _ _ (polar Q v w),
-  simp_rw [polar, complexify_apply, ←tensor_product.tmul_add, complexify_apply, one_mul,
+  change polar (Q.base_change A) (1 ⊗ₜ[R] v) (1 ⊗ₜ[R] w) = 1 * 1 * algebra_map _ _ (polar Q v w),
+  simp_rw [polar, base_change_apply, ←tensor_product.tmul_add, base_change_apply, one_mul,
     _root_.map_sub],
 end
 
-@[simp] lemma complexify_polar_apply (Q : quadratic_form ℝ V)
-  (c₁ : ℂ) (v₁ : V) (c₂ : ℂ) (v₂ : V):
-  polar Q.complexify (c₁ ⊗ₜ[ℝ] v₁) (c₂ ⊗ₜ[ℝ] v₂) = (c₁ * c₂) * algebra_map _ _ (polar Q v₁ v₂) :=
-bilin_form.congr_fun (complexify.polar_bilin Q) _ _
+@[simp] lemma base_change_polar_apply (Q : quadratic_form R V)
+  (c₁ : A) (v₁ : V) (c₂ : A) (v₂ : V) :
+  polar (Q.base_change A) (c₁ ⊗ₜ[R] v₁) (c₂ ⊗ₜ[R] v₂)
+    = (c₁ * c₂) * algebra_map _ _ (polar Q v₁ v₂) :=
+bilin_form.congr_fun (base_change.polar_bilin A Q) _ _
+
+
+variables {A}
+
+/-- The complexification of a quadratic form, defined by $Q_ℂ(z ⊗ v) = z^2Q(v)$. -/
+@[reducible]
+noncomputable def complexify [module ℝ V] (Q : quadratic_form ℝ V) : quadratic_form ℂ (ℂ ⊗[ℝ] V) :=
+Q.base_change ℂ
 
 end quadratic_form
+
+variables [add_comm_group V] [module ℝ V]
 
 -- this instance is nasty
 local attribute [-instance] module.complex_to_real
@@ -88,7 +108,7 @@ ring_quot.smul_comm_class _
 end algebra_tower_instances
 
 namespace clifford_algebra
-open quadratic_form (complexify_apply)
+open quadratic_form (base_change_apply)
 
 /-- Auxiliary construction: note this is really just a heterobasic `clifford_algebra.map`. -/
 noncomputable def of_complexify_aux (Q : quadratic_form ℝ V) :
@@ -96,7 +116,7 @@ noncomputable def of_complexify_aux (Q : quadratic_form ℝ V) :
 clifford_algebra.lift Q begin
   refine ⟨(ι Q.complexify).restrict_scalars ℝ ∘ₗ tensor_product.mk ℝ ℂ V 1, λ v, _⟩,
   refine (clifford_algebra.ι_sq_scalar Q.complexify (1 ⊗ₜ v)).trans _,
-  rw [complexify_apply, one_mul, one_mul, ←is_scalar_tower.algebra_map_apply],
+  rw [base_change_apply, one_mul, one_mul, ←is_scalar_tower.algebra_map_apply],
 end
 
 @[simp] lemma of_complexify_aux_ι (Q : quadratic_form ℝ V) (v : V) :
@@ -151,7 +171,7 @@ clifford_algebra.lift _ $ begin
   change (1 * 1) ⊗ₜ[ℝ] (ι Q v * ι Q w) + (1 * 1) ⊗ₜ[ℝ] (ι Q w * ι Q v) =
     quadratic_form.polar (Q.complexify) (1 ⊗ₜ[ℝ] v) (1 ⊗ₜ[ℝ] w) ⊗ₜ[ℝ] 1,
   rw [← tensor_product.tmul_add, clifford_algebra.ι_mul_ι_add_swap,
-    quadratic_form.complexify_polar_apply, one_mul, one_mul,
+    quadratic_form.base_change_polar_apply, one_mul, one_mul,
     algebra.tensor_product.algebra_map_tmul_one],
 end
 
@@ -187,7 +207,8 @@ begin
   rw [to_complexify_ι, of_complexify_tmul_ι],
 end
 
-@[simp] lemma of_complexify_to_complexify (Q : quadratic_form ℝ V) (x : clifford_algebra Q.complexify) :
+@[simp] lemma of_complexify_to_complexify
+  (Q : quadratic_form ℝ V) (x : clifford_algebra Q.complexify) :
   of_complexify Q (to_complexify Q x) = x := 
 alg_hom.congr_fun (of_complexify_comp_to_complexify Q : _) x
 
