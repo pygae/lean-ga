@@ -22,12 +22,12 @@ variables [fintype ι] (QM₁ : quadratic_form R M₁) (QM₂ : quadratic_form R
 variables (QN₁ : quadratic_form R N₁) (QN₂ : quadratic_form R N₂)
 
 /-- `linear_map.inl` as an `isometric_map`. -/
-@[simps] def inl [decidable_eq ι] (i : ι) : QM₁.isometric_map (QM₁.prod QM₂)  :=
+@[simps] def inl [decidable_eq ι] (i : ι) : QM₁ →qᵢ QM₁.prod QM₂  :=
 { map_app' := λ x, by simp,
   .. linear_map.inl R M₁ M₂ }
 
 /-- `linear_map.inl` as an `isometric_map`. -/
-@[simps] def inr [decidable_eq ι] (i : ι) : QM₂.isometric_map (QM₁.prod QM₂)  :=
+@[simps] def inr [decidable_eq ι] (i : ι) : QM₂ →qᵢ QM₁.prod QM₂  :=
 { map_app' := λ x, by simp,
   .. linear_map.inr R M₁ M₂ }
 
@@ -36,16 +36,16 @@ variables {QM₁ QM₂ QN₁ QN₂}
 /-- `pi.prod` of two isometric maps. -/
 @[simps]
 def prod {fQM₁ gQM₁ : quadratic_form R M₁}
-  (f : fQM₁.isometric_map QN₁) (g : gQM₁.isometric_map QN₂) :
-  (fQM₁ + gQM₁).isometric_map (QN₁.prod QN₂) :=
+  (f : fQM₁ →qᵢ QN₁) (g : gQM₁ →qᵢ QN₂) :
+  (fQM₁ + gQM₁) →qᵢ QN₁.prod QN₂ :=
 { to_fun := pi.prod f g,
   map_app' := λ x, congr_arg2 (+) (f.map_app _) (g.map_app _),
   .. linear_map.prod f.to_linear_map g.to_linear_map }
 
 /-- `prod.map` of two isometric maps. -/
 @[simps]
-def prod_map (f : QM₁.isometric_map QN₁) (g : QM₂.isometric_map QN₂) :
-  (QM₁.prod QM₂).isometric_map (QN₁.prod QN₂) :=
+def prod_map (f : QM₁ →qᵢ QN₁) (g : QM₂ →qᵢ QN₂) :
+  QM₁.prod QM₂ →qᵢ QN₁.prod QN₂ :=
 { map_app' := λ x, congr_arg2 (+) (f.map_app _) (g.map_app _),
   .. linear_map.prod_map f.to_linear_map g.to_linear_map }
 
@@ -56,9 +56,10 @@ variables [fintype ι] (QM₁ : ι → quadratic_form R M₁) (QMᵢ : Π i, qua
 
 /-- `linear_map.single` as an `isometric_map`. -/
 @[simps]
-def single [decidable_eq ι] (i : ι) : (QMᵢ i).isometric_map (quadratic_form.pi QMᵢ)  :=
+def single [decidable_eq ι] (i : ι) : QMᵢ i →qᵢ quadratic_form.pi QMᵢ :=
 { to_fun := pi.single i,
   map_app' := λ x, (pi_apply QMᵢ _).trans $ begin
+    rw ring_hom.id_apply,
     refine (fintype.sum_eq_single i $ λ j hij, _).trans _,
     { rw [pi.single_eq_of_ne hij, map_zero] },
     { rw [pi.single_eq_same] }
@@ -66,10 +67,11 @@ def single [decidable_eq ι] (i : ι) : (QMᵢ i).isometric_map (quadratic_form.
   .. (linear_map.single i : Mᵢ i →ₗ[R] (Π i, Mᵢ i))}
 
 /-- `linear_map.pi` for `isometric_map`. -/
-def pi (f : Π i, (QM₁ i).isometric_map (QMᵢ i)) :
-  (∑ i, QM₁ i).isometric_map (quadratic_form.pi QMᵢ) :=
+def pi (f : Π i, QM₁ i →qᵢ QMᵢ i) :
+  (∑ i, QM₁ i) →qᵢ quadratic_form.pi QMᵢ :=
 { to_fun := λ c i, f i c,
-  map_app' := λ c, (pi_apply QMᵢ _).trans $ by simp_rw [λ i, (f i).map_app, sum_apply],
+  map_app' := λ c, (pi_apply QMᵢ _).trans $
+    by simp_rw [λ i, (f i).map_app, sum_apply, ring_hom.id_apply],
   .. linear_map.pi (λ i, (f i).to_linear_map) }
 
 end pi
