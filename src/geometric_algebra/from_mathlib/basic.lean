@@ -19,6 +19,15 @@ example : ring (clifford_algebra Q) := infer_instance
 variables (Q)
 abbreviation clifford_hom (A : Type*) [semiring A] [algebra R A] :=
 { f : M →ₗ[R] A // ∀ m, f m * f m = ↑ₐ(Q m) }
+
+instance {A : Type*} [ring A] [algebra R A] :
+  has_zero (clifford_hom (0 : quadratic_form R M) A) :=
+{ zero := ⟨0, λ m, by simp⟩ }
+
+instance has_zero_of_subsingleton {A : Type*} [ring A] [algebra R A] [subsingleton A] :
+  has_zero (clifford_hom Q A) :=
+{ zero := ⟨0, λ m, subsingleton.elim _ _⟩ }
+
 variables {Q}
 
 /-- TODO: work out what the necessary conditions are here, then make this an instance -/
