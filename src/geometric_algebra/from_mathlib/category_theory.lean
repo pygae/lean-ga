@@ -1,5 +1,6 @@
 import algebra.category.Algebra.basic
 import linear_algebra.clifford_algebra.basic
+import linear_algebra.exterior_algebra.basic
 import geometric_algebra.from_mathlib.basic
 import for_mathlib.linear_algebra.quadratic_form.isometric_map
 
@@ -85,6 +86,17 @@ def CliffordAlgebra : QuadraticModule.{u} R ⥤ Algebra.{u} R :=
 { obj := λ M,
   { carrier := clifford_algebra M.form },
   map := λ M N f, clifford_algebra.map _ _ f.to_linear_map f.map_app,
+  map_id' := λ X, clifford_algebra.map_id _,
+  map_comp' := λ M N P f g, (clifford_algebra.map_comp_map _ _ _ _ _ _ _).symm }
+
+/-- The "exterior algebra" functor, sending an `R`-module `V` to the exterior algebra on `V`.
+
+In the language of geometric algebra, `(ExteriorAlgebra R).map f` is the outermorphism. -/
+@[simps]
+def ExteriorAlgebra : Module.{u} R ⥤ Algebra.{u} R :=
+{ obj := λ M,
+  { carrier := exterior_algebra R M },
+  map := λ M N f, clifford_algebra.map _ _ f (by simp),
   map_id' := λ X, clifford_algebra.map_id _,
   map_comp' := λ M N P f g, (clifford_algebra.map_comp_map _ _ _ _ _ _ _).symm }
 
