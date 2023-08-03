@@ -1,4 +1,4 @@
-import linear_algebra.clifford_algebra.basic
+import linear_algebra.clifford_algebra.conjugation
 import data.complex.module
 import ring_theory.tensor_product
 import for_mathlib.linear_algebra.bilinear_form.tensor_product
@@ -18,7 +18,8 @@ where
 This covers §2.2 of https://empg.maths.ed.ac.uk/Activities/Spin/Lecture2.pdf.
 -/
 
-variables {R A V : Type*}
+universes uR uA uV
+variables {R : Type uR} {A : Type uA} {V : Type uV}
 
 open_locale tensor_product
 
@@ -178,6 +179,23 @@ end
 @[simp] lemma to_complexify_ι (Q : quadratic_form ℝ V) (z : ℂ) (v : V) :
   to_complexify Q (ι _ (z ⊗ₜ v)) = z ⊗ₜ ι Q v :=
 clifford_algebra.lift_ι_apply _ _ _
+
+lemma to_complexify_comp_involute (Q : quadratic_form ℝ V) :
+  (to_complexify Q).comp (involute : clifford_algebra Q.complexify →ₐ[ℂ] _) =
+    (algebra.tensor_product.map' (alg_hom.id _ _) involute).comp (to_complexify Q) :=
+begin
+  ext v,
+  show to_complexify Q (involute (ι Q.complexify (1 ⊗ₜ[ℝ] v)))
+    = (algebra.tensor_product.map' _ involute) (to_complexify Q (ι Q.complexify (1 ⊗ₜ[ℝ] v))),
+  rw [to_complexify_ι, involute_ι, map_neg, to_complexify_ι, algebra.tensor_product.map'_tmul,
+    alg_hom.id_apply, involute_ι, tensor_product.tmul_neg],
+end
+
+/-- The involution acts only on the right of the tensor product. -/
+lemma to_complexify_involute (Q : quadratic_form ℝ V) (x : clifford_algebra Q.complexify) :
+  to_complexify Q (involute x) =
+    tensor_product.map linear_map.id (involute.to_linear_map) (to_complexify Q x) :=
+fun_like.congr_fun (to_complexify_comp_involute Q) x
 
 local attribute [ext] tensor_product.ext
 

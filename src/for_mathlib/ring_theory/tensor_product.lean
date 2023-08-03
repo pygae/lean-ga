@@ -255,6 +255,10 @@ alg_hom_of_linear_map_tensor_product'
   (by simp)
   (by simp [alg_hom.commutes])
 
+@[simp] lemma map'_tmul (f : A →ₐ[S] C) (g : B →ₐ[R] D) (a : A) (b : B) :
+  map' f g (a ⊗ₜ b) = f a ⊗ₜ g b :=
+rfl
+
 /-- a stronger version of `include_left` -/
 @[simps]
 def include_left' : A →ₐ[S] A ⊗[R] B :=
