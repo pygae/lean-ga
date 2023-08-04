@@ -17,7 +17,7 @@ open tensor_product
 
 namespace tensor_product
 
-variables {R A B C M N P Q : Type*}
+variables {R A B C M N P Q P' Q' : Type*}
 
 /-!
 ### The `A`-module structure on `A ⊗[R] M`
@@ -35,6 +35,8 @@ variables [add_comm_monoid M] [module R M] [module A M] [is_scalar_tower R A M]
 variables [add_comm_monoid N] [module R N]
 variables [add_comm_monoid P] [module R P] [module A P] [is_scalar_tower R A P]
 variables [add_comm_monoid Q] [module R Q]
+variables [add_comm_monoid P'] [module R P'] [module A P'] [is_scalar_tower R A P']
+variables [add_comm_monoid Q'] [module R Q']
 
 /-- Heterobasic `tensor_product.map`. -/
 def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
@@ -43,9 +45,28 @@ lift $ (show (Q →ₗ[R] P ⊗ Q) →ₗ[A] N →ₗ[R] P ⊗[R] Q,
   map_add' := λ h₁ h₂, linear_map.add_comp g h₂ h₁,
   map_smul' := λ c h, linear_map.smul_comp c h g }) ∘ₗ mk R A P Q ∘ₗ f
 
+theorem map_apply (f : M →ₗ[A] P) (g : N →ₗ[R] Q) (x) :
+  map f g x = tensor_product.map (f.restrict_scalars R) g x := rfl
+
 @[simp] theorem map_tmul (f : M →ₗ[A] P) (g : N →ₗ[R] Q) (m : M) (n : N) :
   map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
 rfl
+
+@[simp] theorem map_id :
+  map (linear_map.id : M →ₗ[A] M) (linear_map.id : N →ₗ[R] N) = linear_map.id :=
+by ext; refl
+
+theorem map_id_apply (x) :
+  map (linear_map.id : M →ₗ[A] M) (linear_map.id : N →ₗ[R] N) x = x :=
+fun_like.congr_fun map_id x
+
+theorem map_comp (f : P →ₗ[A] P') (f' : M →ₗ[A] P) (g : Q →ₗ[R] Q') (g' : N →ₗ[R] Q) :
+  map (f.comp f') (g.comp g') = (map f g).comp (map f' g') :=
+by { ext, refl }
+
+theorem map_map (f : P →ₗ[A] P') (f' : M →ₗ[A] P) (g : Q →ₗ[R] Q') (g' : N →ₗ[R] Q) (x) :
+  map f g (map f' g' x) = map (f.comp f') (g.comp g') x:=
+fun_like.congr_fun (map_comp f f' g g').symm x
 
 lemma map_add_left (f₁ f₂ : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (f₁ + f₂) g = map f₁ g + map f₂ g :=
 begin

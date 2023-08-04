@@ -1,9 +1,10 @@
-import linear_algebra.clifford_algebra.conjugation
 import data.complex.module
 import ring_theory.tensor_product
+import for_mathlib.linear_algebra.tensor_product.opposite
 import for_mathlib.linear_algebra.bilinear_form.tensor_product
 import for_mathlib.algebra.ring_quot
 import geometric_algebra.from_mathlib.basic
+import geometric_algebra.from_mathlib.conjugation
 
 /-! # Complexification of a clifford algebra
 
@@ -196,6 +197,38 @@ lemma to_complexify_involute (Q : quadratic_form ℝ V) (x : clifford_algebra Q.
   to_complexify Q (involute x) =
     tensor_product.map linear_map.id (involute.to_linear_map) (to_complexify Q x) :=
 fun_like.congr_fun (to_complexify_comp_involute Q) x
+
+open mul_opposite
+
+/-- Auxiliary lemma used to prove `to_complexify_reverse` without needing induction. -/
+lemma to_complexify_comp_reverse_aux (Q : quadratic_form ℝ V) :
+  (to_complexify Q).op.comp (reverse_aux Q.complexify) =
+    ((algebra.tensor_product.op_alg_equiv ℂ).to_alg_hom.comp $
+      (algebra.tensor_product.map' ((alg_hom.id ℂ ℂ).to_opposite commute.all) (reverse_aux Q)).comp
+        (to_complexify Q)) :=
+begin
+  ext v,
+  show
+    op (to_complexify Q (reverse (ι Q.complexify (1 ⊗ₜ[ℝ] v)))) =
+    algebra.tensor_product.op_alg_equiv ℂ
+      (algebra.tensor_product.map' ((alg_hom.id ℂ ℂ).to_opposite commute.all) (reverse_aux Q)
+         (to_complexify Q (ι Q.complexify (1 ⊗ₜ[ℝ] v)))),
+  rw [to_complexify_ι, reverse_ι, to_complexify_ι, algebra.tensor_product.map'_tmul,
+    algebra.tensor_product.op_alg_equiv_tmul, unop_reverse_aux, reverse_ι],
+  refl,
+end
+
+/-- The reverse acts only on the right of the tensor product. -/
+lemma to_complexify_reverse (Q : quadratic_form ℝ V) (x : clifford_algebra Q.complexify) :
+  to_complexify Q (reverse x) =
+    tensor_product.map linear_map.id (reverse : _ →ₗ[ℝ] _) (to_complexify Q x) :=
+begin
+  have := fun_like.congr_fun (to_complexify_comp_reverse_aux Q) x,
+  refine (congr_arg unop this).trans _; clear this,
+  refine (tensor_product.algebra_tensor_module.map_map _ _ _ _ _).trans _,
+  erw [←reverse_eq_reverse_aux, alg_hom.to_linear_map_to_opposite,
+    tensor_product.algebra_tensor_module.map_apply],
+end
 
 local attribute [ext] tensor_product.ext
 

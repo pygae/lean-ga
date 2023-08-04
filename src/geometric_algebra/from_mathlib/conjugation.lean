@@ -21,6 +21,24 @@ The links above will take you to the collection of mathlib theorems.
 
 namespace clifford_algebra
 
+
+open mul_opposite
+
+section
+variables (Q)
+
+def reverse_aux : clifford_algebra Q →ₐ[R] (clifford_algebra Q)ᵐᵒᵖ :=
+  clifford_algebra.lift Q ⟨(op_linear_equiv R).to_linear_map.comp (ι Q),
+    λ m, unop_injective $ by simp⟩
+
+lemma reverse_eq_reverse_aux :
+  reverse = (op_linear_equiv R).symm.to_linear_map ∘ₗ (reverse_aux Q).to_linear_map := rfl
+
+@[simp] lemma unop_reverse_aux (x : clifford_algebra Q) :
+  unop (reverse_aux Q x) = reverse x := rfl
+
+end
+
 section reverse
   open mul_opposite
 
