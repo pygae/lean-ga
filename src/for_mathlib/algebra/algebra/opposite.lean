@@ -66,6 +66,8 @@ protected def unop : (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) ≃ (A →ₐ[R] B) := al
 
 end alg_hom
 
+namespace alg_equiv
+
 /-- An algebra iso `A ≃ₐ[R] B` can equivalently be viewed as an algebra iso `αᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`.
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps]
@@ -78,6 +80,12 @@ def alg_equiv.op : (A ≃ₐ[R] B) ≃ (Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) :=
     ..f.to_ring_equiv.unop},
   left_inv := λ f, alg_equiv.ext $ λ a, rfl,
   right_inv := λ f, alg_equiv.ext $ λ a, rfl }
+
+/-- The 'unopposite' of an algebra iso  `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`. Inverse to `alg_equiv.op`. -/
+@[simp]
+protected def unop : (Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) ≃ (A ≃ₐ[R] B) := alg_equiv.op.symm
+
+end alg_equiv
 
 /-- The double opposite is isomorphic as an algebra to the original type. -/
 @[simps]
