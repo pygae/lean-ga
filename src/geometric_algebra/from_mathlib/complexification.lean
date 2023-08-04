@@ -11,12 +11,22 @@ import geometric_algebra.from_mathlib.conjugation
 In this file we show the isomorphism
 
 * `clifford_algebra.equiv_complexify Q : clifford_algebra Q.complexify ≃ₐ[ℂ] (ℂ ⊗[ℝ] clifford_algebra Q)`
+  with forward direction `clifford_algebra.to_complexify Q` and reverse direction
+  `clifford_algebra.of_complexify Q`.
 
 where
 
-* `quadratic_form.complexify Q : quadratic_form ℂ (ℂ ⊗[ℝ] V)`
+* `quadratic_form.complexify Q : quadratic_form ℂ (ℂ ⊗[ℝ] V)`, which is defined in terms of a more
+  general `quadratic_form.base_change`.
 
 This covers §2.2 of https://empg.maths.ed.ac.uk/Activities/Spin/Lecture2.pdf.
+
+We show:
+
+* `clifford_algebra.to_complexify_ι`: the effect of complexifying pure vectors.
+* `clifford_algebra.of_complexify_tmul_ι`: the effect of un-complexifying a tensor of pure vectors.
+* `clifford_algebra.to_complexify_involute`: the effect of complexifying an involution.
+* `clifford_algebra.to_complexify_reverse`: the effect of complexifying a reversal.
 -/
 
 universes uR uA uV
@@ -31,7 +41,7 @@ variables [add_comm_group V] [module R V]
 
 variables (A)
 
-/-- Change the base of a quadratic form, defined by $Q_A(a ⊗ v) = a^2Q(v)$. -/
+/-- Change the base of a quadratic form, defined by $Q_A(a ⊗_R v) = a^2Q(v)$. -/
 def base_change (Q : quadratic_form R V) : quadratic_form A (A ⊗[R] V) :=
 bilin_form.to_quadratic_form $
   (bilin_form.tmul' (linear_map.mul A A).to_bilin $ quadratic_form.associated Q)
@@ -218,7 +228,7 @@ begin
   refl,
 end
 
-/-- The reverse acts only on the right of the tensor product. -/
+/-- `reverse` acts only on the right of the tensor product. -/
 lemma to_complexify_reverse (Q : quadratic_form ℝ V) (x : clifford_algebra Q.complexify) :
   to_complexify Q (reverse x) =
     tensor_product.map linear_map.id (reverse : _ →ₗ[ℝ] _) (to_complexify Q x) :=
@@ -264,7 +274,7 @@ end
 alg_hom.congr_fun (of_complexify_comp_to_complexify Q : _) x
 
 /-- Complexifying the vector space of a clifford algebra is isomorphic as a ℂ-algebra to
-complexifying the clifford algebra itself; $𝒞ℓ(ℂ ⊗ V, Q_ℂ) \iso ℂ ⊗ 𝒞ℓ(V, Q)$.
+complexifying the clifford algebra itself; $Cℓ(ℂ ⊗_ℝ V, Q_ℂ) ≅ ℂ ⊗_ℝ Cℓ(V, Q)$.
 
 This is `clifford_algebra.to_complexify` and `clifford_algebra.of_complexify` as an equivalence. -/
 @[simps]
