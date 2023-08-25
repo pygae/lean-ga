@@ -36,7 +36,7 @@ Let $\iota_a : R \amap{R} T(M)$ be the canonical map from $R$ to $T(M)$, as a ri
   \lean{clifford_algebra.rel}
   \leanok
 
-  $\forall m \in M, \iota(m) \otimes \iota(m) \sim \iota_a(Q(m))$
+  $\forall m \in M, \iota(m)^2 \sim \iota_a(Q(m))$
 \end{definition}
 
 We say that $\iota$ \vocab{is Clifford} if this relation holds.
@@ -69,7 +69,7 @@ We say that $\iota$ \vocab{is Clifford} if this relation holds.
 \begin{example}[Clifford algebra over a vector space]
   \label{ex:clifford_algebra_v}
 
-  Let $V$ be a vector space over $\RR$, equipped with a quadratic form $Q$.
+  Let $V$ be a vector space $\RR^n$ over $\RR$, equipped with a quadratic form $Q$.
   
   Since $\RR$ is a commutative ring and $V$ is a module,
   definition \ref{def:clifford_algebra} of Clifford algebra applies.
