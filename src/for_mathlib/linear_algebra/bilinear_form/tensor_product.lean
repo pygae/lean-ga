@@ -4,15 +4,47 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import linear_algebra.bilinear_form.tensor_product
+import for_mathlib.ring_theory.tensor_product
 import linear_algebra.quadratic_form.basic
 import data.is_R_or_C.basic
+import for_mathlib.linear_algebra.tensor_product
+import for_mathlib.linear_algebra.bilinear_form.basic
 
 universes u v w
-variables {ι : Type*} {R : Type*} {M₁ M₂ : Type*}
+variables {ι : Type*} {R A : Type*} {M₁ M₂ : Type*}
 
 open_locale tensor_product
 
 namespace bilin_form
+
+section comm_semiring
+variables [comm_semiring R] [comm_semiring A]
+variables [add_comm_monoid M₁] [add_comm_monoid M₂]
+variables [algebra R A] [module R M₁] [module A M₁]
+variables [smul_comm_class R A M₁] [smul_comm_class A R M₁] [smul_comm_class R A A] [is_scalar_tower R A M₁]
+variables [module R M₂]
+
+/-- The tensor product of two bilinear forms injects into bilinear forms on tensor products. -/
+def tensor_distrib' : bilin_form A M₁ ⊗[R] bilin_form R M₂ →ₗ[A] bilin_form A (M₁ ⊗[R] M₂) :=
+((tensor_product.algebra_tensor_module.tensor_tensor_tensor_comm R A M₁ M₂ M₁ M₂).dual_map
+  ≪≫ₗ (tensor_product.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm
+  ≪≫ₗ linear_map.to_bilin).to_linear_map
+  ∘ₗ tensor_product.algebra_tensor_module.dual_distrib R _ _ _
+  ∘ₗ (tensor_product.algebra_tensor_module.congr
+    (bilin_form.to_lin ≪≫ₗ tensor_product.lift.equiv A M₁ M₁ A)
+    (bilin_form.to_lin ≪≫ₗ tensor_product.lift.equiv R M₂ M₂ R)).to_linear_map
+
+@[simp] lemma tensor_distrib'_tmul (B₁ : bilin_form A M₁) (B₂ : bilin_form R M₂)
+  (m₁ : M₁) (m₂ : M₂) (m₁' : M₁) (m₂' : M₂) :
+  tensor_distrib' (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂') = B₁ m₁ m₁' * algebra_map R A (B₂ m₂ m₂') :=
+rfl
+
+/-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
+@[reducible]
+protected def tmul' (B₁ : bilin_form A M₁) (B₂ : bilin_form R M₂) : bilin_form A (M₁ ⊗[R] M₂) :=
+tensor_distrib' (B₁ ⊗ₜ[R] B₂)
+
+end comm_semiring
 
 section comm_semiring
 variables [comm_semiring R]
