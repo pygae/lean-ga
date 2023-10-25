@@ -27,6 +27,9 @@ We show:
 * `clifford_algebra.of_complexify_tmul_ι`: the effect of un-complexifying a tensor of pure vectors.
 * `clifford_algebra.to_complexify_involute`: the effect of complexifying an involution.
 * `clifford_algebra.to_complexify_reverse`: the effect of complexifying a reversal.
+
+Note that all the results in this file are already in Mathlib4 due to
+https://github.com/leanprover-community/mathlib4/pull/6778.
 -/
 
 universes uR uA uV
