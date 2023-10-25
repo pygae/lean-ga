@@ -44,6 +44,15 @@ begin
     simp_rw [←algebra.smul_def, two_smul],
     rw [h x x, quadratic_form.polar_bilin_apply, quadratic_form.polar_self, two_mul, map_add], },
 end
+
+instance [ring A] [algebra R A] :
+  has_zero (clifford_hom (0 : quadratic_form R M) A) :=
+{ zero := ⟨0, λ m, by simp⟩ }
+
+instance has_zero_of_subsingleton [ring A] [algebra R A] [subsingleton A] :
+  has_zero (clifford_hom Q A) :=
+{ zero := ⟨0, λ m, subsingleton.elim _ _⟩ }
+
 variables {Q}
 
 /-- TODO: work out what the necessary conditions are here, then make this an instance -/
